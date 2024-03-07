@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_book_study/widgetLibrary/utils/size_util.dart';
+import 'package:atv/widgetLibrary/utils/size_util.dart';
 
 import '../../basic/button/lw_button.dart';
 import '../../basic/colors/lw_colors.dart';

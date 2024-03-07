@@ -1,4 +1,4 @@
-
+import 'package:atv/config/conf/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../basic/colors/lw_colors.dart';
@@ -8,7 +8,8 @@ import '../../basic/font/lw_font_weight.dart';
 import '../../lw_widget.dart';
 
 /// 标题栏构建器（含statusBar）
-typedef void OnBackPressed({Map<String, dynamic>? resultParams, List<String>? untilRoutes});
+typedef void OnBackPressed(
+    {Map<String, dynamic>? resultParams, List<String>? untilRoutes});
 
 class LWTitleBar {
   bool onlyStatusBar = false;
@@ -46,13 +47,15 @@ class LWTitleBar {
     this.onBackPressed,
     this.actions,
     this.brightnessLight = false,
-    this.backgroundColor = Colors.white,
-    this.backgroundAlpha,
+    this.backgroundColor = Colors.transparent,
+    this.backgroundAlpha = 0,
     this.onlyStatusBar = false,
   });
 
   AppBar? build({bool isSliver = false}) {
-    if (titleWidget == null && titleName?.isNotEmpty != true && !onlyStatusBar) {
+    if (titleWidget == null &&
+        titleName?.isNotEmpty != true &&
+        !onlyStatusBar) {
       if (actions?.isNotEmpty != true) {
         return null;
       } else {
@@ -65,13 +68,16 @@ class LWTitleBar {
       if (backgroundAlpha! < 0) backgroundAlpha = 0;
       if (backgroundAlpha! > 1) backgroundAlpha = 1;
     }
-    Color textColor = titleColor ?? (backgroundAlpha == 0 ? Colors.white : LWColors.gray1);
-    Color appbarColor = backgroundAlpha == 0 ? Colors.transparent : backgroundColor;
+    Color textColor =
+        titleColor ?? (backgroundAlpha == 0 ? Colors.white : LWColors.gray1);
+    Color appbarColor =
+        backgroundAlpha == 0 ? Colors.transparent : backgroundColor;
     bool isLight = backgroundAlpha == 0;
     if (backgroundAlpha != null && backgroundAlpha! > 0) {
       appbarColor = Colors.white.withOpacity(backgroundAlpha!);
       isLight = backgroundAlpha! < 0.5;
-      textColor = Color.alphaBlend(LWColors.gray1.withOpacity(backgroundAlpha!), Colors.white);
+      textColor = Color.alphaBlend(
+          LWColors.gray1.withOpacity(backgroundAlpha!), Colors.white);
     }
 
     if (onlyStatusBar) {
@@ -79,8 +85,10 @@ class LWTitleBar {
         backgroundColor: appbarColor,
         systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
           statusBarColor: Colors.transparent,
-          statusBarBrightness: brightnessLight ? Brightness.dark : Brightness.light, // iOS
-          statusBarIconBrightness: brightnessLight ? Brightness.light : Brightness.dark, // Android
+          statusBarBrightness:
+              brightnessLight ? Brightness.dark : Brightness.light, // iOS
+          statusBarIconBrightness:
+              brightnessLight ? Brightness.light : Brightness.dark, // Android
           // tips-230531: iOS和Android的状态栏图标的Brightness是相反的
         ),
         elevation: 0,
@@ -94,8 +102,10 @@ class LWTitleBar {
         backgroundColor: appbarColor,
         systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
           statusBarColor: Colors.transparent,
-          statusBarBrightness: brightnessLight ? Brightness.dark : Brightness.light, // iOS
-          statusBarIconBrightness: brightnessLight ? Brightness.light : Brightness.dark, // Android
+          statusBarBrightness:
+              brightnessLight ? Brightness.dark : Brightness.light, // iOS
+          statusBarIconBrightness:
+              brightnessLight ? Brightness.light : Brightness.dark, // Android
           // tips-230531: iOS和Android的状态栏图标的Brightness是相反的
         ),
         elevation: 0,
@@ -111,8 +121,11 @@ class LWTitleBar {
     }
   }
 
-  SliverAppBar buildToSliver({required double expandedHeight, Widget? expandedWidget}) {
-    if (titleWidget == null && titleName?.isNotEmpty != true && actions?.isNotEmpty == true) {
+  SliverAppBar buildToSliver(
+      {required double expandedHeight, Widget? expandedWidget}) {
+    if (titleWidget == null &&
+        titleName?.isNotEmpty != true &&
+        actions?.isNotEmpty == true) {
       hasBackIcon = false;
     }
 
@@ -121,13 +134,16 @@ class LWTitleBar {
       if (backgroundAlpha! < 0) backgroundAlpha = 0;
       if (backgroundAlpha! > 1) backgroundAlpha = 1;
     }
-    Color textColor = backgroundAlpha == 0 ? Colors.white : (titleColor ?? LWColors.gray1);
-    Color appbarColor = backgroundAlpha == 0 ? Colors.transparent : backgroundColor;
+    Color textColor =
+        backgroundAlpha == 0 ? Colors.white : (titleColor ?? LWColors.gray1);
+    Color appbarColor =
+        backgroundAlpha == 0 ? Colors.transparent : backgroundColor;
     bool isLight = backgroundAlpha == 0;
     if (backgroundAlpha != null && backgroundAlpha! > 0) {
       appbarColor = Colors.white.withOpacity(backgroundAlpha!);
       isLight = backgroundAlpha! < 0.5;
-      textColor = Color.alphaBlend(LWColors.gray1.withOpacity(backgroundAlpha!), Colors.white);
+      textColor = Color.alphaBlend(
+          LWColors.gray1.withOpacity(backgroundAlpha!), Colors.white);
     }
 
     var _titleWidget = _buildTitleWidget(textColor);
@@ -137,8 +153,10 @@ class LWTitleBar {
       backgroundColor: Colors.white,
       systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.transparent,
-        statusBarBrightness: brightnessLight ? Brightness.dark : Brightness.light, // iOS
-        statusBarIconBrightness: brightnessLight ? Brightness.light : Brightness.dark, // Android
+        statusBarBrightness:
+            brightnessLight ? Brightness.dark : Brightness.light, // iOS
+        statusBarIconBrightness:
+            brightnessLight ? Brightness.light : Brightness.dark, // Android
       ),
       elevation: 0,
       centerTitle: titleCenter,
@@ -154,7 +172,9 @@ class LWTitleBar {
       pinned: true,
       snap: false,
       stretch: false,
-      flexibleSpace: expandedWidget == null ? null : FlexibleSpaceBar(background: expandedWidget),
+      flexibleSpace: expandedWidget == null
+          ? null
+          : FlexibleSpaceBar(background: expandedWidget),
     );
   }
 
@@ -166,7 +186,10 @@ class LWTitleBar {
     } else if (titleName?.isNotEmpty == true) {
       _titleWidget = Text(
         titleName!,
-        style: TextStyle(fontSize: titleFontSize ?? 16.sp, fontWeight: LWFontWeight.bold, color: textColor),
+        style: TextStyle(
+            fontSize: titleFontSize ?? 16.sp,
+            fontWeight: LWFontWeight.bold,
+            color: textColor),
       );
     }
     return _titleWidget;
@@ -179,9 +202,14 @@ class LWTitleBar {
       _leftWidget = null;
     } else if (hasBackIcon) {
       _leftWidget = IconButton(
-        onPressed: () => onBackPressed?.call(),
-        icon: backIcon ?? LWWidget.assetSvg('ic_title_back.svg', color: textColor),
-      );
+          onPressed: () => onBackPressed?.call(),
+          icon: backIcon ??
+              Image.asset(
+                AppIcons.imgCommonBackIcon,
+                width: 7.33.dp,
+                height: 12.67.dp,
+                color: textColor,
+              ));
     }
     return _leftWidget;
   }

@@ -9,10 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class LWWidget {
   LWWidget._internal();
 
-  static const MethodChannel channel = MethodChannel('flutter_book_study');
-  static Color themeColor = const Color(0xFFE60044);
-  static bool isStyleCircle= false;
-  static String packageName = 'flutter_book_study';
+  static const MethodChannel channel = MethodChannel('flutter_atv');
+  static Color themeColor = const Color(0xFF1E0C3A);
+  static bool isStyleCircle = false;
+  static String packageName = 'flutter_atv';
 
   static String eventImageChooser = 'event/imageChooser';
   static String eventPlatformVersion = 'event/platformVersion';
@@ -22,8 +22,13 @@ class LWWidget {
   ///   - designHeight 设计稿高度
   ///   - themeColor 主题色
   static init(BuildContext context,
-      {double designWidth = 375, double designHeight = 812, double? designScaleFactor, Color? themeColor, bool isStyleCircle = false}) {
-    SizeUtil.init(context, designWidth, designHeight, scaleFactor: designScaleFactor);
+      {double designWidth = 375,
+      double designHeight = 812,
+      double? designScaleFactor,
+      Color? themeColor,
+      bool isStyleCircle = false}) {
+    SizeUtil.init(context, designWidth, designHeight,
+        scaleFactor: designScaleFactor);
     LWWidget.themeColor = themeColor ?? LWWidget.themeColor;
     LWWidget.isStyleCircle = isStyleCircle;
   }
@@ -37,9 +42,11 @@ class LWWidget {
   }
 
   ///======================= 图片加载 =======================
-  static String assetImgPath(String imageName) => 'packages/$packageName/assets/images/$imageName';
+  static String assetImgPath(String imageName) =>
+      'packages/$packageName/assets/images/$imageName';
 
-  static String assetSvgPath(String svgName) => 'packages/$packageName/assets/images/svg/$svgName';
+  static String assetSvgPath(String svgName) =>
+      'packages/$packageName/assets/images/svg/$svgName';
 
   static Widget assetImg(
     String imagePath, {
@@ -49,7 +56,8 @@ class LWWidget {
     Color? color,
     BoxFit fit = BoxFit.contain,
   }) {
-    return Image.asset(assetImgPath(imagePath), width: width, height: height, fit: fit, scale: scale, color: color);
+    return Image.asset(assetImgPath(imagePath),
+        width: width, height: height, fit: fit, scale: scale, color: color);
   }
 
   static Widget assetSvg(
@@ -59,7 +67,8 @@ class LWWidget {
     Color? color,
     BoxFit fit = BoxFit.contain,
   }) {
-    return SvgPicture.asset(assetSvgPath(svgName), width: width, height: height, fit: fit, color: color);
+    return SvgPicture.asset(assetSvgPath(svgName),
+        width: width, height: height, fit: fit, color: color);
   }
 
   static Size boundingTextSize(
