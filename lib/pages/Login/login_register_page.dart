@@ -1,10 +1,12 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
+import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModell/register_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -34,7 +36,7 @@ class _LoginRegisterPageState
   }
 
   @override
-  String? titleName() => '创建用户';
+  String? titleName() => LocaleKeys.create_a_user.tr();
 
   @override
   Widget buildBody(BuildContext context) {
@@ -51,7 +53,7 @@ class _LoginRegisterPageState
             height: 12.dp,
           ),
           Text(
-            '电子邮箱',
+            LocaleKeys.email.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -65,7 +67,7 @@ class _LoginRegisterPageState
             height: 40.dp,
           ),
           Text(
-            '邮箱验证码',
+            LocaleKeys.email_verification_code.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -79,7 +81,7 @@ class _LoginRegisterPageState
             height: 40.dp,
           ),
           Text(
-            '密码',
+            LocaleKeys.password.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -93,7 +95,7 @@ class _LoginRegisterPageState
             height: 40.dp,
           ),
           Text(
-            '确认密码',
+            LocaleKeys.confirm_password.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -144,7 +146,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入电子邮箱",
+            hintText: LocaleKeys.please_enter_your_email_address.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -185,7 +187,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入邮箱验证码",
+            hintText: LocaleKeys.please_enter_your_email_verification_code.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -226,7 +228,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入密码",
+            hintText: LocaleKeys.enter_your_PIN.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -267,7 +269,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入密码",
+            hintText: LocaleKeys.please_enter_your_confirmation_password.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:

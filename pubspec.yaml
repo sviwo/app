@@ -83,6 +83,7 @@ dependencies:
   webview_flutter: ^4.2.2
   flutter_web_plugins:
     sdk: flutter
+  easy_localization: ^3.0.5 #国际化
 
 dev_dependencies:
   flutter_test:
@@ -116,6 +117,7 @@ flutter:
     # - assets/svg/
     # - assets/svga/
     - assets/images/
+    - resources/langs/
     # - assets/images/2.0x/
     # - assets/images/3.0x/
 

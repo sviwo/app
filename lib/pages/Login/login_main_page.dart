@@ -1,9 +1,10 @@
-import 'dart:ui';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
+import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModell/login_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/lw_widget.dart';
@@ -76,7 +77,7 @@ class _LoginMainPageState
               height: 320.dp,
             ),
             LWButton.text(
-              text: '立即登录',
+              text: LocaleKeys.sign_in_now.tr(),
               textColor: Colors.white,
               textSize: 16.sp,
               backgroundColor: LWWidget.themeColor,
@@ -93,7 +94,7 @@ class _LoginMainPageState
               height: 21.dp,
             ),
             LWButton.text(
-              text: '用户注册',
+              text: LocaleKeys.user_register.tr(),
               textColor: const Color(0xff010101),
               textSize: 16.sp,
               backgroundColor: Colors.white,
@@ -144,7 +145,7 @@ class _LoginMainPageState
                         child: RichText(
                           text: TextSpan(children: [
                             TextSpan(
-                              text: '注册即代表您同意',
+                              text: LocaleKeys.by_registering_you_agree.tr(),
                               style: TextStyle(
                                 fontSize: 10.sp,
                                 color: Colors.white,
@@ -157,7 +158,7 @@ class _LoginMainPageState
                                 },
                             ),
                             TextSpan(
-                                text: '《用户协议》',
+                                text: LocaleKeys.user_agreement.tr(),
                                 style: TextStyle(
                                   fontSize: 10.sp,
                                   color: const Color(0xff36BCB3),
@@ -170,13 +171,13 @@ class _LoginMainPageState
                                     LogUtil.d('点击了用户协议');
                                   }),
                             TextSpan(
-                                text: '和',
+                                text: LocaleKeys.and.tr(),
                                 style: TextStyle(
                                   fontSize: 10.sp,
                                   color: Colors.white,
                                 )),
                             TextSpan(
-                                text: '《隐私政策》',
+                                text: LocaleKeys.privacy_policy.tr(),
                                 style: TextStyle(
                                   fontSize: 10.sp,
                                   color: const Color(0xff36BCB3),

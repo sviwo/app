@@ -1,0 +1,23 @@
+{
+    "sign_in_now": "立即登录",
+    "user_register": "用户注册",
+    "by_registering_you_agree": "注册即代表您同意",
+    "user_agreement":"《用户协议》",
+    "and":"和",
+    "privacy_policy":"《隐私政策》",
+    "login":"登录",
+    "email":"电子邮箱",
+    "password":"密码",
+    "please_enter_your_email_address":"请输入电子邮箱",
+    "enter_your_PIN":"请输入密码",
+    "next_step":"下一步",
+    "forget_the_password": "忘记密码",
+    "sign_in_via_facebook":"通过Facebook登录",
+    "sign_in_via_apple":"通过Apple登录",
+    "create_a_user": "创建用户",
+    "email_verification_code":"邮箱验证码",
+    "please_enter_your_email_verification_code":"请输入邮箱验证码",
+    "confirm_password":"确认密码",
+    "please_enter_your_confirmation_password":"请输入确认密码",
+    "submit":"提交"
+}

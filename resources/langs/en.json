@@ -1,0 +1,23 @@
+{
+    "sign_in_now": "sign in now",
+    "user_register": "user register",
+    "by_registering_you_agree":"By registering, you agree",
+    "user_agreement":"《user agreement》",
+    "and":"and",
+    "privacy_policy":"《privacy policy》",
+    "login":"login",
+    "email":"email",
+    "password":"password",
+    "please_enter_your_email_address":"Please enter your email address",
+    "enter_your_PIN":"enter your PIN",
+    "next_step":"next step",
+    "forget_the_password":"forget the password",
+    "sign_in_via_facebook":"Sign in via Facebook",
+    "sign_in_via_apple":"Sign in via Apple",
+    "create_a_user": "Create a user",
+    "email_verification_code":"Email verification code",
+    "please_enter_your_email_verification_code":"Please enter your email verification code",
+    "confirm_password":"confirm password",
+    "please_enter_your_confirmation_password":"Please enter your confirmation password",
+    "submit":"submit"
+}

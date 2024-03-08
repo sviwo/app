@@ -3,11 +3,13 @@ import 'package:atv/archs/base/route_manager.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
+import 'package:atv/generated/codegen_loader.g.dart';
 import 'package:atv/pages/Login/splash_page.dart';
 import 'package:atv/pages/page_route.dart';
+import 'package:atv/tools/language/lw_language_tool.dart';
 import 'package:atv/widgetLibrary/lw_widget.dart';
 import 'package:dio_log/interceptor/dio_log_interceptor.dart';
-import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -19,6 +21,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 bool mixDevelop = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   // sentry为性能与BUG监听库
   await SentryFlutter.init((options) async {
     options.dsn = '';
@@ -56,7 +59,20 @@ void main() async {
     _initMap();
 
     //
-    return runApp(MyApp());
+    return runApp(EasyLocalization(
+      supportedLocales: const [
+        Locale('zh'), // 汉语
+        Locale('en'), // 英语
+        Locale('es'), // 西班牙语
+        Locale('fr'), // 法语
+      ],
+      path: 'resources/langs',
+      fallbackLocale: const Locale('zh'), //TODO: 这里要改成es
+      saveLocale: true, // 保存当前的local到本地
+      useOnlyLangCode: true, // 只用语言标签，不用区域标签
+      assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
+      child: MyApp(),
+    ));
   });
 }
 
@@ -72,6 +88,7 @@ class MyApp extends BaseApp {
   State<StatefulWidget> createState() {
     // Db.instance();
     AppConf.environment().then((value) => _environment = value);
+
     return super.createState();
   }
 
@@ -102,12 +119,15 @@ class MyApp extends BaseApp {
             .copyWith(secondary: const Color(0x01FFFFFF)),
       ),
       //国际化配置
-      // localizationsDelegates: const [
+      localizationsDelegates: context.localizationDelegates,
+      // const [
       //   GlobalMaterialLocalizations.delegate, // for Android
       //   GlobalCupertinoLocalizations.delegate, // for iOS
       //   GlobalWidgetsLocalizations.delegate, // for widget
       // ],
-      // supportedLocales: const [
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      // const [
       //   Locale('zh'), // 汉语
       //   Locale('en'), // 英语
       //   Locale('es'), // 西班牙语

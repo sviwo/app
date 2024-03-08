@@ -1,12 +1,15 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModell/login_view_model.dart';
+import 'package:atv/tools/language/lw_language_tool.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/colors/lw_colors.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/form/lw_form_input.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:basic_utils/basic_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -35,7 +38,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
   }
 
   @override
-  String? titleName() => '登录';
+  String? titleName() => LocaleKeys.login.tr();
 
   @override
   Widget buildBody(BuildContext context) {
@@ -52,7 +55,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
             height: 30.dp,
           ),
           Text(
-            '电子邮箱',
+            LocaleKeys.email.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -66,7 +69,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
             height: 40.dp,
           ),
           Text(
-            '密码',
+            LocaleKeys.password.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -125,7 +128,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入电子邮箱",
+            hintText: LocaleKeys.please_enter_your_email_address.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -173,7 +176,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: "请输入密码",
+            hintText: LocaleKeys.enter_your_PIN.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -191,7 +194,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
 
   Widget _buildNextButton(bool isLegal) {
     return LWButton.text(
-      text: '下一步',
+      text: LocaleKeys.next_step.tr(),
       textColor: const Color(0xff010101),
       textSize: 16.sp,
       backgroundColor: isLegal ? Colors.white : const Color(0xffA8A8A8),
@@ -210,7 +213,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
   Widget _buildForgetPWDButton() {
     return Center(
         child: LWButton.text(
-      text: '忘记密码',
+      text: LocaleKeys.forget_the_password.tr(),
       textColor: Colors.white.withOpacity(0.67),
       textSize: 12.sp,
       backgroundColor: Colors.transparent,
@@ -228,7 +231,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         LWButton.text(
-          text: '通过Facebook登录',
+          text: LocaleKeys.sign_in_via_facebook.tr(),
           textColor: Colors.white.withOpacity(0.67),
           textSize: 12.sp,
           backgroundColor: Colors.transparent,
@@ -246,7 +249,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           },
         ),
         LWButton.text(
-          text: '通过Apple登录',
+          text: LocaleKeys.sign_in_via_apple.tr(),
           textColor: Colors.white.withOpacity(0.67),
           textSize: 12.sp,
           backgroundColor: Colors.transparent,
