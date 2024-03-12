@@ -9,10 +9,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class LWWidget {
   LWWidget._internal();
 
-  static const MethodChannel channel = MethodChannel('flutter_atv');
+  static const MethodChannel channel = MethodChannel('atv');
   static Color themeColor = const Color(0xFF1E0C3A);
   static bool isStyleCircle = false;
-  static String packageName = 'flutter_atv';
+  static String packageName = 'atv';
 
   static String eventImageChooser = 'event/imageChooser';
   static String eventPlatformVersion = 'event/platformVersion';

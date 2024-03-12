@@ -41,7 +41,7 @@ void main() async {
       token: '',
       // token: (await AppConf.tokenInfo()).accessToken,
       baseUrl: (await AppConf.baseUrl),
-      httpSuccessCodes: ['0', '000', '200', '100200', '100201', '100204'],
+      httpSuccessCodes: ['1', '200', '100200', '100201', '100204'],
       mixDevelop: mixDevelop,
     );
 
@@ -70,7 +70,7 @@ void main() async {
       fallbackLocale: const Locale('zh'), //TODO: 这里要改成es
       saveLocale: true, // 保存当前的local到本地
       useOnlyLangCode: true, // 只用语言标签，不用区域标签
-      assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
+      // assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
       child: MyApp(),
     ));
   });
@@ -133,7 +133,7 @@ class MyApp extends BaseApp {
       //   Locale('es'), // 西班牙语
       //   Locale('fr'), // 法语
       // ],
-      home: mixDevelop ? page : SplashPage(route: AppRouteSettings.splash),
+      home: mixDevelop ? page : SplashPage(route: AppRoute.splash),
       builder: EasyLoading.init(
         builder: (context, widget) {
           LWWidget.init(context, designWidth: 375, designHeight: 812);

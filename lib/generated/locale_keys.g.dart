@@ -25,4 +25,34 @@ abstract class LocaleKeys {
   static const please_enter_your_confirmation_password =
       'please_enter_your_confirmation_password';
   static const submit = 'submit';
+  static const km = 'km';
+  static const remote_control = 'remote_control';
+  static const kinetic_energy_model = 'kinetic_energy_model';
+  static const place = 'place';
+  static const trip_recorder = 'trip_recorder';
+  static const vehicle_condition_information = 'vehicle_condition_information';
+  static const safety = 'safety';
+  static const service = 'service';
+  static const upgrade = 'upgrade';
+  static const personal_center = 'personal_center';
+  static const VIN = 'VIN';
+  static const motor_number = 'motor_number';
+  static const account = 'account';
+  static const help = 'help';
+  static const multi_language = 'multi_language';
+  static const authentication_center = 'authentication_center';
+  static const unverified = 'unverified';
+  static const authenticated = 'authenticated';
+  static const quit = 'quit';
+  static const vehicle = 'vehicle';
+  static const charge = 'charge';
+  static const mall = 'mall';
+  static const vehicle_describe = 'vehicle_describe';
+  static const charge_describe = 'charge_describe';
+  static const mall_describe = 'mall_describe';
+  static const name = 'name';
+  static const family_name = 'family_name';
+  static const input_name = 'input_name';
+  static const input_faimily_name = 'input_faimily_name';
+  static const upload_certificate_picture = 'upload_certificate_picture';
 }

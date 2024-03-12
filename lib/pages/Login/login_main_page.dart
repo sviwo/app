@@ -5,7 +5,7 @@ import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
-import 'package:atv/pages/Login/viewModell/login_view_model.dart';
+import 'package:atv/pages/Login/viewModel/login_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/lw_widget.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
@@ -87,7 +87,7 @@ class _LoginMainPageState
                   borderRadius: BorderRadius.all(Radius.circular(25.dp))),
               onPressed: () {
                 LogUtil.d('点击了立即登录');
-                pagePush(AppRouteSettings.login);
+                pagePush(AppRoute.login, fullscreenDialog: true);
               },
             ),
             SizedBox(
@@ -104,7 +104,7 @@ class _LoginMainPageState
                   borderRadius: BorderRadius.all(Radius.circular(25.dp))),
               onPressed: () {
                 LogUtil.d('点击了用户注册');
-                pagePush(AppRouteSettings.register);
+                pagePush(AppRoute.register, fullscreenDialog: true);
               },
             ),
             SizedBox(

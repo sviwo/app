@@ -127,7 +127,8 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
       Map<String, dynamic>? params,
       Function? callback,
       bool jumpNative = false,
-      bool needReplace = false}) {
+      bool needReplace = false,
+      bool fullscreenDialog = false}) {
     loseFocus();
     if (!LWArch.mixDevelop) jumpNative = false;
     if (jumpNative) {
@@ -142,11 +143,17 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
         if (needReplace) {
           _releasePage();
           Navigator.of(context)
-              .pushReplacement(_pageRoute(route, page: page, params: params))
+              .pushReplacement(_pageRoute(route,
+                  page: page,
+                  params: params,
+                  fullscreenDialog: fullscreenDialog))
               .then((value) => callback?.call(value));
         } else {
           Navigator.of(context)
-              .push(_pageRoute(route, page: page, params: params))
+              .push(_pageRoute(route,
+                  page: page,
+                  params: params,
+                  fullscreenDialog: fullscreenDialog))
               .then((value) => callback?.call(value));
         }
       }
@@ -155,26 +162,31 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
 
   /// 页面跳转(跳转的页面替换当前页面)
   void pagePushReplace(String route,
-      {Map<String, dynamic>? params, Function? callback}) {
+      {Map<String, dynamic>? params,
+      Function? callback,
+      bool fullscreenDialog = false}) {
     loseFocus();
     Navigator.of(context)
-        .pushReplacement(_pageRoute(route, params: params))
+        .pushReplacement(_pageRoute(route,
+            params: params, fullscreenDialog: fullscreenDialog))
         .then((value) => callback?.call(value));
   }
 
   MaterialPageRoute _pageRoute(String route,
-      {BasePage? page, Map<String, dynamic>? params}) {
+      {BasePage? page,
+      Map<String, dynamic>? params,
+      bool fullscreenDialog = false}) {
     return MaterialPageRoute(
-      builder: (BuildContext context) {
-        var newPage = page ?? RouteManager.instance.getPage(route);
-        newPage.route = route;
-        if (params != null) {
-          newPage.args = params;
-        }
-        return newPage;
-      },
-      settings: RouteSettings(name: route),
-    );
+        builder: (BuildContext context) {
+          var newPage = page ?? RouteManager.instance.getPage(route);
+          newPage.route = route;
+          if (params != null) {
+            newPage.args = params;
+          }
+          return newPage;
+        },
+        settings: RouteSettings(name: route),
+        fullscreenDialog: fullscreenDialog);
   }
 
   /// 实例名称

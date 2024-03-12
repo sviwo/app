@@ -1,36 +1,30 @@
-import 'dart:io';
-
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
-import 'package:atv/pages/Login/viewModel/login_view_model.dart';
-import 'package:atv/tools/language/lw_language_tool.dart';
+import 'package:atv/pages/Mine/viewModel/authentication_center_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
-import 'package:atv/widgetLibrary/basic/colors/lw_colors.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
-import 'package:atv/widgetLibrary/form/lw_form_input.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
-import 'package:basic_utils/basic_utils.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/src/widgets/framework.dart';
 
-import '../../config/conf/app_icons.dart';
-
-class LoginPage extends BaseMvvmPage {
+class AuthenticationCenterPage extends BaseMvvmPage {
   @override
-  State<StatefulWidget> createState() => _LoginPageState();
+  State<StatefulWidget> createState() => _AuthenticationCenterPageState();
 }
 
-class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
+class _AuthenticationCenterPageState extends BaseMvvmPageState<
+    AuthenticationCenterPage, AuthenticationCenterViewModel> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _familyNameController = TextEditingController();
   @override
-  LoginViewModel viewModelProvider() => LoginViewModel();
-  @override
+  AuthenticationCenterViewModel viewModelProvider() =>
+      AuthenticationCenterViewModel();
   bool isSupportScrollView() => true;
-
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _pwdController = TextEditingController();
-
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
@@ -40,12 +34,11 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
   }
 
   @override
-  String? titleName() => LocaleKeys.login.tr();
+  String? titleName() => LocaleKeys.authentication_center.tr();
 
   @override
   Widget buildBody(BuildContext context) {
-    var isLegal = viewModel.judgeEmailAndPassword();
-
+    bool isLegal = viewModel.isLegal;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 30.dp),
@@ -57,7 +50,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
             height: 30.dp,
           ),
           Text(
-            LocaleKeys.email.tr(),
+            LocaleKeys.name.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -66,12 +59,12 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           SizedBox(
             height: 20.dp,
           ),
-          _buildEmailInputField(),
+          _buildNameInputField(),
           SizedBox(
             height: 40.dp,
           ),
           Text(
-            LocaleKeys.password.tr(),
+            LocaleKeys.family_name.tr(),
             style: TextStyle(
                 color: Colors.white,
                 fontSize: 14.sp,
@@ -80,47 +73,46 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           SizedBox(
             height: 20.dp,
           ),
-          _buildPWDInputField(),
+          _buildFamilyNameInputField(),
           SizedBox(
-            height: 82.dp,
+            height: 42.dp,
+          ),
+          Text(
+            LocaleKeys.upload_certificate_picture.tr(),
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 12.sp,
+                fontWeight: LWFontWeight.normal),
+          ),
+          SizedBox(
+            height: 36.dp,
+          ),
+          _buildUploadItems(),
+          SizedBox(
+            height: 80.dp,
           ),
           _buildNextButton(isLegal),
-          SizedBox(
-            height: 10.dp,
-          ),
-          _buildForgetPWDButton(),
-          SizedBox(
-            height: 52.dp,
-          ),
-          _buildThirdPartLogin()
         ],
       ),
     );
   }
 
-  Widget _buildEmailInputField() {
+  Widget _buildNameInputField() {
     return SizedBox(
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.emailName = value;
+            viewModel.name = value;
             pageRefresh(() {});
-            // if (value.isEmpty) {
-            //   viewModel.measurementReq.price = null;
-            // } else {
-            //   viewModel.measurementReq.price = value;
-            // }
-            // viewModel.measurementPrice = null;
-            // pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
             LogUtil.d('-----');
           },
-          controller: _emailController,
+          controller: _nameController,
           autofocus: false,
           textAlign: TextAlign.left,
           textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: TextInputType.text,
           inputFormatters: [
             FilteringTextInputFormatter.singleLineFormatter,
             // FilteringTextInputFormatter.allow(RegExp(r'^[A-Za-z0-9]+@.$')),
@@ -130,7 +122,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: LocaleKeys.please_enter_your_email_address.tr(),
+            hintText: LocaleKeys.input_name.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -146,25 +138,18 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
     );
   }
 
-  Widget _buildPWDInputField() {
+  Widget _buildFamilyNameInputField() {
     return SizedBox(
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.password = value;
+            viewModel.familyName = value;
             pageRefresh(() {});
-            // if (value.isEmpty) {
-            //   viewModel.measurementReq.price = null;
-            // } else {
-            //   viewModel.measurementReq.price = value;
-            // }
-            // viewModel.measurementPrice = null;
-            // pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
             LogUtil.d('-----');
           },
-          controller: _pwdController,
+          controller: _familyNameController,
           autofocus: false,
           textAlign: TextAlign.left,
           textInputAction: TextInputAction.done,
@@ -178,7 +163,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: LocaleKeys.enter_your_PIN.tr(),
+            hintText: LocaleKeys.input_faimily_name.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -194,9 +179,62 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
     );
   }
 
+  Widget _buildUploadItems() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 15.dp),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          InkWell(
+              onTap: () {
+                LogUtil.d('点击了第一个上传');
+              },
+              child: DottedBorder(
+                  borderType: BorderType.RRect,
+                  radius: Radius.circular(11.dp),
+                  // padding: EdgeInsets.all(6),
+                  color: Colors.white,
+                  child: Container(
+                    width: 120.dp,
+                    height: 120.dp,
+                    alignment: Alignment.center,
+                    child: Text(
+                      "+",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 23.dp,
+                          fontWeight: LWFontWeight.bold),
+                    ),
+                  ))),
+          InkWell(
+              onTap: () {
+                LogUtil.d('点击了第二个上传');
+              },
+              child: DottedBorder(
+                  borderType: BorderType.RRect,
+                  radius: Radius.circular(11.dp),
+                  // padding: EdgeInsets.all(6),
+                  color: Colors.white,
+                  child: Container(
+                    width: 120.dp,
+                    height: 120.dp,
+                    alignment: Alignment.center,
+                    child: Text(
+                      "+",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 23.dp,
+                          fontWeight: LWFontWeight.bold),
+                    ),
+                  )))
+        ],
+      ),
+    );
+  }
+
   Widget _buildNextButton(bool isLegal) {
     return LWButton.text(
-      text: LocaleKeys.next_step.tr(),
+      text: LocaleKeys.submit.tr(),
       textColor: const Color(0xff010101),
       textSize: 16.sp,
       backgroundColor: isLegal ? Colors.white : const Color(0xffA8A8A8),
@@ -207,72 +245,8 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           borderRadius: BorderRadius.all(Radius.circular(25.dp))),
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了下一步');
+        LogUtil.d('点击了提交');
       },
-    );
-  }
-
-  Widget _buildForgetPWDButton() {
-    return Center(
-        child: LWButton.text(
-      text: LocaleKeys.forget_the_password.tr(),
-      textColor: Colors.white.withOpacity(0.67),
-      textSize: 12.sp,
-      backgroundColor: Colors.transparent,
-      minWidth: 70.dp,
-      minHeight: 30.dp,
-      onPressed: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了忘记密码');
-      },
-    ));
-  }
-
-  Widget _buildThirdPartLogin() {
-    return Row(
-      mainAxisAlignment: Platform.isIOS
-          ? MainAxisAlignment.spaceAround
-          : MainAxisAlignment.center,
-      children: [
-        LWButton.text(
-          text: LocaleKeys.sign_in_via_facebook.tr(),
-          textColor: Colors.white.withOpacity(0.67),
-          textSize: 12.sp,
-          backgroundColor: Colors.transparent,
-          // minWidth: 70.dp,
-          // minHeight: 30.dp,
-          iconDirection: IconDirection.bottom,
-          iconSpacing: 18.dp,
-          iconWidget: Image.asset(
-            AppIcons.imgLoginByFacebook,
-            width: 28.dp,
-            height: 28.dp,
-          ),
-          onPressed: () {
-            LogUtil.d('点击了通过Facebook登录');
-          },
-        ),
-        Visibility(
-            visible: Platform.isIOS,
-            child: LWButton.text(
-              text: LocaleKeys.sign_in_via_apple.tr(),
-              textColor: Colors.white.withOpacity(0.67),
-              textSize: 12.sp,
-              backgroundColor: Colors.transparent,
-              // minWidth: 70.dp,
-              // minHeight: 30.dp,
-              iconDirection: IconDirection.bottom,
-              iconSpacing: 18.dp,
-              iconWidget: Image.asset(
-                AppIcons.imgLoginByApple,
-                width: 28.dp,
-                height: 28.dp,
-              ),
-              onPressed: () {
-                LogUtil.d('点击了通过Apple登录');
-              },
-            ))
-      ],
     );
   }
 }

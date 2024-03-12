@@ -1,5 +1,5 @@
-class AppRouteSettings {
-  AppRouteSettings._internal();
+class AppRoute {
+  AppRoute._();
 
   // 启动页
   static const String splash = '/settings/splash';
@@ -17,20 +17,8 @@ class AppRouteSettings {
   static const String register = '/settings/register';
 
   // 我的
-  static const String mine = '/settings/home';
+  static const String mine = '/mine/home';
 
-  // 安全设置
-  static const String safeSet = '/settings/safeSet';
-
-  // flutter代理
-  static const String safeSetHttpConfig = '/settings/safeSet/httpConfig';
-
-  // 帮助中心
-  static const String helpCenter = '/settings/helpCenter';
-
-  // 帮助中心详情
-  static const String helpCenterDetail = "/settings/helpCenter/detail";
-
-  // 关于我们
-  static const String aboutUs = '/settings/aboutUs';
+  // 认证中心
+  static const String authenticationCenter = '/mine/authenticationCenter';
 }

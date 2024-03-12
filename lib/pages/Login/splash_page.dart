@@ -4,7 +4,7 @@ import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
-import 'package:atv/pages/Login/viewModell/login_view_model.dart';
+import 'package:atv/pages/Login/viewModel/login_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
@@ -20,12 +20,15 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
   void initState() {
     super.initState();
     AppConf.loginSuccess().then((value) {
-      LogUtil.d(value);
-      if (value) {
-        pagePush(AppRouteSettings.main, needReplace: true);
-      } else {
-        pagePush(AppRouteSettings.loginMain, needReplace: true);
-      }
+      LogUtil.d('登录状态为$value');
+      pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+      // if (value) {
+      //   pagePush(AppRouteSettings.main,
+      //       needReplace: true, fullscreenDialog: true);
+      // } else {
+      //   pagePush(AppRouteSettings.loginMain,
+      //       needReplace: true, fullscreenDialog: true);
+      // }
     });
   }
 

@@ -26,6 +26,7 @@ class LWTitleBar {
   bool hasBackIcon; // 是否有返回图标
   Widget? backIcon; // 返回图标资源
   OnBackPressed? onBackPressed; // 返回操作方法
+  Widget? leadingWidget;
 
   // 右侧按钮区
   List<Widget>? actions;
@@ -45,6 +46,7 @@ class LWTitleBar {
     this.hasBackIcon = true,
     this.backIcon,
     this.onBackPressed,
+    this.leadingWidget,
     this.actions,
     this.brightnessLight = false,
     this.backgroundColor = Colors.transparent,
@@ -198,7 +200,9 @@ class LWTitleBar {
   // 左侧按钮区
   Widget? _buildLeftWidget(Color textColor) {
     Widget? _leftWidget;
-    if (titleWidget != null && !titleCenter) {
+    if (leadingWidget != null) {
+      _leftWidget = leadingWidget;
+    } else if (titleWidget != null && !titleCenter) {
       _leftWidget = null;
     } else if (hasBackIcon) {
       _leftWidget = IconButton(

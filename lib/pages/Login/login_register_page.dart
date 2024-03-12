@@ -2,7 +2,7 @@ import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
-import 'package:atv/pages/Login/viewModell/register_view_model.dart';
+import 'package:atv/pages/Login/viewModel/register_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';

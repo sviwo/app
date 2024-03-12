@@ -30,7 +30,7 @@ class AppConf {
   static Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
   static List<String>? _permissions;
   static List<String>? _roles;
-  static bool isMainPage = false; // 临时，主页是否启用
+  // static bool isMainPage = false; // 临时，主页是否启用
 
   static void logout() {
     _permissions = null;
