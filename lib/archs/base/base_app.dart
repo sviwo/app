@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:atv/archs/base/event_manager.dart';
+import 'package:atv/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,23 +50,27 @@ class BaseAppState extends State<BaseApp> {
 
   @override
   void dispose() {
-    ArchChannel.removeTakeNatives(ArchChannelMsgTake.commonPagePush, _uniqueKey());
+    ArchChannel.removeTakeNatives(
+        ArchChannelMsgTake.commonPagePush, _uniqueKey());
     ArchChannel.removeTakeNatives(ArchChannelMsgSend.commonEvent, _uniqueKey());
-    EventBus.instance().unregister(_uniqueKey(), ArchEvent.showLoading);
-    EventBus.instance().unregister(_uniqueKey(), ArchEvent.hideLoading);
+    EventManager.unregister(_uniqueKey(), ArchEvent.showLoading);
+    EventManager.unregister(_uniqueKey(), ArchEvent.hideLoading);
     super.dispose();
   }
 
   BaseAppState(this.buildImpl) {
     // 打开指定页面（native外部调用）
-    ArchChannel.takeNatives(ArchChannelMsgTake.commonPagePush, _uniqueKey(), (call) async {
+    ArchChannel.takeNatives(ArchChannelMsgTake.commonPagePush, _uniqueKey(),
+        (call) async {
       if (mounted) {
-        LWArch.initData().then((value) => _initPage(jsonDecode(call.arguments)));
+        LWArch.initData()
+            .then((value) => _initPage(jsonDecode(call.arguments)));
       }
     });
     // 接收
-    ArchChannel.takeNatives(ArchChannelMsgSend.commonEvent, _uniqueKey(), (call) async {
-      LogUtil.d('-------------channel receive msg, data is ${call.arguments}');
+    ArchChannel.takeNatives(ArchChannelMsgSend.commonEvent, _uniqueKey(),
+        (call) async {
+      // LogUtil.d('-------------channel receive msg, data is ${call.arguments}');
       if (mounted) {
         var eventName = call.arguments['name'];
         Map? eventData;
@@ -79,12 +86,12 @@ class BaseAppState extends State<BaseApp> {
     });
 
     // 加载中展示隐藏事件
-    EventBus.instance().register(_uniqueKey(), ArchEvent.showLoading, (arg) {
+    EventManager.register(_uniqueKey(), ArchEvent.showLoading, (arg) {
       if (mounted) {
-        LWLoading.showLoading2(text: '加载中...');
+        LWLoading.showLoading2(text: LocaleKeys.is_loading.tr());
       }
     });
-    EventBus.instance().register(_uniqueKey(), ArchEvent.hideLoading, (arg) {
+    EventManager.register(_uniqueKey(), ArchEvent.hideLoading, (arg) {
       if (mounted) {
         LWLoading.dismiss();
       }

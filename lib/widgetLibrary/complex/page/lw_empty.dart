@@ -1,4 +1,6 @@
-
+import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/widgetLibrary/utils/size_util.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../basic/button/lw_button.dart';
@@ -36,11 +38,11 @@ class LWEmpty extends StatelessWidget {
   final Widget? actionCustom;
 
   _getText() {
-    String _text = '这里暂时没有内容~';
+    String _text = LocaleKeys.no_data_tips.tr();
     if (emptyType == LWEmptyType.loadFailed) {
-      _text = '加载失败';
+      _text = LocaleKeys.load_fail_tips.tr();
     } else if (emptyType == LWEmptyType.netAnomaly) {
-      _text = '服务器异常';
+      _text = LocaleKeys.server_exception.tr();
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -48,30 +50,48 @@ class LWEmpty extends StatelessWidget {
         emptyTips ?? _text,
         textAlign: TextAlign.center,
         maxLines: 2,
-        style: const TextStyle(fontSize: 12, color: LWColors.gray4, overflow: TextOverflow.ellipsis),
+        style: const TextStyle(
+            fontSize: 12,
+            color: LWColors.gray4,
+            overflow: TextOverflow.ellipsis),
       ),
     );
   }
 
   _getImage() {
     if (emptyType == LWEmptyType.loadFailed) {
-      return LWWidget.assetImg(
-        'ic_empty_load_failed.png',
-        width: 220,
-        height: 166,
+      return Icon(
+        Icons.error_outline_sharp,
+        size: 200.dp,
+        color: Colors.white,
       );
+      // return LWWidget.assetImg(
+      //   'ic_empty_load_failed.png',
+      //   width: 220,
+      //   height: 166,
+      // );
     } else if (emptyType == LWEmptyType.netAnomaly) {
-      return LWWidget.assetImg(
-        'ic_empty_network_anomaly.png',
-        width: 220,
-        height: 167,
+      return Icon(
+        Icons.forward_to_inbox_sharp,
+        size: 200.dp,
+        color: Colors.white,
       );
+      // return LWWidget.assetImg(
+      //   'ic_empty_network_anomaly.png',
+      //   width: 220,
+      //   height: 167,
+      // );
     }
-    return LWWidget.assetImg(
-      'ic_empty_not_data.png',
-      width: 220,
-      height: 156,
+    return Icon(
+      Icons.no_adult_content,
+      size: 200.dp,
+      color: Colors.white,
     );
+    // return LWWidget.assetImg(
+    //   'ic_empty_not_data.png',
+    //   width: 220,
+    //   height: 156,
+    // );
   }
 
   _getButton() {
@@ -101,7 +121,7 @@ class LWEmpty extends StatelessWidget {
       image = _getImage();
     }
     return Container(
-      color: Colors.white,
+      color: Colors.transparent,
       padding: padding,
       child: Center(
         child: Column(

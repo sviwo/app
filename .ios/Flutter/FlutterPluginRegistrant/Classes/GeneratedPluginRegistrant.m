@@ -12,6 +12,12 @@
 @import device_info;
 #endif
 
+#if __has_include(<device_info_plus/FPPDeviceInfoPlusPlugin.h>)
+#import <device_info_plus/FPPDeviceInfoPlusPlugin.h>
+#else
+@import device_info_plus;
+#endif
+
 #if __has_include(<file_picker/FilePickerPlugin.h>)
 #import <file_picker/FilePickerPlugin.h>
 #else
@@ -30,6 +36,12 @@
 @import flutter_keyboard_visibility;
 #endif
 
+#if __has_include(<google_maps_flutter_ios/FLTGoogleMapsPlugin.h>)
+#import <google_maps_flutter_ios/FLTGoogleMapsPlugin.h>
+#else
+@import google_maps_flutter_ios;
+#endif
+
 #if __has_include(<image_cropper/FLTImageCropperPlugin.h>)
 #import <image_cropper/FLTImageCropperPlugin.h>
 #else
@@ -40,6 +52,12 @@
 #import <image_picker_ios/FLTImagePickerPlugin.h>
 #else
 @import image_picker_ios;
+#endif
+
+#if __has_include(<package_info/FLTPackageInfoPlugin.h>)
+#import <package_info/FLTPackageInfoPlugin.h>
+#else
+@import package_info;
 #endif
 
 #if __has_include(<package_info_plus/FPPPackageInfoPlusPlugin.h>)
@@ -76,11 +94,14 @@
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [FLTDeviceInfoPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTDeviceInfoPlugin"]];
+  [FPPDeviceInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPDeviceInfoPlusPlugin"]];
   [FilePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FilePickerPlugin"]];
   [FlutterBluePlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterBluePlusPlugin"]];
   [FlutterKeyboardVisibilityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterKeyboardVisibilityPlugin"]];
+  [FLTGoogleMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleMapsPlugin"]];
   [FLTImageCropperPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImageCropperPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
+  [FLTPackageInfoPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPackageInfoPlugin"]];
   [FPPPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPPackageInfoPlusPlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];
   [SentryFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"SentryFlutterPlugin"]];

@@ -12,7 +12,6 @@ class LWToast {
     // if (EasyLoading.isShow) return;
     _initStyle(duration: duration);
     EasyLoading.showToast(text);
-
     if (whenComplete != null) {
       Future.delayed(Duration(milliseconds: (duration ?? 2000) + 100), (() {
         whenComplete.call();
@@ -26,38 +25,59 @@ class LWToast {
 
   /// 成功提示文字
   static success(String text, {int? duration}) {
-    Widget icon = LWWidget.assetSvg(
-      'ic_toast_success.svg',
-      width: EasyLoading.instance.indicatorSize,
-      height: EasyLoading.instance.indicatorSize,
-      color: EasyLoading.instance.indicatorColor,
-    );
-
-    LWToast.icon(text, icon, duration: duration);
+    // Widget icon = LWWidget.assetSvg(
+    //   'ic_toast_success.svg',
+    //   width: EasyLoading.instance.indicatorSize,
+    //   height: EasyLoading.instance.indicatorSize,
+    //   color: EasyLoading.instance.indicatorColor,
+    // );
+    LWToast.icon(
+        text,
+        Icon(
+          Icons.done,
+          color: Colors.white,
+          size: EasyLoading.instance.indicatorSize,
+        ),
+        duration: duration);
   }
 
   /// 失败提示文字
   static failed(String text, {int? duration}) {
-    Widget icon = LWWidget.assetSvg(
-      'ic_toast_failed.svg',
-      width: EasyLoading.instance.indicatorSize,
-      height: EasyLoading.instance.indicatorSize,
-      color: EasyLoading.instance.indicatorColor,
-    );
-
-    LWToast.icon(text, icon, duration: duration);
+    // Widget icon = LWWidget.assetSvg(
+    //   'ic_toast_failed.svg',
+    //   width: EasyLoading.instance.indicatorSize,
+    //   height: EasyLoading.instance.indicatorSize,
+    //   color: EasyLoading.instance.indicatorColor,
+    // );
+    LWToast.icon(
+        text,
+        Icon(
+          Icons.clear,
+          // color: EasyLoading.instance.indicatorColor,
+          color: Colors.white,
+          size: EasyLoading.instance.indicatorSize,
+        ),
+        duration: duration);
   }
 
   /// 警示提示文字
   static warning(String text, {int? duration}) {
-    Widget icon = LWWidget.assetSvg(
-      'ic_toast_warning.svg',
-      width: EasyLoading.instance.indicatorSize,
-      height: EasyLoading.instance.indicatorSize,
-      color: EasyLoading.instance.indicatorColor,
-    );
+    // Widget icon = LWWidget.assetSvg(
+    //   'ic_toast_warning.svg',
+    //   width: EasyLoading.instance.indicatorSize,
+    //   height: EasyLoading.instance.indicatorSize,
+    //   color: EasyLoading.instance.indicatorColor,
+    // );
 
-    LWToast.icon(text, icon, duration: duration);
+    LWToast.icon(
+        text,
+        Icon(
+          Icons.warning,
+          // color: EasyLoading.instance.indicatorColor,
+          color: Colors.white,
+          size: EasyLoading.instance.indicatorSize,
+        ),
+        duration: duration);
   }
 
   /// 自定义图标提示文字

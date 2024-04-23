@@ -43,11 +43,13 @@ class LWLoading {
       String? text}) async {
     EasyLoading.instance
       ..loadingStyle = EasyLoadingStyle.custom
-      ..backgroundColor = Colors.transparent
-      ..indicatorColor = Colors.transparent
+      ..backgroundColor = Colors.white.opacity80
+      ..indicatorColor = Colors.black.opacity60
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
       ..maskColor = Colors.transparent
-      ..textColor = LWColors.gray1
+      ..textColor = LWColors.theme
       ..contentPadding = EdgeInsets.zero
+      ..textPadding = const EdgeInsets.symmetric(horizontal: 40)
       ..radius = 12
       ..indicatorSize = 88
       ..userInteractions = false

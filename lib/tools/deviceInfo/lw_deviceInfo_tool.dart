@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:device_info/device_info.dart';
+import 'package:package_info/package_info.dart';
 
-class DeviceInfos {
+class LWDeviceInfos {
   // Sit("sit", "http://t-ser-cloud.xinchao.com/"),
   // Prod("prod", "http://ser-cloud.xinchao.com/")
   //"/portal/xc-statistics/statistics/page"
   static int currentTimeMillis() {
-    return new DateTime.now().millisecondsSinceEpoch;
+    return DateTime.now().millisecondsSinceEpoch;
   }
 
   /// 获取唯一标识  iOS可能取不到
@@ -40,5 +41,9 @@ class DeviceInfos {
     } else {
       return "";
     }
+  }
+
+  static Future<PackageInfo> getAppInfo() async {
+    return await PackageInfo.fromPlatform();
   }
 }

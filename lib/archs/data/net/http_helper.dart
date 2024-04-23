@@ -1,4 +1,7 @@
+import 'package:atv/generated/locale_keys.g.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 
 import '../../base/event_manager.dart';
 import '../../conf/arch_event.dart';
@@ -19,41 +22,51 @@ class HttpHelper {
   }
 
   /// 带数据转换（data为对象）
-  static Future<ResData<T>> httpDataConvert<T>(dynamic data, T Function(Map<String, dynamic> json)? fromJsonT, {bool needOriginalData = false}) async {
+  static Future<ResData<T>> httpDataConvert<T>(
+      dynamic data, T Function(Map<String, dynamic> json)? fromJsonT,
+      {bool needOriginalData = false}) async {
     try {
       if (_successCodes.contains(data['code'].toString())) {
         var ret = ResData.fromJson(data, fromJsonT);
         ret.originalData = needOriginalData ? data['data'] : null;
         return ret;
       } else {
-        throw HttpErrorException(code: data['code'].toString(), message: data['msg'].toString());
+        throw HttpErrorException(
+            code: data['code'].toString(), message: data['msg'].toString());
       }
     } catch (e, stack) {
       LogUtil.d('http-error: $e, stack=\n${stack.toString()}');
       if (e is HttpErrorException) {
         rethrow;
       } else {
-        throw HttpErrorException(code: '-2', message: '网络数据转换异常');
+        throw HttpErrorException(
+            code: '-2',
+            message: LocaleKeys.network_data_conversion_is_abnormal.tr());
       }
     }
   }
 
   /// 带数据转换（data为不分页list）
-  static Future<ResData<T>> httpListConvert<T>(dynamic data, T Function(List<dynamic> json)? fromJsonT, {bool needOriginalData = false}) async {
+  static Future<ResData<T>> httpListConvert<T>(
+      dynamic data, T Function(List<dynamic> json)? fromJsonT,
+      {bool needOriginalData = false}) async {
     try {
       if (_successCodes.contains(data['code'].toString())) {
         var ret = ResData.fromJsonList(data, fromJsonT);
         ret.originalData = needOriginalData ? data['data'] : null;
         return ret;
       } else {
-        throw HttpErrorException(code: data['code'].toString(), message: data['msg'].toString());
+        throw HttpErrorException(
+            code: data['code'].toString(), message: data['msg'].toString());
       }
     } catch (e, stack) {
       LogUtil.d('http-error: $e, stack=\n${stack.toString()}');
       if (e is HttpErrorException) {
         rethrow;
       } else {
-        throw HttpErrorException(code: '-2', message: '网络数据转换异常');
+        throw HttpErrorException(
+            code: '-2',
+            message: LocaleKeys.network_data_conversion_is_abnormal.tr());
       }
     }
   }
@@ -64,14 +77,17 @@ class HttpHelper {
       if (_successCodes.contains(data['code'].toString())) {
         return ResEmpty.fromJson(data);
       } else {
-        throw HttpErrorException(code: data['code'].toString(), message: data['msg'].toString());
+        throw HttpErrorException(
+            code: data['code'].toString(), message: data['msg'].toString());
       }
     } catch (e, stack) {
       LogUtil.d('http-error: $e, stack=\n${stack.toString()}');
       if (e is HttpErrorException) {
         rethrow;
       } else {
-        throw HttpErrorException(code: '-2', message: '网络数据转换异常');
+        throw HttpErrorException(
+            code: '-2',
+            message: LocaleKeys.network_data_conversion_is_abnormal.tr());
       }
     }
   }
@@ -82,21 +98,26 @@ class HttpHelper {
       if (_successCodes.contains(data['code'].toString())) {
         return data['data'];
       } else {
-        throw HttpErrorException(code: data['code'].toString(), message: data['msg'].toString());
+        throw HttpErrorException(
+            code: data['code'].toString(), message: data['msg'].toString());
       }
     } catch (e, stack) {
       LogUtil.d('http-error: $e, stack=\n${stack.toString()}');
       if (e is HttpErrorException) {
         rethrow;
       } else {
-        throw HttpErrorException(code: '-2', message: '网络数据转换异常');
+        throw HttpErrorException(
+            code: '-2',
+            message: LocaleKeys.network_data_conversion_is_abnormal.tr());
       }
     }
   }
 
   static Exception handleException(Object e) {
     LogUtil.d('http-error: $e');
-    if (e is TokenInvalidException) {
+    if (e is Error) {
+      return HttpErrorException(message: e.toString());
+    } else if (e is TokenInvalidException) {
       EventManager.post(ArchEvent.tokenInvalid);
       return e;
     } else if (e is HttpErrorException) {

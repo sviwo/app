@@ -1,3 +1,6 @@
+import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -165,10 +168,16 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
           }
         }
       });
+      //dataRefreshFinished
     }
     EventManager.register(context, ArchEvent.dataRefresh, (arg) {
       if (arg['hashCode'] == hashCode) {
         dataRefresh();
+      }
+    });
+    EventManager.register(context, ArchEvent.dataRefreshFinished, (arg) {
+      if (arg['hashCode'] == hashCode) {
+        dataRefreshFinish();
       }
     });
   }
@@ -182,7 +191,6 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
         dataReady = args['dataReady'] ?? dataReady;
       }
     }
-
     updateState(fn);
   }
 
@@ -214,11 +222,12 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
   void dispose() {
     _headerScrollController?.dispose();
     _refreshController?.dispose();
-    if (!isFullPage) {
-      // fullPage=true，onBackPressed自动调用releaseVm
-      // fullPage=false，需要手动调用releaseVM
-      releaseVM();
-    }
+    releaseVM();
+    // if (!isFullPage) {
+    //   // fullPage=true，onBackPressed自动调用releaseVm
+    //   // fullPage=false，需要手动调用releaseVM
+    //   releaseVM();
+    // }
     super.dispose();
   }
 
@@ -229,8 +238,11 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
       EventManager.unregister(context, ArchEvent.pageStateChanged);
     }
     EventManager.unregister(context, ArchEvent.dataRefresh);
+    EventManager.unregister(context, ArchEvent.dataRefreshFinished);
+
     stateMsg = null;
     pageState = PageState.content;
+    LogUtil.d("============$runtimeType");
     viewModel.release();
   }
 
@@ -256,9 +268,7 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
   /// 响应页面状态变化
   @protected
   void onPageStateChanged() {
-    if (pageState != PageState.loading) {
-      dataRefreshFinish();
-    }
+    dataRefreshFinish();
   }
 
   @protected
@@ -273,8 +283,10 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
 
   @protected
   void dataRefreshFinish() {
-    _refreshController?.refreshCompleted();
-    _refreshController?.loadComplete();
+    if (pageState != PageState.loading) {
+      _refreshController?.refreshCompleted();
+      _refreshController?.loadComplete();
+    }
   }
 
   @protected
@@ -375,15 +387,15 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
       case PageState.empty:
         body = LWEmpty(
           emptyType: LWEmptyType.notData,
-          emptyTips: stateMsg ?? '这里暂时没有内容~',
+          emptyTips: stateMsg ?? LocaleKeys.no_data_tips.tr(),
           onTapAction: () => dataRefresh(),
         );
         break;
       case PageState.error:
         body = LWEmpty(
           emptyType: LWEmptyType.loadFailed,
-          emptyTips: stateMsg ?? '服务器异常',
-          actionText: '点击重试',
+          emptyTips: stateMsg ?? LocaleKeys.server_exception.tr(),
+          actionText: LocaleKeys.click_retry.tr(),
           onTapAction: () => dataRefresh(),
         );
         break;
@@ -469,6 +481,7 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
 
   /// 正文区构建器-全页面滑动布局
   Widget _bodyBuilderWithHeaderImage(Widget body) {
+    // LogUtil.d('---------------------${runtimeType.toString()}');
     var headerImage = headerBackgroundImage() ?? '';
     var headerWidget = headerBackgroundWidget();
     var scrollOffset = _headerScrollController!.hasClients
@@ -565,15 +578,21 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
         behavior: HitTestBehavior.opaque,
         onTap: () => actions2[index].value.call(),
         child: Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.symmetric(horizontal: 10.dp),
           alignment: Alignment.center,
           child: Text(
             actions2[index].key,
-            style: TextStyle(fontSize: 14, color: LWColors.theme),
+            style: TextStyle(
+                fontSize: 16,
+                color: const Color(0xff36BCB3),
+                fontWeight: LWFontWeight.bold),
           ),
         ),
       ));
     }
+    newActions.add(SizedBox(
+      width: 20.dp,
+    ));
     return newActions;
   }
 

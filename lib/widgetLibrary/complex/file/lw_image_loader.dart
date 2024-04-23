@@ -10,7 +10,8 @@ class LWImageLoader {
   LWImageLoader._();
 
   /// 占位图名称
-  static const String _placeholderSvgName = 'ic_image_loader_placeholder.svg';
+  // static const String _placeholderSvgName = 'ic_image_loader_placeholder.svg';
+  static const String _placeholderSvgName = 'ic_image_loader_fail.svg';
 
   /// 失败图名称
   static const String _failureSvgName = 'ic_image_loader_fail.svg';

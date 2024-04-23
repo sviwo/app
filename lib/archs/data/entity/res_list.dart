@@ -1,16 +1,21 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'dart:convert';
 
-part 'res_list.g.dart';
+import 'package:atv/widgetLibrary/basic/lw_object.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 @JsonSerializable()
 class ResList<T> {
+  @JsonKey(fromJson: LWObject.dynamicToInt, defaultValue: 0)
   int total;
-  @JsonKey(includeFromJson: false)
+  @JsonKey(
+    includeFromJson: false,
+  )
   List<T>? list;
 
   ResList({required this.total, this.list});
 
-  factory ResList.fromJson(Map<String, dynamic> json, T Function(Map<String, dynamic> json) fromJsonT) {
+  factory ResList.fromJson(Map<String, dynamic> json,
+      T Function(Map<String, dynamic> json) fromJsonT) {
     ResList<T> item = _$ResListFromJson2(json, fromJsonT);
     return item;
   }
@@ -24,8 +29,10 @@ ResList<T> _$ResListFromJson2<T>(
 
   return ResList<T>(
     total: int.tryParse(total) ?? 0,
-    list: (int.tryParse(total) ?? 0) <= 0 ? null : (json['list'] as List).map((e) => fromJsonT(e)).toList(),
+    list: (int.tryParse(total) ?? 0) <= 0
+        ? null
+        : (json['result'] as List).map((e) => fromJsonT(e)).toList(),
   );
 }
 
-enum ListLabels { list, records}
+enum ListLabels { list, records }

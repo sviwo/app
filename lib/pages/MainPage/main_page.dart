@@ -1,7 +1,6 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/conf/arch_event.dart';
-import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
@@ -9,26 +8,23 @@ import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/main_page_view_model.dart';
-import 'package:atv/widgetLibrary/basic/colors/lw_colors.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/complex/titleBar/lw_title_bar.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
+import 'package:basic_utils/basic_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MainPage extends BaseMvvmPage {
   @override
   State<StatefulWidget> createState() => _MainPageState();
 }
 
-class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
+class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
+    with WidgetsBindingObserver {
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
@@ -39,15 +35,40 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
 
   @override
   LWTitleBar? buildTitleBar() {
-    // TODO: implement buildTitleBar
-    return super.buildTitleBar();
+    return LWTitleBar(
+        leadingWidth: 90.dp,
+        leadingWidget: InkWell(
+          onTap: () {
+            LogUtil.d('点击了扫码');
+          },
+          child: Center(
+            child: Image.asset(
+              AppIcons.imgMainScanCode,
+              width: 19.dp,
+              height: 19.dp,
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+              padding: EdgeInsets.symmetric(horizontal: 20.dp),
+              onPressed: () {
+                pagePush(AppRoute.mine);
+              },
+              iconSize: 25.67.dp,
+              icon: Image.asset(
+                AppIcons.imgMainPageMineIcon,
+                width: 25.67.dp,
+                height: 22.67.dp,
+              ))
+        ]);
   }
 
-  // @override
-  // bool isSupportPullRefresh() => true;
+  @override
+  bool isSupportPullRefresh() => true;
 
   @override
-  bool isSupportScrollView() => true;
+  bool isSupportScrollView() => false;
 
   @override
   MainPageViewModel viewModelProvider() {
@@ -58,27 +79,104 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
   void initState() {
     super.initState();
     // AppConf.isMainPage = true;
+    EventManager.register(context, ArchEvent.tokenInvalid, (params) {
+      AppConf.logout();
+      pagePushAndRemoveUntil(AppRoute.loginMain);
+    });
+    EventManager.register(context, AppEvent.userBaseInfoChange, (params) {
+      viewModel.loadData();
+    });
+    EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
+      viewModel.loadData();
+    });
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    LogUtil.d('=================dispose========');
+    EventManager.unregister(context, ArchEvent.tokenInvalid);
+    EventManager.unregister(context, AppEvent.userBaseInfoChange);
+    EventManager.unregister(context, AppEvent.vehicleInfoChange);
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   void releaseVM() {
-    // AppConf.isMainPage = false;
-    EventManager.unregister(this, ArchEvent.tokenInvalid);
+    LogUtil.d('=================releaseVM========');
+
     super.releaseVM();
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // 当应用进入前台时
+    if (state == AppLifecycleState.resumed) {
+      // 执行进入前台时需要处理的逻辑
+      print('App has entered foreground!');
+      readFromClipboard();
+    }
+  }
+
+  @override
+  void readFromClipboard() async {
+    LogUtil.d('----------粘贴板回调');
+    var copyIsString = await Clipboard.hasStrings();
+    LogUtil.d('----------粘贴板中是字符串:$copyIsString');
+    if (copyIsString) {
+      ClipboardData? newClipboardData =
+          await Clipboard.getData(Clipboard.kTextPlain);
+      var copyText = newClipboardData?.text;
+      LogUtil.d('----------粘贴板中的文字为:$copyText');
+      if (StringUtils.isNullOrEmpty(copyText) == false) {
+        var resultText = copyText ?? '';
+
+        if (resultText.startsWith(RegExp(r'SVIWO_'))) {
+          // 车钥匙 绑定
+          if (viewModel.clipboardText == resultText) {
+            return;
+          }
+          viewModel.clipboardText = resultText;
+          viewModel.inviteBindVehicle(resultText, (isSuccess) {
+            if (isSuccess) {
+              LWToast.show(LocaleKeys.car_key_bind_success.tr());
+              // viewModel.clipboardText = '';
+              if (viewModel.haveCar == false) {
+                // 没有车就要去拉数据 延迟两秒 让toast展示一会儿
+                Future.delayed(const Duration(seconds: 2), () {
+                  viewModel.loadData();
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+  }
+
+  @override
   Widget buildBody(BuildContext context) {
-    return ListView(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      children: [
-        _buildNaviIcons(),
-        _buildCar(),
+    List<Widget> list = [];
+    if (viewModel.haveCar == false) {
+      list.addAll(_buildNoCar());
+    } else {
+      list.addAll([
         SizedBox(
-          height: 28.dp,
+          height: 30.dp,
         ),
-        _buildCarStatus(),
+        _buildCar(),
+        Visibility(
+            visible: (viewModel.dataModel?.batteryStatus ?? false) &&
+                ((viewModel.dataModel?.electricity ?? 0) > 0),
+            child: SizedBox(
+              height: 28.dp,
+            )),
+        Visibility(
+            visible: (viewModel.dataModel?.batteryStatus ?? false) &&
+                ((viewModel.dataModel?.electricity ?? 0) > 0),
+            child: _buildCarStatus()),
         SizedBox(
           height: 30.dp,
         ),
@@ -87,66 +185,131 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
           height: 32.dp,
         ),
         _buildItem(
-            LocaleKeys.remote_control,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageRemoteControlIcon,
-              width: 21.5.dp,
-              height: 21.5.dp,
-            )),
+          LocaleKeys.remote_control,
+          null,
+          Image.asset(
+            AppIcons.imgMainPageRemoteControlIcon,
+            width: 21.5.dp,
+            height: 21.5.dp,
+          ),
+          callback: () {
+            if (viewModel.dataModel?.authStatus == 2) {
+              pagePush(AppRoute.remoteControl);
+            } else if (viewModel.dataModel?.authStatus == 0 ||
+                viewModel.dataModel?.authStatus == 3) {
+              LWToast.show(
+                LocaleKeys.authentication_not_tips.tr(),
+                duration: 3000,
+                whenComplete: () {
+                  pagePush(AppRoute.authenticationCenter);
+                },
+              );
+            } else if (viewModel.dataModel?.authStatus == 1) {
+              LWToast.show(LocaleKeys.inAuthenticate.tr());
+            }
+          },
+        ),
         _buildItem(
-            LocaleKeys.kinetic_energy_model,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageLightningIcon,
-              width: 15.5.dp,
-              height: 24.5.dp,
-            )),
+          LocaleKeys.kinetic_energy_model,
+          null,
+          Image.asset(
+            AppIcons.imgMainPageLightningIcon,
+            width: 15.5.dp,
+            height: 24.5.dp,
+          ),
+          callback: () {
+            if (viewModel.dataModel?.authStatus == 2) {
+              pagePush(AppRoute.energyModel,
+                  params: {'home': viewModel.dataModel?.toJson()});
+            } else if (viewModel.dataModel?.authStatus == 0 ||
+                viewModel.dataModel?.authStatus == 3) {
+              LWToast.show(
+                LocaleKeys.authentication_not_tips.tr(),
+                duration: 3000,
+                whenComplete: () {
+                  pagePush(AppRoute.authenticationCenter);
+                },
+              );
+            } else if (viewModel.dataModel?.authStatus == 1) {
+              LWToast.show(LocaleKeys.inAuthenticate.tr());
+            }
+          },
+        ),
         _buildLocationItem(),
         _buildItem(
-            LocaleKeys.trip_recorder,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageLocationIcon,
-              width: 18.dp,
-              height: 24.dp,
+          LocaleKeys.trip_recorder,
+          null,
+          Image.asset(
+            AppIcons.imgMainPageLocationIcon,
+            width: 18.dp,
+            height: 24.dp,
+          ),
+          callback: () {
+            pagePush(AppRoute.tripRecorder);
+          },
+        ),
+        _buildVehicleConditionInformationItem(),
+        Visibility(
+            visible: viewModel.isOwnerCar,
+            child: _buildItem(
+              LocaleKeys.safety,
+              null,
+              Image.asset(
+                AppIcons.imgMainPageSafeIcon,
+                width: 20.5.dp,
+                height: 20.5.dp,
+              ),
+              callback: () {
+                if (viewModel.dataModel?.authStatus == 2) {
+                  pagePush(AppRoute.safetyInfo);
+                } else if (viewModel.dataModel?.authStatus == 0 ||
+                    viewModel.dataModel?.authStatus == 3) {
+                  LWToast.show(
+                    LocaleKeys.authentication_not_tips.tr(),
+                    duration: 3000,
+                    whenComplete: () {
+                      pagePush(AppRoute.authenticationCenter);
+                    },
+                  );
+                } else if (viewModel.dataModel?.authStatus == 1) {
+                  LWToast.show(LocaleKeys.inAuthenticate.tr());
+                }
+              },
             )),
         _buildItem(
-            LocaleKeys.vehicle_condition_information,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageAtvInfoIcon,
-              width: 28.dp,
-              height: 14.dp,
-            )),
+          LocaleKeys.service,
+          null,
+          Image.asset(
+            AppIcons.imgMainPageServiceIcon,
+            width: 19.dp,
+            height: 19.dp,
+          ),
+          callback: () {
+            pagePush(AppRoute.serviceInfo);
+          },
+        ),
         _buildItem(
-            LocaleKeys.safety,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageSafeIcon,
-              width: 20.5.dp,
-              height: 20.5.dp,
-            )),
-        _buildItem(
-            LocaleKeys.service,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageServiceIcon,
-              width: 19.dp,
-              height: 19.dp,
-            )),
-        _buildItem(
-            LocaleKeys.upgrade,
-            null,
-            Image.asset(
-              AppIcons.imgMainPageUpgrade,
-              width: 21.dp,
-              height: 21.dp,
-            )),
+          LocaleKeys.upgrade,
+          null,
+          Image.asset(
+            AppIcons.imgMainPageUpgrade,
+            width: 21.dp,
+            height: 21.dp,
+          ),
+          callback: () {
+            pagePush(AppRoute.upgradeInfo);
+          },
+        ),
         SizedBox(
           height: bottomBarHeight,
         )
-      ],
+      ]);
+    }
+
+    return ListView(
+      // physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      children: list,
     );
   }
 
@@ -182,6 +345,58 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
     );
   }
 
+  List<Widget> _buildNoCar() {
+    return [
+      // _buildNaviIcons(),
+      SizedBox(
+        height: 30.dp,
+      ),
+      _buildCar(),
+      SizedBox(
+        height: 30.dp,
+      ),
+      _buildItem(
+        LocaleKeys.place,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageNavigationIcon,
+          width: 17.5.dp,
+          height: 22.dp,
+        ),
+        callback: () {
+          pagePush(AppRoute.mapNavi);
+        },
+      ),
+      _buildItem(
+        LocaleKeys.service,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageServiceIcon,
+          width: 19.dp,
+          height: 19.dp,
+        ),
+        callback: () {
+          pagePush(AppRoute.serviceInfo);
+        },
+      ),
+      _buildItem(
+        LocaleKeys.upgrade,
+        null,
+        Image.asset(
+          AppIcons.imgMainPageUpgrade,
+          width: 21.dp,
+          height: 21.dp,
+        ),
+        callback: () {
+          pagePush(AppRoute.upgradeInfo);
+        },
+      ),
+      SizedBox(
+        height: bottomBarHeight,
+      )
+    ];
+  }
+
   Widget _buildCar() {
     return SizedBox(
       height: 165.dp,
@@ -196,53 +411,77 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
   }
 
   Widget _buildCarStatus() {
-    return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 40.dp),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  AppIcons.imgMainPageQuantityOfElectricityIcon,
-                  width: 37.dp,
-                  height: 16.dp,
-                ),
-                SizedBox(
-                  width: 8.5.dp,
-                ),
-                Text(
-                  '100' + LocaleKeys.km.tr(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.sp,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '28℃',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 10.dp,
-                ),
-                Image.asset(
-                  AppIcons.imgMainPageTemperatureIcon,
-                  width: 44.dp,
-                  height: 15.5.dp,
-                ),
-              ],
-            )
-          ],
-        ));
+    var factor = (viewModel.dataModel?.electricity ?? 0) * 0.01;
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 40.dp),
+      padding: EdgeInsets.all(2.dp),
+      height: 14.dp,
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.white, width: 1.0.dp),
+          borderRadius: BorderRadius.circular(7.dp)),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: factor,
+        child: Shimmer.fromColors(
+            baseColor: const Color(0xff01cde4),
+            highlightColor: const Color(0xff0cd1a4),
+            period: Duration(milliseconds: (1000 * factor).toInt()),
+            child: Container(
+              height: 14.dp,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5.dp),
+                color: const Color(0xff0CD1A4),
+              ),
+            )),
+      ),
+    );
+    // return Padding(
+    //     padding: EdgeInsets.symmetric(horizontal: 40.dp),
+    //     child: Row(
+    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //       children: [
+    //         Row(
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Image.asset(
+    //               AppIcons.imgMainPageQuantityOfElectricityIcon,
+    //               width: 37.dp,
+    //               height: 16.dp,
+    //             ),
+    //             SizedBox(
+    //               width: 8.5.dp,
+    //             ),
+    //             Text(
+    //               '100' + 'km',
+    //               style: TextStyle(
+    //                 color: Colors.white,
+    //                 fontSize: 16.sp,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //         Row(
+    //           mainAxisSize: MainAxisSize.min,
+    //           children: [
+    //             Text(
+    //               '28℃',
+    //               style: TextStyle(
+    //                 color: Colors.white,
+    //                 fontSize: 16.sp,
+    //               ),
+    //             ),
+    //             SizedBox(
+    //               width: 10.dp,
+    //             ),
+    //             Image.asset(
+    //               AppIcons.imgMainPageTemperatureIcon,
+    //               width: 44.dp,
+    //               height: 15.5.dp,
+    //             ),
+    //           ],
+    //         )
+    //       ],
+    //     ));
   }
 
   Widget _buildControlIcons() {
@@ -261,34 +500,46 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
                   AppIcons.imgMainPageLockIcon,
                   width: 41.dp,
                   height: 41.dp,
+                  color: (viewModel.dataModel?.lockedStatus ?? false)
+                      ? const Color(0xff36BCB3)
+                      : Colors.white,
                 )),
             IconButton(
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了喇叭图标');
+                  viewModel.controlVehicle(1);
                 },
                 iconSize: 27.dp,
                 icon: Image.asset(
                   AppIcons.imgMainPageTrumpetIcon,
                   width: 27.dp,
                   height: 23.5.dp,
+                  // color: (viewModel.dataModel?.lockedStatus ?? false)
+                  //     ? const Color(0xff36BCB3)
+                  //     : Colors.white,
                 )),
             IconButton(
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了灯光图标');
+                  viewModel.controlVehicle(0);
                 },
                 iconSize: 32.5.dp,
                 icon: Image.asset(
                   AppIcons.imgMainPageLamplightIcon,
                   width: 32.5.dp,
                   height: 20.dp,
+                  // color: (viewModel.dataModel?.lockedStatus ?? false)
+                  //     ? const Color(0xff36BCB3)
+                  //     : Colors.white,
                 ))
           ],
         ));
   }
 
-  Widget _buildItem(String? title, Widget? leftWidget, Widget icon) {
+  Widget _buildItem(String? title, Widget? leftWidget, Widget icon,
+      {VoidCallback? callback}) {
     LogUtil.d(title);
     // assert(
     // title.isNullOrEmpty() && leftWidget == null, 'title或者leftWidget至少有一个');
@@ -308,6 +559,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
     return InkWell(
         onTap: () {
           LogUtil.d('点击了$title');
+          if (callback != null) {
+            callback();
+          }
         },
         child: Padding(
           padding: EdgeInsets.fromLTRB(40.dp, 15.dp, 42.dp, 15.dp),
@@ -342,19 +596,33 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
         SizedBox(
           height: 5.5.dp,
         ),
-        Text(
-          '成都市高新区都说了带你飞克里斯蒂娜发啦凯撒到哪发啦萨达；那份；单开放大；开朗；答案发生；你',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 9.5.sp,
-            // fontWeight: LWFontWeight.bold
-          ),
-        ),
+        viewModel.dataModel?.geoLocation != null
+            ? FutureBuilder(
+                future: viewModel.reverseGeocodingString(),
+                builder: (context, snapshot) {
+                  return Text(
+                    snapshot.data ?? "-",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 9.5.sp,
+                      // fontWeight: LWFontWeight.bold
+                    ),
+                  );
+                },
+              )
+            : Text(
+                '-',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 9.5.sp,
+                  // fontWeight: LWFontWeight.bold
+                ),
+              ),
       ],
     );
     return InkWell(
         onTap: () {
-          LogUtil.d('点击了地点');
+          pagePush(AppRoute.mapNavi);
         },
         child: Padding(
           padding: EdgeInsets.fromLTRB(40.dp, 15.dp, 42.dp, 15.dp),
@@ -369,6 +637,74 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel> {
                     AppIcons.imgMainPageNavigationIcon,
                     width: 17.5.dp,
                     height: 22.dp,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildVehicleConditionInformationItem() {
+    Widget? _lWiget = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          LocaleKeys.vehicle_condition_information.tr(),
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            // fontWeight: LWFontWeight.bold
+          ),
+        ),
+        SizedBox(
+          height: 5.5.dp,
+        ),
+        Text(
+          '${LocaleKeys.remaining_mileage.tr()}:${viewModel.dataModel?.remainMile ?? 0}km',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 9.5.sp,
+            // fontWeight: LWFontWeight.bold
+          ),
+        ),
+      ],
+    );
+    return InkWell(
+        onTap: () {
+          if (viewModel.dataModel?.authStatus == 2) {
+            pagePush(AppRoute.vehicleConditionInformation, params: {
+              'userDeviceType': viewModel.dataModel?.userDeviceType
+            });
+          } else if (viewModel.dataModel?.authStatus == 0 ||
+              viewModel.dataModel?.authStatus == 3) {
+            LWToast.show(
+              LocaleKeys.authentication_not_tips.tr(),
+              duration: 3000,
+              whenComplete: () {
+                pagePush(AppRoute.vehicleConditionInformation, params: {
+                  'userDeviceType': viewModel.dataModel?.userDeviceType
+                });
+              },
+            );
+          } else if (viewModel.dataModel?.authStatus == 1) {
+            LWToast.show(LocaleKeys.inAuthenticate.tr());
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(40.dp, 15.dp, 42.dp, 15.dp),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _lWiget),
+              SizedBox(
+                width: 28.dp,
+                child: Center(
+                  child: Image.asset(
+                    AppIcons.imgMainPageAtvInfoIcon,
+                    width: 28.dp,
+                    height: 14.dp,
                   ),
                 ),
               )

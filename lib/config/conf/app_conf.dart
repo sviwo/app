@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:atv/archs/data/net/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../tools/deviceInfo/lw_deviceInfo_tool.dart';
@@ -7,6 +6,9 @@ import 'app_keys.dart';
 
 class AppConf {
   AppConf._();
+
+  static const iosMapApiKey = 'AIzaSyAOrV7txQSbF0LDcBYpioW-nXIHaOCoURM';
+  static const androidMapApiKey = 'AIzaSyAOrV7txQSbF0LDcBYpioW-nXIHaOCoURM';
 
   /// =====================
   // 服务器域名
@@ -23,18 +25,30 @@ class AppConf {
 
   // 服务器BaseUrl
   static Future<String> get baseUrl async {
-    return '${await domainUrl}/portal/pcrm/api/';
+    // return '${await domainUrl}/portal/pcrm/api/';
+    return Future(() => 'http://114.115.135.233:8000/');
   }
 
   /// =====================
   static Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
-  static List<String>? _permissions;
-  static List<String>? _roles;
-  // static bool isMainPage = false; // 临时，主页是否启用
+  static void logout() async {
+    /// 退出登录不删除多语言设置
+    var p = (await prefs);
+    p.remove(AppKeys.loginSuccess);
+    p.remove(AppKeys.httpAuthorization);
+    p.remove(AppKeys.httpPublickey);
+    Http.instance().clearToken();
+  }
 
-  static void logout() {
-    _permissions = null;
-    _roles = null;
+  static void afterLoginSuccess(
+      {String? Authorization, String? Publickey}) async {
+    /// 登录成功保存token、publickey、登录标志设为true
+    var wait = [
+      setHttpAuthorization(Authorization ?? ''),
+      setHttpPublickey(Publickey ?? ''),
+      setLoginSuccess(true)
+    ];
+    Http.instance().setToken(Authorization);
   }
 
   // 混合开发
@@ -45,11 +59,6 @@ class AppConf {
   static Future<String> hostPrefix() async {
     var env = await environment();
     return {'dev': 'd-', 'sit': 't-', 'uat': 'p-'}[env] ?? '';
-  }
-
-  // 致敬XX
-  static Future<bool> respectGreat() async {
-    return (await prefs).getString(AppKeys.respectGreat) == '1';
   }
 
   // 环境
@@ -63,7 +72,13 @@ class AppConf {
 
   // 设备唯一标识
   static Future<String> deviceId() async {
-    return (await prefs).getString(AppKeys.deviceId) ?? await DeviceInfos.getDeviceIdentifier();
+    return (await prefs).getString(AppKeys.deviceId) ??
+        await LWDeviceInfos.getDeviceIdentifier();
+  }
+
+  /// app版本号
+  static Future<String> appVersion() async {
+    return (await LWDeviceInfos.getAppInfo()).version;
   }
 
   // 登录信息
@@ -75,89 +90,27 @@ class AppConf {
     return (await prefs).setBool(AppKeys.loginSuccess, success ?? false);
   }
 
-  // token信息
-  // static Future<TokenInfo> tokenInfo() async {
-  //   String? string = (await prefs).getString(AppKeys.tokenInfo);
-  //   if (string == null) {
-  //     return TokenInfo();
-  //   }
-  //   return TokenInfo.fromJson(jsonDecode(string));
-  // }
+  static Future<String> getHttpAuthorization() async {
+    return (await prefs).getString(AppKeys.httpAuthorization) ?? '';
+  }
 
-  // static Future<bool> setTokenInfo(TokenInfo? tokenInfo) async {
-  //   return (await prefs).setString(AppKeys.tokenInfo, tokenInfo == null ? '' : jsonEncode(tokenInfo.toJson()));
-  // }
+  static Future<bool> setHttpAuthorization(String value) async {
+    return (await prefs).setString(AppKeys.httpAuthorization, value);
+  }
 
-  // 用户信息
-  // static Future<UserInfo> userInfo() async {
-  //   String? string = (await prefs).getString(AppKeys.userInfo);
-  //   if (string == null) {
-  //     return UserInfo();
-  //   }
-  //   return UserInfo.fromJson(jsonDecode(string));
-  // }
+  static Future<String> getHttpPublickey() async {
+    return (await prefs).getString(AppKeys.httpPublickey) ?? "";
+  }
 
-  // static Future<bool> setUserInfo(UserInfo? userInfo) async {
-  //   _permissions ??= userInfo?.permissions;
-  //   _roles ??= userInfo?.roles;
-  //   return (await prefs).setString(AppKeys.userInfo, userInfo == null ? '' : jsonEncode(userInfo.toJson()));
-  // }
+  static Future<bool> setHttpPublickey(String value) async {
+    return (await prefs).setString(AppKeys.httpPublickey, value);
+  }
 
-  // 用户权限
-  // static Future<List<String>> permissions() async {
-  //   _permissions ??= (await userInfo()).permissions;
-  //   return _permissions ?? [];
-  // }
+  static Future<String> getLauguage() async {
+    return (await prefs).getString(AppKeys.currentLauguage) ?? '';
+  }
 
-  // 用户角色
-  // static Future<List<String>> roles() async {
-  //   _roles ??= (await userInfo()).roles;
-  //   return _roles ?? [];
-  // }
-
-  // 用户id
-  // static Future<String?> userId() async {
-  //   UserInfo info = await userInfo();
-  //   return info.sysUser?.userId;
-  // }
-
-  // 用户code
-  // static Future<String?> userCode() async {
-  //   UserInfo info = await userInfo();
-  //   return info.sysUser?.username;
-  // }
-
-
-  // 数据字典
-  // static Future<List<DictInfo>> dictList() async {
-  //   String? string = (await prefs).getString(AppKeys.dictList);
-  //   if (string == null) {
-  //     return [];
-  //   }
-  //   return (jsonDecode(string) as List).map((e) => DictInfo.fromJson(e)).toList();
-  // }
-
-  // static Future<bool> setDictList(List<DictInfo>? dictInfos) async {
-  //   return (await prefs).setString(AppKeys.dictList, dictInfos == null ? '' : jsonEncode(dictInfos));
-  // }
-
-  
-
-  // 环境信息
-  // static Future<EnvironmentInfo?> environmentInfo() async {
-  //   String? string = (await prefs).getString(AppKeys.environmentInfo);
-  //   if (string == null) {
-  //     return null;
-  //   }
-  //   return EnvironmentInfo.fromJson(jsonDecode(string));
-  // }
-
-  // 配置信息
-  // static Future<ConfigInfo?> configInfo() async {
-  //   String? string = (await prefs).getString(AppKeys.configInfo);
-  //   if (string == null) {
-  //     return null;
-  //   }
-  //   return ConfigInfo.fromJson(jsonDecode(string));
-  // }
+  static Future<bool> setLauguage(String value) async {
+    return (await prefs).setString(AppKeys.currentLauguage, value);
+  }
 }

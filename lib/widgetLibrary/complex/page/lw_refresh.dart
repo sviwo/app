@@ -6,8 +6,18 @@ import 'lw_refresh_footer.dart';
 import 'lw_refresh_header.dart';
 
 class LWRefresh extends StatefulWidget {
-  const LWRefresh({Key? key, this.controller, required this.child, this.enablePullDown = true, this.enablePullUp = true,
-  this.onRefresh,this.onLoading,this.footer,this.header, this.scrollController, this.onControllerCallback})
+  const LWRefresh(
+      {Key? key,
+      this.controller,
+      required this.child,
+      this.enablePullDown = true,
+      this.enablePullUp = true,
+      this.onRefresh,
+      this.onLoading,
+      this.footer,
+      this.header,
+      this.scrollController,
+      this.onControllerCallback})
       : super(key: key);
   final RefreshController? controller;
   final ScrollController? scrollController;
@@ -50,8 +60,8 @@ class _LWRefreshState extends State<LWRefresh> {
   Widget build(BuildContext context) {
     return SmartRefresher(
       controller: widget.controller ?? _controller!,
-      header: widget.header ?? const LWRefreshHeader(),
-      footer: widget.header ?? const LWRefreshFooter(),
+      // header: widget.header ?? const LWRefreshHeader(),
+      // footer: widget.header ?? const LWRefreshFooter(),
       enablePullDown: widget.enablePullDown,
       enablePullUp: widget.enablePullUp,
       onRefresh: widget.onRefresh,

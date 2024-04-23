@@ -3,6 +3,7 @@ import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Mine/viewModel/authentication_center_view_model.dart';
+import 'package:atv/tools/imagePicker/image_picker_tool.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
@@ -102,7 +103,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.name = value;
+            viewModel.authLastName = value;
             pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
@@ -115,7 +116,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
           keyboardType: TextInputType.text,
           inputFormatters: [
             FilteringTextInputFormatter.singleLineFormatter,
-            // FilteringTextInputFormatter.allow(RegExp(r'^[A-Za-z0-9]+@.$')),
+            LengthLimitingTextInputFormatter(100)
           ],
           maxLines: 1,
           style: TextStyle(
@@ -143,7 +144,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.familyName = value;
+            viewModel.authFirstName = value;
             pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
@@ -156,7 +157,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
           keyboardType: TextInputType.text,
           inputFormatters: [
             FilteringTextInputFormatter.singleLineFormatter,
-            // FilteringTextInputFormatter.allow(RegExp(r'^[A-Za-z0-9]+@.$')),
+            LengthLimitingTextInputFormatter(100)
           ],
           maxLines: 1,
           style: TextStyle(
@@ -187,46 +188,76 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
         children: [
           InkWell(
               onTap: () {
-                LogUtil.d('点击了第一个上传');
+                ImagePickerTool.showChooseImagePicker(
+                  context,
+                  completion: (type, files) {
+                    viewModel.setFrontImage(files.first);
+                  },
+                );
               },
-              child: DottedBorder(
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(11.dp),
-                  // padding: EdgeInsets.all(6),
-                  color: Colors.white,
-                  child: Container(
-                    width: 120.dp,
-                    height: 120.dp,
-                    alignment: Alignment.center,
-                    child: Text(
-                      "+",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 23.dp,
-                          fontWeight: LWFontWeight.bold),
-                    ),
-                  ))),
+              child: viewModel.certificateFrontImgFile == null
+                  ? DottedBorder(
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(11.dp),
+                      // padding: EdgeInsets.all(6),
+                      color: Colors.white,
+                      child: Container(
+                        width: 120.dp,
+                        height: 120.dp,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "+",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 23.dp,
+                              fontWeight: LWFontWeight.bold),
+                        ),
+                      ))
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(11.dp),
+                      child: Image.memory(
+                        viewModel.frontImage,
+                        fit: BoxFit.cover,
+                        width: 120.dp,
+                        height: 120.dp,
+                      ),
+                    )),
           InkWell(
               onTap: () {
-                LogUtil.d('点击了第二个上传');
+                ImagePickerTool.showChooseImagePicker(
+                  context,
+                  completion: (type, files) {
+                    viewModel.setBackImage(files.first);
+                  },
+                );
               },
-              child: DottedBorder(
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(11.dp),
-                  // padding: EdgeInsets.all(6),
-                  color: Colors.white,
-                  child: Container(
-                    width: 120.dp,
-                    height: 120.dp,
-                    alignment: Alignment.center,
-                    child: Text(
-                      "+",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 23.dp,
-                          fontWeight: LWFontWeight.bold),
-                    ),
-                  )))
+              child: viewModel.certificateBackImgFile == null
+                  ? DottedBorder(
+                      borderType: BorderType.RRect,
+                      radius: Radius.circular(11.dp),
+                      // padding: EdgeInsets.all(6),
+                      color: Colors.white,
+                      child: Container(
+                        width: 120.dp,
+                        height: 120.dp,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "+",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 23.dp,
+                              fontWeight: LWFontWeight.bold),
+                        ),
+                      ))
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(11.dp),
+                      child: Image.memory(
+                        viewModel.backImage,
+                        fit: BoxFit.cover,
+                        width: 120.dp,
+                        height: 120.dp,
+                      ),
+                    ))
         ],
       ),
     );
@@ -245,7 +276,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
           borderRadius: BorderRadius.all(Radius.circular(25.dp))),
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了提交');
+        viewModel.submmitData();
       },
     );
   }

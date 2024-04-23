@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -33,7 +32,7 @@ class RouteManager {
   BasePage getPage(String name) {
     if (routes.containsKey(name)) {
       var page = routes[name]!();
-      LogUtil.d('routeManger: $name, ${page.hashCode}');
+      // LogUtil.d('routeManger: $name, ${page.hashCode}');
       return page;
     } else {
       return PageNotFound();
@@ -96,4 +95,7 @@ class _PageNotFoundState extends BasePageState<PageNotFound> {
       ),
     );
   }
+
+  @override
+  void dataRefreshFinish() {}
 }

@@ -40,7 +40,7 @@ class _LoginRegisterPageState
 
   @override
   Widget buildBody(BuildContext context) {
-    var isLegal = viewModel.judgeIsLegal();
+    var isInputAll = viewModel.judgeIsInputAll;
 
     return Container(
       width: double.infinity,
@@ -76,7 +76,26 @@ class _LoginRegisterPageState
           SizedBox(
             height: 20.dp,
           ),
-          _buildVerifyCodeInputField(),
+          SizedBox(
+            height: 43.dp,
+            child: Stack(
+              children: [
+                _buildVerifyCodeInputField(),
+                Positioned(
+                    bottom: 5.dp,
+                    right: 10.dp,
+                    child: LWButton.text(
+                      text: viewModel.sendVCodeTitle,
+                      textColor: const Color(0xff36BCB3),
+                      textSize: 12.sp,
+                      minHeight: 40.dp,
+                      onPressed: () {
+                        viewModel.getVfCode();
+                      },
+                    )),
+              ],
+            ),
+          ),
           SizedBox(
             height: 40.dp,
           ),
@@ -108,7 +127,7 @@ class _LoginRegisterPageState
           SizedBox(
             height: 58.dp,
           ),
-          _buildNextButton(isLegal),
+          _buildNextButton(isInputAll),
         ],
       ),
     );
@@ -119,15 +138,8 @@ class _LoginRegisterPageState
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.emailName = value;
+            viewModel.params.username = value;
             pageRefresh(() {});
-            // if (value.isEmpty) {
-            //   viewModel.measurementReq.price = null;
-            // } else {
-            //   viewModel.measurementReq.price = value;
-            // }
-            // viewModel.measurementPrice = null;
-            // pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
             LogUtil.d('-----');
@@ -167,7 +179,7 @@ class _LoginRegisterPageState
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.verifyCode = value;
+            viewModel.params.emailVftCode = value;
             pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
@@ -177,9 +189,10 @@ class _LoginRegisterPageState
           autofocus: false,
           textAlign: TextAlign.left,
           textInputAction: TextInputAction.next,
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.number,
           inputFormatters: [
             FilteringTextInputFormatter.singleLineFormatter,
+            LengthLimitingTextInputFormatter(10),
             // FilteringTextInputFormatter.allow(RegExp(r'^[A-Za-z0-9]+@.$')),
           ],
           maxLines: 1,
@@ -208,7 +221,7 @@ class _LoginRegisterPageState
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.password = value;
+            viewModel.params.password = value;
             pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
@@ -228,7 +241,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: LocaleKeys.enter_your_PIN.tr(),
+            hintText: LocaleKeys.password_common_describe.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -249,7 +262,7 @@ class _LoginRegisterPageState
       height: 42.dp,
       child: TextFormField(
           onChanged: (value) {
-            viewModel.confirmPassword = value;
+            viewModel.params.confirmPassword = value;
             pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
@@ -269,7 +282,7 @@ class _LoginRegisterPageState
               fontSize: 12.sp, color: Colors.white, height: SizeUtil.dp(1.5)),
           strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
           decoration: InputDecoration(
-            hintText: LocaleKeys.please_enter_your_confirmation_password.tr(),
+            hintText: LocaleKeys.password_common_describe.tr(),
             hintStyle:
                 TextStyle(fontSize: 12.sp, color: const Color(0xff8E8E8E)),
             contentPadding:
@@ -285,20 +298,20 @@ class _LoginRegisterPageState
     );
   }
 
-  Widget _buildNextButton(bool isLegal) {
+  Widget _buildNextButton(bool isInputAll) {
     return LWButton.text(
-      text: '提交',
+      text: LocaleKeys.submit.tr(),
       textColor: const Color(0xff010101),
       textSize: 16.sp,
-      backgroundColor: isLegal ? Colors.white : const Color(0xffA8A8A8),
+      backgroundColor: isInputAll ? Colors.white : const Color(0xffA8A8A8),
       minWidth: 315.dp,
       minHeight: 50.dp,
-      enabled: isLegal,
+      enabled: isInputAll,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(25.dp))),
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了提交');
+        viewModel.submmit();
       },
     );
   }

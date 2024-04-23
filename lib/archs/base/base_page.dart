@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:atv/main.dart';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:dio_log/overlay_draggable_button.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,7 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
       {Map<String, dynamic>? resultParams, List<String>? untilRoutes}) {
     LogUtil.d('pagePop:: will pop');
     // 若是入口页面，dispose不会调用，故需要主动释放viewModel
-    releaseVM();
+    // releaseVM();
     _releasePage();
     if (Navigator.of(context).canPop()) {
       // widget.route != BaseApp.rootRoot &&
@@ -172,6 +173,20 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
         .then((value) => callback?.call(value));
   }
 
+  /// 页面跳转(跳转的页面替换当前页面)
+  void pagePushAndRemoveUntil(String route,
+      {Map<String, dynamic>? params,
+      Function? callback,
+      bool fullscreenDialog = true}) {
+    loseFocus();
+    Navigator.of(context)
+        .pushAndRemoveUntil(
+            _pageRoute(route,
+                params: params, fullscreenDialog: fullscreenDialog),
+            (route1) => false)
+        .then((value) => callback?.call(value));
+  }
+
   MaterialPageRoute _pageRoute(String route,
       {BasePage? page,
       Map<String, dynamic>? params,
@@ -215,10 +230,11 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
     EventManager.unregister(context, ArchEvent.pageRefresh);
     // EventBus.instance().unregister(context, ArchEvent.showLoading);
     // EventBus.instance().unregister(context, ArchEvent.hideLoading);
-    EventBus.instance().unregister(context, ArchEvent.httpConfigChanged);
+    EventManager.unregister(context, ArchEvent.httpConfigChanged);
     if (isFullPage) {
-      EventBus.instance().unregister(context, ArchEvent.pagePush);
-      EventBus.instance().unregister(context, ArchEvent.pagePop);
+      EventManager.unregister(context, ArchEvent.pagePush);
+      EventManager.unregister(context, ArchEvent.pagePop);
+      EventManager.unregister(context, ArchEvent.pagePushAndRemoveUtil);
       ArchChannel.removeTakeNatives(
           ArchChannelMsgTake.commonNativeWillPop, uniqueKey());
     }
@@ -239,14 +255,14 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
     // 仅限当前页及其子页面show
     if (mounted && (_contextLast == context || !isFullPage)) {
       // await LWLoading.showLoading2(text: '加载中...');
-      EventBus.instance().post(ArchEvent.showLoading);
+      EventManager.post(ArchEvent.showLoading);
     }
   }
 
   void hideLoading() {
     if (mounted && (_contextLast == context || !isFullPage)) {
       // await LWLoading.dismiss();
-      EventBus.instance().post(ArchEvent.hideLoading);
+      EventManager.post(ArchEvent.hideLoading);
     }
   }
 
@@ -285,13 +301,13 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
     // EventBus.instance().register(context, ArchEvent.hideLoading, (arg) async {
     //   await hideLoading();
     // });
-    EventBus.instance().register(context, ArchEvent.httpConfigChanged, (arg) {
+    EventManager.register(context, ArchEvent.httpConfigChanged, (arg) {
       _handleHttpLogDialog(enable: arg['httpLogEnable']);
     });
 
     if (isFullPage) {
       // flutter打开指定页面
-      EventBus.instance().register(context, ArchEvent.pagePush, (arg) {
+      EventManager.register(context, ArchEvent.pagePush, (arg) {
         if (mounted && _contextLast == context) {
           LogUtil.d('event:: flutter will push');
           var paramsCarry = arg as Map<String, dynamic>;
@@ -299,15 +315,17 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
           Function? callback = paramsCarry.remove('carry_callback');
           bool jumpNative = paramsCarry.remove('carry_jumpNative');
           bool needReplace = paramsCarry.remove('carry_needReplace');
+          bool fullscreenDialog = paramsCarry.remove('fullscreenDialog');
           pagePush(route,
               params: paramsCarry,
               callback: callback,
               jumpNative: jumpNative,
-              needReplace: needReplace);
+              needReplace: needReplace,
+              fullscreenDialog: fullscreenDialog);
         }
       });
       // flutter退出指定页面
-      EventBus.instance().register(context, ArchEvent.pagePop, (arg) {
+      EventManager.register(context, ArchEvent.pagePop, (arg) {
         if (mounted && _contextLast == context) {
           LogUtil.d('event:: flutter will pop');
           var paramsCarry = arg as Map<String, dynamic>;
@@ -319,6 +337,19 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
           } else {
             onBackPressed(resultParams: paramsCarry, untilRoutes: untilRoutes);
           }
+        }
+      });
+      EventManager.register(context, ArchEvent.pagePushAndRemoveUtil, (arg) {
+        if (mounted && _contextLast == context) {
+          LogUtil.d('event:: flutter will pushAndRemoveUtil');
+          var paramsCarry = arg as Map<String, dynamic>;
+          String route = paramsCarry.remove('carry_route');
+          Function? callback = paramsCarry.remove('carry_callback');
+          bool fullscreenDialog = paramsCarry.remove('fullscreenDialog');
+          pagePushAndRemoveUntil(route,
+              params: paramsCarry,
+              callback: callback,
+              fullscreenDialog: fullscreenDialog);
         }
       });
       // native退出指定页面

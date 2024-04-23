@@ -23,5 +23,5 @@ Map<String, dynamic> _$IndustryToJson(Industry instance) => <String, dynamic>{
       'industryName': instance.industryName,
       'industryLevel': instance.industryLevel,
       'parentCode': instance.parentCode,
-      'children': instance.children?.map((e) => e.toJson()).toList(),
+      'children': instance.children,
     };

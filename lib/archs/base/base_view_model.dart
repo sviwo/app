@@ -1,3 +1,7 @@
+import 'package:atv/archs/base/event_manager.dart';
+import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgetLibrary/complex/loading/lw_loading.dart';
@@ -9,7 +13,6 @@ import 'base_mvvm_page.dart';
 import 'event_bus.dart';
 
 abstract class BaseViewModel with ChangeNotifier {
-
   /// 归属页面的哈希值（业务逻辑调用者不可赋值）
   int pageHashCode = 0;
   @protected
@@ -24,12 +27,12 @@ abstract class BaseViewModel with ChangeNotifier {
 
   /// 展示加载中
   void showLoading() {
-    EventBus.instance().post(ArchEvent.showLoading);
+    EventManager.post(ArchEvent.showLoading);
   }
 
   /// 隐藏加载中
   void hideLoading() {
-    EventBus.instance().post(ArchEvent.hideLoading);
+    EventManager.post(ArchEvent.hideLoading);
   }
 
   /// 退出页面
@@ -41,7 +44,7 @@ abstract class BaseViewModel with ChangeNotifier {
     Map<String, dynamic> paramsCarry = resultParams ?? {};
     paramsCarry['carry_untilRoutes'] = untilRoutes;
     paramsCarry['carry_forceQuick'] = forceQuick;
-    EventBus.instance().post(ArchEvent.pagePop, paramsCarry);
+    EventManager.post(ArchEvent.pagePop, data: paramsCarry);
   }
 
   /// 页面跳转
@@ -51,20 +54,34 @@ abstract class BaseViewModel with ChangeNotifier {
       {Map<String, dynamic>? params,
       Function? callback,
       bool jumpNative = false,
-      bool needReplace = false}) {
+      bool needReplace = false,
+      bool fullscreenDialog = false}) {
     Map<String, dynamic> paramsCarry = params ?? {};
     paramsCarry['carry_route'] = route;
     paramsCarry['carry_callback'] = callback;
     paramsCarry['carry_jumpNative'] = jumpNative;
     paramsCarry['carry_needReplace'] = needReplace;
-    EventBus.instance().post(ArchEvent.pagePush, paramsCarry);
+    paramsCarry['fullscreenDialog'] = fullscreenDialog;
+    EventManager.post(ArchEvent.pagePush, data: paramsCarry);
+  }
+
+  /// 页面跳转到某页面 并删除之前的路由页面
+  void pagePushAndRemoveUtil(String route,
+      {Map<String, dynamic>? params,
+      Function? callback,
+      bool fullscreenDialog = true}) {
+    Map<String, dynamic> paramsCarry = params ?? {};
+    paramsCarry['carry_route'] = route;
+    paramsCarry['carry_callback'] = callback;
+    paramsCarry['fullscreenDialog'] = fullscreenDialog;
+    EventManager.post(ArchEvent.pagePushAndRemoveUtil, data: paramsCarry);
   }
 
   /// 通知关联页面刷新
   void pageRefresh({bool? dataReady}) {
     this.dataReady = dataReady ?? this.dataReady;
-    EventBus.instance().post(ArchEvent.pageRefresh,
-        {'hashCode': pageHashCode, 'dataReady': dataReady});
+    EventManager.post(ArchEvent.pageRefresh,
+        data: {'hashCode': pageHashCode, 'dataReady': dataReady});
   }
 
   // @override
@@ -78,7 +95,7 @@ abstract class BaseViewModel with ChangeNotifier {
   void updatePageState(PageState pageState,
       {String? stateMsg, bool? dataReady}) {
     this.dataReady = dataReady ?? this.dataReady;
-    EventBus.instance().post(ArchEvent.pageStateChanged, {
+    EventManager.post(ArchEvent.pageStateChanged, data: {
       'pageState': pageState.value,
       'stateMsg': stateMsg,
       'hashCode': pageHashCode,
@@ -88,7 +105,13 @@ abstract class BaseViewModel with ChangeNotifier {
 
   /// 通知关联页面刷新数据
   void dataRefresh() {
-    EventBus.instance().post(ArchEvent.dataRefresh, {'hashCode': pageHashCode});
+    EventManager.post(ArchEvent.dataRefresh, data: {'hashCode': pageHashCode});
+  }
+
+  /// 通知关联页面数据
+  void dataRefreshFinished() {
+    EventManager.post(ArchEvent.dataRefreshFinished,
+        data: {'hashCode': pageHashCode});
   }
 
   /// 默认的数据加载器（需业务VM继承重写）
@@ -110,7 +133,7 @@ abstract class BaseViewModel with ChangeNotifier {
       //
       if (showLoading) {
         try {
-          await LWLoading.showLoading2().timeout(const Duration(seconds: 3));
+          await LWLoading.showLoading2();
         } catch (e) {}
       }
 
@@ -136,9 +159,12 @@ abstract class BaseViewModel with ChangeNotifier {
       pageState = PageState.error;
       newErrorMsg = e.message;
       if (e.code == '-1') {
-        newErrorMsg = errorMsg ?? newErrorMsg ?? '网络访问错误';
+        newErrorMsg =
+            errorMsg ?? newErrorMsg ?? LocaleKeys.network_access_error.tr();
       } else {
-        newErrorMsg = newErrorMsg ?? errorMsg ?? '网络数据未知错误';
+        newErrorMsg = newErrorMsg ??
+            errorMsg ??
+            LocaleKeys.network_data_unknown_error.tr();
       }
       if (onFailed == null && !handlePageState) {
         LWToast.show(newErrorMsg);
@@ -150,7 +176,6 @@ abstract class BaseViewModel with ChangeNotifier {
       if (showLoading) {
         await LWLoading.dismiss(animation: false);
       }
-
       pageState = PageState.error;
       newErrorMsg = e.toString();
       onFailed?.call(newErrorMsg);

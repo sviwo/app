@@ -42,11 +42,10 @@ class LWWidget {
   }
 
   ///======================= 图片加载 =======================
-  static String assetImgPath(String imageName) =>
-      'packages/$packageName/assets/images/$imageName';
+  static String assetImgPath(String imageName) => 'assets/images/$imageName';
 
-  static String assetSvgPath(String svgName) =>
-      'packages/$packageName/assets/images/svg/$svgName';
+  static String assetSvgPath(String svgName) => 'assets/svg/$svgName';
+  //packages/$packageName/
 
   static Widget assetImg(
     String imagePath, {

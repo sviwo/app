@@ -1,15 +1,23 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
+import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/config/conf/app_conf.dart';
+import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
+import 'package:atv/config/data/entity/vehicle%20/vehicle_list_model.dart';
 import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/main.dart';
 import 'package:atv/pages/Mine/viewModel/mine_page_view_model.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/complex/file/lw_image_loader.dart';
+import 'package:atv/widgetLibrary/complex/titleBar/lw_title_bar.dart';
 import 'package:atv/widgetLibrary/form/lw_form_text_multiple.dart';
 import 'package:atv/widgetLibrary/form/ui_form_label.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
@@ -33,6 +41,36 @@ class _MinePageState
       AppIcons.imgMainPageBg,
       fit: BoxFit.cover,
     );
+  }
+
+  // @override
+  // LWTitleBar? buildTitleBar() {
+  //   // TODO: implement buildTitleBar
+  //   return LWTitleBar();
+  // }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    EventManager.register(context, AppEvent.userBaseInfoChange, (params) {
+      viewModel.getUserData();
+    });
+    EventManager.register(context, AppEvent.languageChange, (params) async {
+      viewModel.currentLauguage = await AppConf.getLauguage();
+      updateState(() {});
+    });
+    // EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
+    //   viewModel.getVehicleList();
+    // });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    EventManager.unregister(context, AppEvent.userBaseInfoChange);
+    EventManager.unregister(context, AppEvent.languageChange);
+    // EventManager.unregister(context, AppEvent.vehicleInfoChange);
+    super.dispose();
   }
 
   @override
@@ -73,114 +111,186 @@ class _MinePageState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(7.5.dp),
-                  child: LWImageLoader.network(
-                      imageUrl:
-                          'https://img1.baidu.com/it/u=1621616811,1488147250&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1710262800&t=7696ef2d7d37554bac6980fdf313e2c4',
-                      width: 60.dp,
-                      height: 60.dp)),
+              InkWell(
+                  onTap: () {
+                    pagePush(AppRoute.userInfo);
+                  },
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(7.5.dp),
+                      child: LWImageLoader.network(
+                          imageUrl: viewModel.userInfo?.headImg ?? '',
+                          width: 60.dp,
+                          height: 60.dp))),
               SizedBox(
                 height: 9.dp,
               ),
               Text(
-                'SVIWO',
+                viewModel.fullName,
+                maxLines: 3,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16.sp,
-                    fontWeight: LWFontWeight.bold),
+                    fontWeight: LWFontWeight.bold,
+                    overflow: TextOverflow.ellipsis),
               ),
             ],
           ),
         ),
-        Column(
-          children: [
-            Stack(
-              fit: StackFit.loose,
-              children: [
-                Container(
-                    width: 172.dp,
-                    padding: EdgeInsets.fromLTRB(14.dp, 15.dp, 15.dp, 18.dp),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(7.5.dp),
-                        color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+        viewModel.vehicleList.isNotEmpty
+            ? SizedBox(
+                width: 201.dp,
+                height: 120.dp,
+                child: Swiper(
+                  itemCount: viewModel.vehicleList.length,
+                  index: 0,
+                  loop: viewModel.vehicleList.length > 1 ? true : false,
+                  itemBuilder: (context, index) {
+                    VehicleListModel model = viewModel.vehicleList[index];
+                    return Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Image.asset(
-                              AppIcons.imgMinePageCardBrand,
-                              width: 64.5.dp,
-                              height: 15.5.dp,
-                            ),
-                            RichText(
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text: '99 ',
-                                    style: TextStyle(
-                                        color: const Color(0xff1B1B1B),
-                                        fontSize: 20.sp,
-                                        fontWeight: LWFontWeight.bold)),
-                                TextSpan(
-                                    text: LocaleKeys.km,
-                                    style: TextStyle(
-                                      color: const Color(0xff1B1B1B),
+                        Container(
+                          width: 172.dp,
+                          height: 92.dp,
+                          padding: EdgeInsets.fromLTRB(14.dp, 15.dp, 0, 0.dp),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7.5.dp),
+                              color: Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: Text(model.nickname ?? '-',
+                                          style: TextStyle(
+                                              color: const Color(0xff36BCB3),
+                                              fontSize: 20.sp,
+                                              fontWeight: LWFontWeight.bold))),
+                                  RichText(
+                                    text: TextSpan(children: [
+                                      TextSpan(
+                                          text: '${model.mileage ?? '0'} ',
+                                          style: TextStyle(
+                                              color: const Color(0xff1B1B1B),
+                                              fontSize: 20.sp,
+                                              fontWeight: LWFontWeight.bold)),
+                                      TextSpan(
+                                          text: 'km',
+                                          style: TextStyle(
+                                            color: const Color(0xff1B1B1B),
+                                            fontSize: 8.sp,
+                                          ))
+                                    ]),
+                                  ),
+                                  SizedBox(
+                                    width: 15.dp,
+                                  )
+                                ],
+                              ),
+                              SizedBox(
+                                height: 14.dp,
+                              ),
+                              model.userDeviceType == 0
+                                  ? UIFormLabel(
+                                      LocaleKeys.VIN.tr(), model.deviceName,
                                       fontSize: 8.sp,
-                                    ))
-                              ]),
-                            )
-                          ],
+                                      bottomMargin: 0,
+                                      labelColor: const Color(0xff1B1B1B),
+                                      valueColor: const Color(0xff1B1B1B))
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                            child: UIFormLabel(
+                                                LocaleKeys.VIN.tr(),
+                                                model.deviceName,
+                                                fontSize: 8.sp,
+                                                bottomMargin: 0,
+                                                maxLines: 2,
+                                                labelColor:
+                                                    const Color(0xff1B1B1B),
+                                                valueColor:
+                                                    const Color(0xff1B1B1B))),
+                                        InkWell(
+                                            onTap: () {
+                                              showCupertinoDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return CupertinoAlertDialog(
+                                                    title: Text(
+                                                      LocaleKeys.reminder.tr(),
+                                                      style: TextStyle(
+                                                          fontSize: 20.dp,
+                                                          color: Colors.black),
+                                                    ),
+                                                    content: Text(
+                                                      LocaleKeys
+                                                          .sure_want_to_delete_car
+                                                          .tr(),
+                                                      style: TextStyle(
+                                                          fontSize: 14.dp,
+                                                          color: Colors.black),
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: Text(LocaleKeys
+                                                            .cancel
+                                                            .tr()),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        child: Text(LocaleKeys
+                                                            .confirm
+                                                            .tr()),
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          viewModel
+                                                              .deleteCar(model);
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.all(10.dp),
+                                              child: Image.asset(
+                                                AppIcons.imgMinePageCardDraft,
+                                                width: 8.33.dp,
+                                                height: 9.67.dp,
+                                              ),
+                                            )),
+                                        SizedBox(
+                                          width: 5.dp,
+                                        )
+                                      ],
+                                    ),
+                            ],
+                          ),
                         ),
-                        SizedBox(
-                          height: 14.dp,
-                        ),
-                        UIFormLabel(LocaleKeys.VIN.tr(),
-                            '1561231315312312313512613203513135135135516',
-                            fontSize: 8.sp,
-                            bottomMargin: 0,
-                            labelColor: const Color(0xff1B1B1B),
-                            valueColor: const Color(0xff1B1B1B)),
-                        SizedBox(
-                          height: 9.dp,
-                        ),
-                        UIFormLabel(LocaleKeys.motor_number.tr(),
-                            '1561231315312312313512613203513135135135516',
-                            fontSize: 8.sp,
-                            bottomMargin: 0,
-                            paddingRight: 28.33.dp,
-                            labelColor: const Color(0xff1B1B1B),
-                            valueColor: const Color(0xff1B1B1B)),
+                        Image.asset(
+                          AppIcons.imgMinePageCardBottom,
+                          width: 200.dp,
+                          height: 5.33.dp,
+                        )
                       ],
-                    )),
-                Positioned(
-                  right: 5.dp,
-                  bottom: 2.67.dp,
-                  child: IconButton(
-                    padding: EdgeInsets.all(10.dp),
-                    alignment: Alignment.center,
-                    icon: Image.asset(
-                      AppIcons.imgMinePageCardDraft,
-                      width: 8.33.dp,
-                      height: 9.67.dp,
-                    ),
-                    iconSize: 9.67.dp,
-                    onPressed: () {
-                      LogUtil.d('点击了删除');
-                    },
-                  ),
-                )
-              ],
-            ),
-            Image.asset(
-              AppIcons.imgMinePageCardBottom,
-              width: 200.dp,
-              height: 5.33.dp,
-            )
-          ],
-        ),
+                    );
+                  },
+                  onIndexChanged: (value) {
+                    VehicleListModel model = viewModel.vehicleList[value];
+                    viewModel.changeCar(model);
+                  },
+                ))
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -198,7 +308,15 @@ class _MinePageState
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               var itemName = viewModel.itemNames[index];
-              bool isAC = itemName == LocaleKeys.authentication_center.tr();
+              bool isAC = (itemName == LocaleKeys.authentication_center.tr() ||
+                  itemName == LocaleKeys.multi_language.tr());
+              var describe = '';
+              if (itemName == LocaleKeys.authentication_center.tr()) {
+                describe = viewModel.verifiedString;
+              } else if (itemName == LocaleKeys.multi_language.tr()) {
+                describe = viewModel.languageString ?? '-';
+              }
+
               return Padding(
                 padding:
                     EdgeInsets.only(top: 30.dp, bottom: isAC ? 20.dp : 30.dp),
@@ -207,18 +325,54 @@ class _MinePageState
                     LogUtil.d('点击了${viewModel.itemNames[index]}');
                     if (itemName == LocaleKeys.account.tr()) {
                       // 账户
+                      pagePush(AppRoute.accountInfo);
                     } else if (itemName == LocaleKeys.help.tr()) {
                       // 帮助
-                      pagePush(AppRoute.authenticationCenter);
+                      pagePush(AppRoute.helpInfo);
                     } else if (itemName == LocaleKeys.multi_language.tr()) {
                       // 多语言
-                      pagePush(AppRoute.authenticationCenter);
-                    } else if (isAC) {
+                      pagePush(AppRoute.multiLanguage);
+                    } else if (itemName ==
+                        LocaleKeys.authentication_center.tr()) {
                       // 认证中心
-                      pagePush(AppRoute.authenticationCenter);
+                      if (viewModel.userInfo?.authStatus == 0 ||
+                          viewModel.userInfo?.authStatus == 3) {
+                        pagePush(AppRoute.authenticationCenter);
+                      } else if (viewModel.userInfo?.authStatus == 2) {}
                     } else if (itemName == LocaleKeys.quit.tr()) {
                       // 退出
-                      pagePush(AppRoute.authenticationCenter);
+                      showCupertinoDialog(
+                        context: context,
+                        builder: (context) {
+                          return CupertinoAlertDialog(
+                            title: Text(
+                              LocaleKeys.reminder.tr(),
+                              style: TextStyle(
+                                  fontSize: 20.dp, color: Colors.black),
+                            ),
+                            content: Text(
+                              LocaleKeys.sure_want_to_log_out.tr(),
+                              style: TextStyle(
+                                  fontSize: 14.dp, color: Colors.black),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text(LocaleKeys.cancel.tr()),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text(LocaleKeys.confirm.tr()),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  viewModel.logout();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     }
                   },
                   child: Row(
@@ -252,7 +406,7 @@ class _MinePageState
                                       height: 7.3.dp,
                                     ),
                                     Text(
-                                      viewModel.verifiedString,
+                                      describe,
                                       style: TextStyle(
                                           fontSize: 12.sp,
                                           color: const Color(0xff36BCB3)),

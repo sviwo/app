@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModel/login_view_model.dart';
 import 'package:atv/tools/language/lw_language_tool.dart';
@@ -105,13 +106,6 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           onChanged: (value) {
             viewModel.emailName = value;
             pageRefresh(() {});
-            // if (value.isEmpty) {
-            //   viewModel.measurementReq.price = null;
-            // } else {
-            //   viewModel.measurementReq.price = value;
-            // }
-            // viewModel.measurementPrice = null;
-            // pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
             LogUtil.d('-----');
@@ -153,13 +147,6 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           onChanged: (value) {
             viewModel.password = value;
             pageRefresh(() {});
-            // if (value.isEmpty) {
-            //   viewModel.measurementReq.price = null;
-            // } else {
-            //   viewModel.measurementReq.price = value;
-            // }
-            // viewModel.measurementPrice = null;
-            // pageRefresh(() {});
           },
           onFieldSubmitted: (value) {
             LogUtil.d('-----');
@@ -207,7 +194,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           borderRadius: BorderRadius.all(Radius.circular(25.dp))),
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了下一步');
+        viewModel.userNameLogin();
       },
     );
   }
@@ -223,7 +210,7 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
       minHeight: 30.dp,
       onPressed: () {
         FocusManager.instance.primaryFocus?.unfocus();
-        LogUtil.d('点击了忘记密码');
+        pagePush(AppRoute.resetPassword);
       },
     ));
   }

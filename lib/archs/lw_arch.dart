@@ -11,11 +11,11 @@ import 'data/net/proxy/http_proxy.dart';
 import 'fe_arch_flutter_platform_interface.dart';
 
 class LWArch {
-  // LWArch._();
+  LWArch._();
   static bool mixDevelop = false; // 是否混合开发
   static double pageBottomBarHeight = 62; // 只能传入不带dp的常量值
   static double pageBottomBarElevation = 0;
-  static Color pageBackgroundColor = LWColors.gray7;
+  static Color pageBackgroundColor = Colors.transparent;
 
   /// params:
   ///   - env, environment abbr, value is dev, sit, uat and prod
@@ -61,6 +61,10 @@ class LWArch {
     Http.instance().init(baseUrl: ArchConf.baseUrl, token: ArchConf.token);
     LogUtil.d(
         'BaseApp: env=${ArchConf.env} baseUrl=${ArchConf.baseUrl} token=${ArchConf.token}');
+  }
+
+  static void setLanguage(String? language) {
+    Http.instance().setLanguage(language);
   }
 
   static void setHttpToken(String? token) {

@@ -30,12 +30,12 @@ class ArchConf {
   }
 
   static Future<bool> getHttpLogEnable() async {
-    return (await prefs).getBool(ArchKeys.httpLogEnable) ?? !['prod', ''].contains(env);
+    return (await prefs).getBool(ArchKeys.httpLogEnable) ??
+        !['prod', ''].contains(env);
   }
 
   static Future<bool> setHttpLogEnable(bool value) async {
-    await (await prefs).setBool(ArchKeys.httpLogEnable, value);
-    return (await prefs).commit();
+    return await (await prefs).setBool(ArchKeys.httpLogEnable, value);
   }
 
   static Future<bool> getHttpProxyEnable() async {

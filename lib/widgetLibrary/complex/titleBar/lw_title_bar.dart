@@ -26,6 +26,7 @@ class LWTitleBar {
   bool hasBackIcon; // 是否有返回图标
   Widget? backIcon; // 返回图标资源
   OnBackPressed? onBackPressed; // 返回操作方法
+  double? leadingWidth;
   Widget? leadingWidget;
 
   // 右侧按钮区
@@ -46,6 +47,7 @@ class LWTitleBar {
     this.hasBackIcon = true,
     this.backIcon,
     this.onBackPressed,
+    this.leadingWidth,
     this.leadingWidget,
     this.actions,
     this.brightnessLight = false,
@@ -115,7 +117,8 @@ class LWTitleBar {
         title: _titleWidget,
         toolbarHeight: titleHeight ?? 40.dp,
         leading: _leftWidget,
-        leadingWidth: _leftWidget == null && titleWidget != null ? 0 : null,
+        leadingWidth: leadingWidth ??
+            (_leftWidget == null && titleWidget != null ? 0 : null),
         titleSpacing: _leftWidget == null && titleWidget != null ? 0 : null,
         automaticallyImplyLeading: _leftWidget != null,
         actions: actions,
@@ -165,7 +168,8 @@ class LWTitleBar {
       title: _titleWidget,
       toolbarHeight: 40.dp,
       leading: _leftWidget,
-      leadingWidth: _leftWidget == null && titleWidget != null ? 0 : null,
+      leadingWidth: leadingWidth ??
+          (_leftWidget == null && titleWidget != null ? 0 : null),
       titleSpacing: _leftWidget == null && titleWidget != null ? 0 : null,
       automaticallyImplyLeading: _leftWidget != null,
       actions: actions,

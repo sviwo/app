@@ -1,5 +1,8 @@
 import 'package:atv/archs/base/base_view_model.dart';
-import 'package:basic_utils/basic_utils.dart';
+import 'package:atv/config/conf/app_conf.dart';
+import 'package:atv/config/conf/route/app_route_settings.dart';
+import 'package:atv/config/data/entity/Login/login_response.dart';
+import 'package:atv/config/net/api_login.dart';
 
 class LoginViewModel extends BaseViewModel {
   /// 登录的邮箱名
@@ -9,7 +12,25 @@ class LoginViewModel extends BaseViewModel {
   String password = '';
 
   bool judgeEmailAndPassword() {
-    return EmailUtils.isEmail(emailName) && password.isNotEmpty;
+    return emailName.isNotEmpty && password.isNotEmpty;
+  }
+
+  void userNameLogin() async {
+    if (judgeEmailAndPassword()) {
+      await loadApiData<LoginResponse>(
+        ApiLogin.login(username: emailName, password: password),
+        showLoading: true,
+        handlePageState: false,
+        dataSuccess: (data) {
+          AppConf.afterLoginSuccess(
+              Authorization: data.Authorization, Publickey: data.Publickey);
+          // pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+          pagePushAndRemoveUtil(
+            AppRoute.main,
+          );
+        },
+      );
+    }
   }
 
   @override

@@ -21,14 +21,12 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
     super.initState();
     AppConf.loginSuccess().then((value) {
       LogUtil.d('登录状态为$value');
-      pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
-      // if (value) {
-      //   pagePush(AppRouteSettings.main,
-      //       needReplace: true, fullscreenDialog: true);
-      // } else {
-      //   pagePush(AppRouteSettings.loginMain,
-      //       needReplace: true, fullscreenDialog: true);
-      // }
+      // pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+      if (value) {
+        pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+      } else {
+        pagePush(AppRoute.loginMain, needReplace: true, fullscreenDialog: true);
+      }
     });
   }
 
@@ -40,9 +38,6 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
       fit: BoxFit.cover,
     );
   }
-
-  @override
-  void releaseVM() {}
 
   @override
   Widget buildBody(BuildContext context) {

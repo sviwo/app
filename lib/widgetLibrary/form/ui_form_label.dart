@@ -1,18 +1,23 @@
+import 'dart:math';
+
 import 'package:basic_utils/basic_utils.dart';
 
 import '../basic/colors/lw_colors.dart';
 import '../utils/size_util.dart';
 import 'package:flutter/widgets.dart';
 
-Widget UIFormLabel(String key, String? value,
-    {double? fontSize,
-    Color? labelColor,
-    Color? valueColor,
-    double? bottomMargin,
-    double? paddingLeft,
-    double? paddingRight,
-    double? paddingHorizontal,
-    bool? singleLine}) {
+Widget UIFormLabel(
+  String key,
+  String? value, {
+  double? fontSize,
+  Color? labelColor,
+  Color? valueColor,
+  double? bottomMargin,
+  double? paddingLeft,
+  double? paddingRight,
+  double? paddingHorizontal,
+  int maxLines = 0,
+}) {
   bottomMargin ??= 8.dp;
   return Container(
     margin: EdgeInsets.only(bottom: bottomMargin),
@@ -32,8 +37,8 @@ Widget UIFormLabel(String key, String? value,
           child: Text(
             StringUtils.isNullOrEmpty(value) ? '-' : value!,
             softWrap: true,
-            maxLines: singleLine == true ? 1 : null,
-            overflow: singleLine == true ? TextOverflow.ellipsis : null,
+            maxLines: maxLines == 0 ? null : maxLines,
+            overflow: maxLines > 0 ? TextOverflow.ellipsis : null,
             strutStyle: const StrutStyle(forceStrutHeight: true, leading: 0),
             style: TextStyle(
                 fontSize: fontSize ?? 14.sp,

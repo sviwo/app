@@ -9,7 +9,8 @@ class SizeUtil {
   static late Size _uiSize;
   static double? _scaleFactor;
 
-  static init(BuildContext context, double width, double height, {double? scaleFactor}) {
+  static init(BuildContext context, double width, double height,
+      {double? scaleFactor}) {
     _uiSize = Size(width, height);
     _scaleFactor = scaleFactor;
     ScreenUtil.init(

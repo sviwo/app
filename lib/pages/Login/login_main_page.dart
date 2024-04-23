@@ -1,3 +1,5 @@
+import 'package:atv/tools/imagePicker/image_picker_tool.dart';
+import 'package:atv/widgetLibrary/complex/loading/lw_loading.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:atv/archs/base/base_mvvm_page.dart';
@@ -26,6 +28,9 @@ class _LoginMainPageState
   bool isSupportSmoothTitleBar() => false;
 
   var _isSelectedProtocol = false;
+
+  @override
+  bool isSupportScrollView() => true;
 
   @override
   Widget? headerBackgroundWidget() {
@@ -86,7 +91,6 @@ class _LoginMainPageState
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.dp))),
               onPressed: () {
-                LogUtil.d('点击了立即登录');
                 pagePush(AppRoute.login, fullscreenDialog: true);
               },
             ),
@@ -188,6 +192,10 @@ class _LoginMainPageState
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     LogUtil.d('点击了隐私政策');
+                                    ImagePickerTool.showChooseImagePicker(
+                                      context,
+                                      completion: (type, files) {},
+                                    );
                                   }),
                           ]),
                           strutStyle: const StrutStyle(
