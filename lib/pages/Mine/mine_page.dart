@@ -5,7 +5,7 @@ import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_list_model.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_list_model.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/main.dart';
 import 'package:atv/pages/Mine/viewModel/mine_page_view_model.dart';

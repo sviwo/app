@@ -2,7 +2,7 @@ import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/config/conf/app_event.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_info.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_info.dart';
 import 'package:atv/config/net/api_vehicle.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';

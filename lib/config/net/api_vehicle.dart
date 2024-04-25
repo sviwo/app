@@ -3,9 +3,9 @@ import 'package:atv/archs/data/entity/res_empty.dart';
 import 'package:atv/archs/data/net/http.dart';
 import 'package:atv/archs/data/net/http_helper.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_info.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_list_model.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_share_key.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_info.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_list_model.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_share_key.dart';
 
 class ApiVehicle {
   ApiVehicle._();

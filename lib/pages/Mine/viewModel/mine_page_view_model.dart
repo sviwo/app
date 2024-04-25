@@ -9,7 +9,7 @@ import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/config/data/entity/User/user_basic_info.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_list_model.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_list_model.dart';
 import 'package:atv/config/net/api_home_page.dart';
 import 'package:atv/config/net/api_vehicle.dart';
 import 'package:atv/generated/locale_keys.g.dart';

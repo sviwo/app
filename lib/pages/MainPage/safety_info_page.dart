@@ -1,7 +1,7 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
-import 'package:atv/config/data/entity/vehicle%20/vehicle_info.dart';
+import 'package:atv/config/data/entity/vehicle/vehicle_info.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/safety_info_page_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
