@@ -21,7 +21,7 @@ class _HelpInfoPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgMainPageBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }

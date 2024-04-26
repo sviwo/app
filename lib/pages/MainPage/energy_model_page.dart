@@ -22,7 +22,7 @@ class _EnergyModelPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgMainTopStarsBg,
+      AppIcons.imgCommonBgUpStar,
       fit: BoxFit.cover,
     );
   }

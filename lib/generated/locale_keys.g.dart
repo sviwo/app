@@ -4,6 +4,8 @@ abstract class LocaleKeys {
   static const sign_in_now = 'sign_in_now';
   static const user_register = 'user_register';
   static const by_registering_you_agree = 'by_registering_you_agree';
+  static const by_login_you_agree = 'by_login_you_agree';
+  static const agree_regist_or_login_tips = 'agree_regist_or_login_tips';
   static const user_agreement = 'user_agreement';
   static const and = 'and';
   static const privacy_policy = 'privacy_policy';

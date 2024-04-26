@@ -6,8 +6,14 @@ class AppIcons {
 
   static const String imgCommonCheck = 'assets/images/common_check.png';
 
+  static const String imgCommonBgUpStar = 'assets/images/common_bg_up_star.png';
+  static const String imgCommonBgDownStar =
+      'assets/images/common_bg_down_star.png';
+  static const String imgCommonBgNoStar = 'assets/images/common_bg_no_star.png';
+
   /// 登录注册
   static const String imgBgLoginMain = 'assets/images/login_main_page.png';
+
   static const String imgLoginMainSviwoIcon =
       'assets/images/login_main_sviwo_icon.png';
   static const String imgLoginMainProtocolSelected =
@@ -17,9 +23,8 @@ class AppIcons {
   static const String imgLoginByFacebook = 'assets/images/login_facebook.png';
 
   /// 主页
-  static const String imgMainPageBg = 'assets/images/main_page_bg.png';
-  static const String imgMainPageSviwoIcon =
-      'assets/images/main_page_sviwo_icon.png';
+  static const String imgMainPageNoCarIcon =
+      'assets/images/main_page_no_car_icon.png';
   static const String imgMainPageMineIcon =
       'assets/images/main_page_mine_icon.png';
   static const String imgMainPageCarIcon =
@@ -48,9 +53,7 @@ class AppIcons {
       'assets/images/main_page_service.png';
   static const String imgMainPageUpgrade =
       'assets/images/main_page_upgrade.png';
-  static const String imgMainTopStarsBg = 'assets/images/main_top_stars_bg.png';
-  static const String imgMainScanCode =
-      'assets/images/main_page_scan-code.png';
+  static const String imgMainScanCode = 'assets/images/main_page_scan-code.png';
 
   /// 动能模式
   static const String imgEnergyECOModel = 'assets/images/energy_eco_model.png';

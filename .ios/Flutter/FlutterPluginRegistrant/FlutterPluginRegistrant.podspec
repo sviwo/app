@@ -24,6 +24,7 @@ Depends on all your plugins, and provides a function to register them.
   s.dependency 'file_picker'
   s.dependency 'flutter_blue_plus'
   s.dependency 'flutter_keyboard_visibility'
+  s.dependency 'geolocator_apple'
   s.dependency 'google_maps_flutter_ios'
   s.dependency 'image_cropper'
   s.dependency 'image_picker_ios'

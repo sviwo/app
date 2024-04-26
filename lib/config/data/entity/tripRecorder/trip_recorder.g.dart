@@ -20,9 +20,12 @@ TripRecorder _$TripRecorderFromJson(Map<String, dynamic> json) => TripRecorder(
       mileageDriven: json['mileageDriven'] == null
           ? '0'
           : LWObject.dynamicToString(json['mileageDriven']),
-      startTime: json['startTime'] as String?,
-      endTime: json['endTime'] as String?,
-      avgSpeed: json['avgSpeed'] as String?,
+      startTime: LWObject.dynamicToString(json['startTime']),
+      endTime: LWObject.dynamicToString(json['endTime']),
+      avgSpeed: LWObject.dynamicToString(json['avgSpeed']),
+      duration: json['duration'] == null
+          ? '0'
+          : LWObject.dynamicToString(json['duration']),
       consumption: json['consumption'] == null
           ? '0'
           : LWObject.dynamicToString(json['consumption']),
@@ -38,5 +41,6 @@ Map<String, dynamic> _$TripRecorderToJson(TripRecorder instance) =>
       'startTime': instance.startTime,
       'endTime': instance.endTime,
       'avgSpeed': instance.avgSpeed,
+      'duration': instance.duration,
       'consumption': instance.consumption,
     };

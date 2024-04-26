@@ -8,6 +8,9 @@ import 'package:basic_utils/basic_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class RegisterViewModel extends BaseViewModel {
+  /// 是否选中了同意协议
+  var isSelectedProtocol = false;
+
   var params = RegistParams();
 
   /// 验证码是否已经发送过了
@@ -67,6 +70,10 @@ class RegisterViewModel extends BaseViewModel {
 
   void submmit() async {
     if (judgeIsLegal()) {
+      if (isSelectedProtocol == false) {
+        LWToast.show(LocaleKeys.agree_regist_or_login_tips.tr());
+        return;
+      }
       await loadApiData(
         ApiLogin.registUser(params),
         showLoading: true,

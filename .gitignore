@@ -35,7 +35,7 @@ Pods
 /windows
 /web
 /android
-/ios/Runner/Assets.xcassets
+# /ios/Runner/Assets.xcasset
 /macos
 /linux
 

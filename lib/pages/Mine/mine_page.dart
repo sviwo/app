@@ -38,7 +38,7 @@ class _MinePageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgMainPageBg,
+      AppIcons.imgCommonBgUpStar,
       fit: BoxFit.cover,
     );
   }

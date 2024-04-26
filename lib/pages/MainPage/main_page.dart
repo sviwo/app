@@ -27,10 +27,15 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     with WidgetsBindingObserver {
   @override
   Widget? headerBackgroundWidget() {
-    return Image.asset(
-      AppIcons.imgMainPageBg,
-      fit: BoxFit.cover,
-    );
+    return viewModel.haveCar
+        ? Image.asset(
+            AppIcons.imgCommonBgNoStar,
+            fit: BoxFit.cover,
+          )
+        : Image.asset(
+            AppIcons.imgCommonBgDownStar,
+            fit: BoxFit.cover,
+          );
   }
 
   @override
@@ -77,6 +82,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
 
   @override
   void initState() {
+    viewModel = MainPageViewModel();
     super.initState();
     // AppConf.isMainPage = true;
     EventManager.register(context, ArchEvent.tokenInvalid, (params) {
@@ -124,7 +130,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
   void readFromClipboard() async {
     LogUtil.d('----------粘贴板回调');
     var copyIsString = await Clipboard.hasStrings();
-    LogUtil.d('----------粘贴板中是字符串:$copyIsString');
+    LogUtil.d('----------粘贴板中是否字符串:$copyIsString');
     if (copyIsString) {
       ClipboardData? newClipboardData =
           await Clipboard.getData(Clipboard.kTextPlain);
@@ -139,6 +145,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             return;
           }
           viewModel.clipboardText = resultText;
+          // await Clipboard.setData(ClipboardData(text: ' '));
           viewModel.inviteBindVehicle(resultText, (isSuccess) {
             if (isSuccess) {
               LWToast.show(LocaleKeys.car_key_bind_success.tr());
@@ -313,47 +320,15 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     );
   }
 
-  Widget _buildNaviIcons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          padding: EdgeInsets.symmetric(horizontal: 20.dp),
-          iconSize: 51.57.dp,
-          onPressed: () {
-            LogUtil.d('点击了sviwo图标');
-          },
-          icon: Image.asset(
-            AppIcons.imgMainPageSviwoIcon,
-            width: 51.67.dp,
-            height: 12.33.dp,
-          ),
-        ),
-        IconButton(
-            padding: EdgeInsets.symmetric(horizontal: 20.dp),
-            onPressed: () {
-              pagePush(AppRoute.mine);
-              LogUtil.d('点击了我的图标');
-            },
-            iconSize: 25.67.dp,
-            icon: Image.asset(
-              AppIcons.imgMainPageMineIcon,
-              width: 25.67.dp,
-              height: 22.67.dp,
-            ))
-      ],
-    );
-  }
-
   List<Widget> _buildNoCar() {
     return [
       // _buildNaviIcons(),
       SizedBox(
-        height: 30.dp,
+        height: 60.dp,
       ),
-      _buildCar(),
+      _buildNoCarIcon(),
       SizedBox(
-        height: 30.dp,
+        height: 105.dp,
       ),
       _buildItem(
         LocaleKeys.place,
@@ -364,7 +339,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           height: 22.dp,
         ),
         callback: () {
-          pagePush(AppRoute.mapNavi);
+          LogUtil.d('===========${viewModel.dataModel?.geoLocation}');
         },
       ),
       _buildItem(
@@ -405,6 +380,19 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           AppIcons.imgMainPageCarIcon,
           width: 212.dp,
           height: 165.dp,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoCarIcon() {
+    return SizedBox(
+      height: 81.dp,
+      child: Center(
+        child: Image.asset(
+          AppIcons.imgMainPageNoCarIcon,
+          width: 127.dp,
+          height: 81.dp,
         ),
       ),
     );
@@ -498,8 +486,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 iconSize: 41.dp,
                 icon: Image.asset(
                   AppIcons.imgMainPageLockIcon,
-                  width: 41.dp,
-                  height: 41.dp,
+                  width: 29.dp,
+                  height: 29.dp,
+                  fit: BoxFit.contain,
                   color: (viewModel.dataModel?.lockedStatus ?? false)
                       ? const Color(0xff36BCB3)
                       : Colors.white,
@@ -510,11 +499,12 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                   LogUtil.d('点击了喇叭图标');
                   viewModel.controlVehicle(1);
                 },
-                iconSize: 27.dp,
+                iconSize: 41.dp,
                 icon: Image.asset(
                   AppIcons.imgMainPageTrumpetIcon,
-                  width: 27.dp,
-                  height: 23.5.dp,
+                  width: 22.dp,
+                  height: 19.dp,
+                  fit: BoxFit.contain,
                   // color: (viewModel.dataModel?.lockedStatus ?? false)
                   //     ? const Color(0xff36BCB3)
                   //     : Colors.white,
@@ -525,11 +515,12 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                   LogUtil.d('点击了灯光图标');
                   viewModel.controlVehicle(0);
                 },
-                iconSize: 32.5.dp,
+                iconSize: 41.dp,
                 icon: Image.asset(
                   AppIcons.imgMainPageLamplightIcon,
-                  width: 32.5.dp,
-                  height: 20.dp,
+                  width: 25.dp,
+                  height: 15.dp,
+                  fit: BoxFit.contain,
                   // color: (viewModel.dataModel?.lockedStatus ?? false)
                   //     ? const Color(0xff36BCB3)
                   //     : Colors.white,
@@ -622,7 +613,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     );
     return InkWell(
         onTap: () {
-          pagePush(AppRoute.mapNavi);
+          pagePush(AppRoute.mapNavi,
+              params: viewModel.dataModel?.geoLocation?.toJson());
         },
         child: Padding(
           padding: EdgeInsets.fromLTRB(40.dp, 15.dp, 42.dp, 15.dp),
