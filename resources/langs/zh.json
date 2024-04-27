@@ -158,5 +158,10 @@
     "remove_car_key":"移除",
     "sure_want_to_delete_car_key":"确定删除这个车钥匙吗？",
     "remove_car_back_key":"返回",
-    "illegal_operation":"非法操作"
+    "illegal_operation":"非法操作",
+    "towards":"前往",
+    "nearby":"附近",
+    "google_map_not_installed":"本机未安装谷歌地图",
+    "geographical_distance":"距离",
+    "no_map_destination_tips":"请搜索并在列表中选择终点"
 }

@@ -94,6 +94,8 @@ dependencies:
   google_maps_flutter: ^2.3.0
   google_geocoding_api: ^1.2.0
   geolocator: ^11.0.0
+  sliding_up_panel: ^2.0.0+1
+  map_launcher: ^3.2.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/conf/arch_event.dart';
+import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
@@ -338,9 +339,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           width: 17.5.dp,
           height: 22.dp,
         ),
-        callback: () {
-          LogUtil.d('===========${viewModel.dataModel?.geoLocation}');
-        },
+        callback: () {},
       ),
       _buildItem(
         LocaleKeys.service,
@@ -613,6 +612,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     );
     return InkWell(
         onTap: () {
+          if (viewModel.dataModel == null) {
+            return;
+          }
+          if (viewModel.dataModel?.geoLocation == null) {
+            return;
+          }
+          if (viewModel.dataModel?.geoLocation?.locationString
+                  .isNullOrEmpty() ==
+              true) {
+            return;
+          }
           pagePush(AppRoute.mapNavi,
               params: viewModel.dataModel?.geoLocation?.toJson());
         },

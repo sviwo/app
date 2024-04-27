@@ -60,6 +60,12 @@
 @import image_picker_ios;
 #endif
 
+#if __has_include(<map_launcher/MapLauncherPlugin.h>)
+#import <map_launcher/MapLauncherPlugin.h>
+#else
+@import map_launcher;
+#endif
+
 #if __has_include(<package_info/FLTPackageInfoPlugin.h>)
 #import <package_info/FLTPackageInfoPlugin.h>
 #else
@@ -108,6 +114,7 @@
   [FLTGoogleMapsPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleMapsPlugin"]];
   [FLTImageCropperPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImageCropperPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
+  [MapLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"MapLauncherPlugin"]];
   [FLTPackageInfoPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPackageInfoPlugin"]];
   [FPPPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FPPPackageInfoPlusPlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];

@@ -10,10 +10,12 @@ GeoLocationDefine _$GeoLocationDefineFromJson(Map<String, dynamic> json) =>
     GeoLocationDefine(
       latitude: LWObject.dynamicToDouble(json['latitude']),
       longitude: LWObject.dynamicToDouble(json['longitude']),
+      locationString: json['locationString'] as String?,
     );
 
 Map<String, dynamic> _$GeoLocationDefineToJson(GeoLocationDefine instance) =>
     <String, dynamic>{
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'locationString': instance.locationString,
     };

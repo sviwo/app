@@ -27,9 +27,6 @@ class HomePageModel {
   /// 地理位置
   GeoLocationDefine? geoLocation;
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  String locationString = '';
-
   /// 是否有车：false=没有，true=有
   @JsonKey(fromJson: LWObject.dynamicToBool, defaultValue: false)
   bool? isHavingCar;

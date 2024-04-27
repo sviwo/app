@@ -144,4 +144,16 @@ class AppIcons {
   static const String imgHelpDialogIcon = 'assets/images/help_dialog_icon.png';
   static const String imgHelpMaintainIcon =
       'assets/images/help_maintain_icon.png';
+
+  /// 地图
+  static const String imgMapSearchIcon =
+      'assets/images/map_page_search_icon.png';
+  static const String imgMapDottedLine =
+      'assets/images/map_page_dotted_line.png';
+  static const String imgMapNavigationIcon =
+      'assets/images/map_page_navigation_icon.png';
+  static const String imgMapLocationIcon =
+      'assets/images/map_page_location_icon.png';
+  static const String imgMapCurrentLocationIcon =
+      'assets/images/map_page_current_location.png';
 }

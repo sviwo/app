@@ -107,15 +107,15 @@ class MainPageViewModel extends BaseViewModel {
   }
 
   Future<String> reverseGeocodingString() async {
-    if (dataModel?.locationString.isNotEmpty == true &&
-        dataModel?.locationString != '-') {
-      return dataModel?.locationString ?? '-';
+    if (dataModel?.geoLocation?.locationString?.isNotEmpty == true &&
+        dataModel?.geoLocation?.locationString != '-') {
+      return dataModel?.geoLocation?.locationString ?? '-';
     }
     if (dataModel?.geoLocation != null) {
-      dataModel?.locationString =
+      dataModel?.geoLocation?.locationString =
           await LWMapTool.reverseGeocoding((dataModel?.geoLocation)!);
     }
-    return dataModel?.locationString ?? '-';
+    return dataModel?.geoLocation?.locationString ?? '-';
   }
 
   /// 绑定车辆
