@@ -1,0 +1,7 @@
+# compiler: R8
+# compiler_version: 3.0.69
+# pg_map_id: 8b54745
+# common_typos_disable
+io.flutter.plugins.GeneratedPluginRegistrant -> io.flutter.plugins.GeneratedPluginRegistrant:
+    1:1:void <init>():15:15 -> <init>
+    1:73:void registerWith(io.flutter.embedding.engine.FlutterEngine):19:91 -> registerWith

@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\permission_handler_android\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-mn\\values-mn.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\08e342b76ca492c2045e08d6cd2196ac\\transformed\\core-1.6.0\\res\\values-mn\\values-mn.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\permission_handler_android\\intermediates\\merged_res\\release\\values-mn\\values-mn.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\08e342b76ca492c2045e08d6cd2196ac\\transformed\\core-1.6.0\\res\\values-mn\\values-mn.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        }
+    ]
+}

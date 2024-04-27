@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\image_picker_android\\intermediates\\merged_res\\release\\drawable\\notification_bg_low.xml",
+        "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\c608ae65e4ed13ce5b8cc6aceaa6d679\\transformed\\core-1.10.1\\res\\drawable\\notification_bg_low.xml"
+    },
+    {
+        "merged": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\image_picker_android\\intermediates\\merged_res\\release\\drawable\\notification_icon_background.xml",
+        "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\c608ae65e4ed13ce5b8cc6aceaa6d679\\transformed\\core-1.10.1\\res\\drawable\\notification_icon_background.xml"
+    },
+    {
+        "merged": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\image_picker_android\\intermediates\\merged_res\\release\\drawable\\notification_bg.xml",
+        "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\c608ae65e4ed13ce5b8cc6aceaa6d679\\transformed\\core-1.10.1\\res\\drawable\\notification_bg.xml"
+    },
+    {
+        "merged": "F:\\workspace\\flutter\\atvapp\\.android\\plugins_build_output\\image_picker_android\\intermediates\\merged_res\\release\\drawable\\notification_tile_bg.xml",
+        "source": "C:\\Users\\Administrator.DESKTOP-IU7C7ID\\.gradle\\caches\\transforms-3\\c608ae65e4ed13ce5b8cc6aceaa6d679\\transformed\\core-1.10.1\\res\\drawable\\notification_tile_bg.xml"
+    }
+]
