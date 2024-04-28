@@ -29,7 +29,7 @@ class _AuthenticationCenterPageState extends BaseMvvmPageState<
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgLoginBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }

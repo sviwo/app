@@ -16,6 +16,7 @@ class TripRecorder {
       this.startTime,
       this.endTime,
       this.avgSpeed,
+      this.duration = '0',
       this.consumption = '0'});
 
   /// 里程id
@@ -29,8 +30,10 @@ class TripRecorder {
   /// 起点
   GeoLocationDefine? startPoint;
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String startPointString = '';
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
   String endPointString = '';
 
   /// 终点
@@ -41,13 +44,20 @@ class TripRecorder {
   String? mileageDriven;
 
   /// 行程开始时间
+  @JsonKey(fromJson: LWObject.dynamicToString)
   String? startTime;
 
   /// 行程结束时间
+  @JsonKey(fromJson: LWObject.dynamicToString)
   String? endTime;
 
   /// 平均时速，单位（m）
+  @JsonKey(fromJson: LWObject.dynamicToString)
   String? avgSpeed;
+
+  /// 时长
+  @JsonKey(fromJson: LWObject.dynamicToString)
+  String? duration;
 
   /// 使用电量
   @JsonKey(fromJson: LWObject.dynamicToString)

@@ -26,7 +26,7 @@ class _ResetPasswordPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgLoginBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }

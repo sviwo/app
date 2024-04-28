@@ -35,6 +35,7 @@ migrate_working_dir/
 Pods
 /windows
 /web
+# /ios/Runner/Assets.xcasset
 /ios/Runner/Assets.xcassets
 /macos
 /linux

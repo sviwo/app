@@ -133,6 +133,7 @@ class MyApp extends BaseApp {
           supportedLocales: context.supportedLocales,
           locale: locale,
           home: mixDevelop ? page : SplashPage(route: AppRoute.splash),
+          // home: MapNaviPage(),
           builder: EasyLoading.init(
             builder: (context, widget) {
               LWWidget.init(context, designWidth: 375, designHeight: 812);

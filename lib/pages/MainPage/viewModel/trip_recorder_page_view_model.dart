@@ -10,6 +10,7 @@ import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/define/trip_recorder_list_request.dart';
 import 'package:atv/tools/map/lw_map_tool.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 
 class TripRecorderPageViewModel extends PagingViewModel<TripRecorder> {
   var request = TripRecorderListRequest();

@@ -26,7 +26,7 @@ class _VehicleConditionInformationPageState extends BaseMvvmPageState<
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgMainPageBg,
+      AppIcons.imgCommonBgUpStar,
       fit: BoxFit.cover,
     );
   }

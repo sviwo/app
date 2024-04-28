@@ -34,7 +34,7 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
   Widget? headerBackgroundWidget() {
     // TODO: implement headerBackgroundWidget
     return Image.asset(
-      AppIcons.imgLoginBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }

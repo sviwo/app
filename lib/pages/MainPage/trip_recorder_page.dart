@@ -30,7 +30,7 @@ class _TripRecorderPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgMainPageBg,
+      AppIcons.imgCommonBgUpStar,
       fit: BoxFit.cover,
     );
   }
@@ -131,27 +131,20 @@ class _TripRecorderPageState
                           children: [
                             Container(
                               width: double.infinity,
-                              color: Colors.white,
+                              // color: Colors.white,
+                              color: const Color(0xff17151A),
                               padding: EdgeInsets.fromLTRB(
                                   13.dp, 13.dp, 13.dp, 18.dp),
                               child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                            child: Text(
-                                          StringUtils.isNotNullOrEmpty(
-                                                  model.endTime)
-                                              ? (model.endTime ?? placeHodler)
-                                              : placeHodler,
-                                          style: TextStyle(
-                                              fontSize: 12.sp,
-                                              color: const Color(0xff211B2B)),
-                                        )),
-                                      ],
+                                    Text(
+                                      StringUtils.isNotNullOrEmpty(
+                                              model.endTime)
+                                          ? (model.endTime ?? placeHodler)
+                                          : placeHodler,
+                                      style: TextStyle(
+                                          fontSize: 12.sp, color: Colors.white),
                                     ),
                                     SizedBox(
                                       height: 13.dp,
@@ -184,8 +177,7 @@ class _TripRecorderPageState
                                                         placeHodler,
                                                     style: TextStyle(
                                                         fontSize: 12.sp,
-                                                        color: const Color(
-                                                            0xff211B2B)),
+                                                        color: Colors.white),
                                                   );
                                                 },
                                               ))
@@ -193,8 +185,7 @@ class _TripRecorderPageState
                                                 placeHodler,
                                                 style: TextStyle(
                                                     fontSize: 12.sp,
-                                                    color: const Color(
-                                                        0xff211B2B)),
+                                                    color: Colors.white),
                                               )
                                       ],
                                     ),
@@ -229,8 +220,7 @@ class _TripRecorderPageState
                                                         placeHodler,
                                                     style: TextStyle(
                                                         fontSize: 12.sp,
-                                                        color: const Color(
-                                                            0xff211B2B)),
+                                                        color: Colors.white),
                                                   );
                                                 },
                                               ))
@@ -238,8 +228,7 @@ class _TripRecorderPageState
                                                 placeHodler,
                                                 style: TextStyle(
                                                     fontSize: 12.sp,
-                                                    color: const Color(
-                                                        0xff211B2B)),
+                                                    color: Colors.white),
                                               )
                                       ],
                                     ),
@@ -248,7 +237,8 @@ class _TripRecorderPageState
                             Container(
                               width: double.infinity,
                               // height: 47.4.dp,
-                              color: const Color(0xff211B2B),
+                              // color: const Color(0xff211B2B),
+                              color: Colors.transparent,
                               child: Row(
                                 children: [
                                   Expanded(
@@ -267,7 +257,12 @@ class _TripRecorderPageState
                                     height: 26.3.dp,
                                   ),
                                   Expanded(
-                                    child: _buildInfoItem('28', 'min',
+                                    child: _buildInfoItem(
+                                        StringUtils.isNotNullOrEmpty(
+                                                model.duration)
+                                            ? (model.duration ?? placeHodler)
+                                            : placeHodler,
+                                        'min',
                                         LocaleKeys.travlled_duration.tr()),
                                   ),
                                   Container(

@@ -30,7 +30,7 @@ class _UserInfoPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgLoginBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }

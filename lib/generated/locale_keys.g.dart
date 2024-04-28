@@ -4,6 +4,8 @@ abstract class LocaleKeys {
   static const sign_in_now = 'sign_in_now';
   static const user_register = 'user_register';
   static const by_registering_you_agree = 'by_registering_you_agree';
+  static const by_login_you_agree = 'by_login_you_agree';
+  static const agree_regist_or_login_tips = 'agree_regist_or_login_tips';
   static const user_agreement = 'user_agreement';
   static const and = 'and';
   static const privacy_policy = 'privacy_policy';
@@ -29,6 +31,10 @@ abstract class LocaleKeys {
   static const remote_control = 'remote_control';
   static const kinetic_energy_model = 'kinetic_energy_model';
   static const place = 'place';
+  static const towards = 'towards';
+  static const nearby = 'nearby';
+  static const google_map_not_installed = "google_map_not_installed";
+  static const geographical_distance = "geographical_distance";
   static const trip_recorder = 'trip_recorder';
   static const vehicle_condition_information = 'vehicle_condition_information';
   static const safety = 'safety';
@@ -171,7 +177,7 @@ abstract class LocaleKeys {
   static const remove_car_back_key = "remove_car_back_key";
   static const sure_want_to_delete_car_key = "sure_want_to_delete_car_key";
   static const illegal_operation = "illegal_operation";
-// static const  = "";
+  static const no_map_destination_tips = "no_map_destination_tips";
 // static const  = "";
 // static const  = "";
 // static const  = "";

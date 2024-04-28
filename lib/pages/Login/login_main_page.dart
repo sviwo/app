@@ -27,8 +27,6 @@ class _LoginMainPageState
   @override
   bool isSupportSmoothTitleBar() => false;
 
-  var _isSelectedProtocol = false;
-
   @override
   bool isSupportScrollView() => true;
 
@@ -111,98 +109,6 @@ class _LoginMainPageState
                 pagePush(AppRoute.register, fullscreenDialog: true);
               },
             ),
-            SizedBox(
-              height: 20.dp,
-            ),
-            SizedBox(
-                height: 26.dp,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                        onTap: () {
-                          _isSelectedProtocol = !_isSelectedProtocol;
-                          pageRefresh(() {});
-                        },
-                        child: Container(
-                          width: 19.dp,
-                          height: double.infinity,
-                          alignment: Alignment.center,
-                          child: Container(
-                              width: 9.dp,
-                              height: 9.dp,
-                              color: Colors.white,
-                              alignment: Alignment.center,
-                              child: _isSelectedProtocol
-                                  ? Image.asset(
-                                      AppIcons.imgLoginMainProtocolSelected,
-                                      width: 7.dp,
-                                      height: 4.67.dp,
-                                    )
-                                  : null),
-                        )),
-                    Container(
-                        height: double.infinity,
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(children: [
-                            TextSpan(
-                              text: LocaleKeys.by_registering_you_agree.tr(),
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: Colors.white,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  LogUtil.d('----');
-                                  _isSelectedProtocol = !_isSelectedProtocol;
-                                  pageRefresh(() {});
-                                },
-                            ),
-                            TextSpan(
-                                text: LocaleKeys.user_agreement.tr(),
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  color: const Color(0xff36BCB3),
-                                  decoration: TextDecoration.underline,
-                                  decorationStyle: TextDecorationStyle.solid,
-                                  decorationThickness: 1,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    LogUtil.d('点击了用户协议');
-                                  }),
-                            TextSpan(
-                                text: LocaleKeys.and.tr(),
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  color: Colors.white,
-                                )),
-                            TextSpan(
-                                text: LocaleKeys.privacy_policy.tr(),
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  color: const Color(0xff36BCB3),
-                                  decoration: TextDecoration.underline,
-                                  decorationStyle: TextDecorationStyle.solid,
-                                  decorationThickness: 1,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    LogUtil.d('点击了隐私政策');
-                                    ImagePickerTool.showChooseImagePicker(
-                                      context,
-                                      completion: (type, files) {},
-                                    );
-                                  }),
-                          ]),
-                          strutStyle: const StrutStyle(
-                              forceStrutHeight: true, height: 2, leading: 0),
-                        )),
-                  ],
-                ))
           ],
         ));
   }

@@ -60,38 +60,38 @@ class LWEmpty extends StatelessWidget {
 
   _getImage() {
     if (emptyType == LWEmptyType.loadFailed) {
-      return Icon(
-        Icons.error_outline_sharp,
-        size: 200.dp,
-        color: Colors.white,
-      );
-      // return LWWidget.assetImg(
-      //   'ic_empty_load_failed.png',
-      //   width: 220,
-      //   height: 166,
+      // return Icon(
+      //   Icons.error_outline_sharp,
+      //   size: 200.dp,
+      //   color: Colors.white,
       // );
+      return LWWidget.assetSvg(
+        'ic_empty_load_failed.svg',
+        width: 220,
+        height: 220,
+      );
     } else if (emptyType == LWEmptyType.netAnomaly) {
-      return Icon(
-        Icons.forward_to_inbox_sharp,
-        size: 200.dp,
-        color: Colors.white,
-      );
-      // return LWWidget.assetImg(
-      //   'ic_empty_network_anomaly.png',
-      //   width: 220,
-      //   height: 167,
+      // return Icon(
+      //   Icons.forward_to_inbox_sharp,
+      //   size: 200.dp,
+      //   color: Colors.white,
       // );
+      return LWWidget.assetSvg(
+        'ic_empty_network_anomaly.svg',
+        width: 220,
+        height: 220,
+      );
     }
-    return Icon(
-      Icons.no_adult_content,
-      size: 200.dp,
-      color: Colors.white,
-    );
-    // return LWWidget.assetImg(
-    //   'ic_empty_not_data.png',
-    //   width: 220,
-    //   height: 156,
+    // return Icon(
+    //   Icons.no_adult_content,
+    //   size: 200.dp,
+    //   color: Colors.white,
     // );
+    return LWWidget.assetSvg(
+      'ic_empty_not_data.svg',
+      width: 220,
+      height: 220,
+    );
   }
 
   _getButton() {

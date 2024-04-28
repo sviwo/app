@@ -242,7 +242,7 @@ abstract class BaseMvvmPageState<T extends BaseMvvmPage,
 
     stateMsg = null;
     pageState = PageState.content;
-    LogUtil.d("============$runtimeType");
+    // LogUtil.d("============$runtimeType");
     viewModel.release();
   }
 

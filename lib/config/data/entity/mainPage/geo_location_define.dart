@@ -13,10 +13,9 @@ class GeoLocationDefine {
   @JsonKey(fromJson: LWObject.dynamicToDouble)
   double? longitude;
 
-  GeoLocationDefine({
-    this.latitude,
-    this.longitude,
-  });
+  String? locationString;
+
+  GeoLocationDefine({this.latitude, this.longitude, this.locationString});
 
   factory GeoLocationDefine.fromJson(Map<String, dynamic> srcJson) =>
       _$GeoLocationDefineFromJson(srcJson);

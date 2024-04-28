@@ -2,6 +2,8 @@
     "sign_in_now": "立即登录",
     "user_register": "用户注册",
     "by_registering_you_agree": "注册即代表您同意",
+    "by_login_you_agree": "登录即代表您同意",
+    "agree_regist_or_login_tips":"请先阅读并同意用户协议和隐私政策",
     "user_agreement":"《用户协议》",
     "and":"和",
     "privacy_policy":"《隐私政策》",
@@ -156,5 +158,10 @@
     "remove_car_key":"移除",
     "sure_want_to_delete_car_key":"确定删除这个车钥匙吗？",
     "remove_car_back_key":"返回",
-    "illegal_operation":"非法操作"
+    "illegal_operation":"非法操作",
+    "towards":"前往",
+    "nearby":"附近",
+    "google_map_not_installed":"本机未安装谷歌地图",
+    "geographical_distance":"距离",
+    "no_map_destination_tips":"请搜索并在列表中选择终点"
 }

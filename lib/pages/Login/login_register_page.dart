@@ -7,6 +7,7 @@ import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -30,7 +31,7 @@ class _LoginRegisterPageState
   @override
   Widget? headerBackgroundWidget() {
     return Image.asset(
-      AppIcons.imgLoginBg,
+      AppIcons.imgCommonBgDownStar,
       fit: BoxFit.cover,
     );
   }
@@ -128,6 +129,7 @@ class _LoginRegisterPageState
             height: 58.dp,
           ),
           _buildNextButton(isInputAll),
+          _buildPolicyItems()
         ],
       ),
     );
@@ -313,6 +315,103 @@ class _LoginRegisterPageState
         FocusManager.instance.primaryFocus?.unfocus();
         viewModel.submmit();
       },
+    );
+  }
+
+  Widget _buildPolicyItems() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20.dp,
+        ),
+        SizedBox(
+            height: 26.dp,
+            child: Center(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                    onTap: () {
+                      viewModel.isSelectedProtocol =
+                          !viewModel.isSelectedProtocol;
+                      pageRefresh(() {});
+                    },
+                    child: Container(
+                      width: 19.dp,
+                      height: double.infinity,
+                      alignment: Alignment.center,
+                      child: Container(
+                          width: 9.dp,
+                          height: 9.dp,
+                          color: Colors.white,
+                          alignment: Alignment.center,
+                          child: viewModel.isSelectedProtocol
+                              ? Image.asset(
+                                  AppIcons.imgLoginMainProtocolSelected,
+                                  width: 7.dp,
+                                  height: 4.67.dp,
+                                )
+                              : null),
+                    )),
+                Container(
+                    height: double.infinity,
+                    alignment: Alignment.center,
+                    child: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: LocaleKeys.by_registering_you_agree.tr(),
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            color: Colors.white,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              viewModel.isSelectedProtocol =
+                                  !viewModel.isSelectedProtocol;
+                              pageRefresh(() {});
+                            },
+                        ),
+                        TextSpan(
+                            text: LocaleKeys.user_agreement.tr(),
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: const Color(0xff36BCB3),
+                              decoration: TextDecoration.underline,
+                              decorationStyle: TextDecorationStyle.solid,
+                              decorationThickness: 1,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                LogUtil.d('点击了用户协议');
+                              }),
+                        TextSpan(
+                            text: LocaleKeys.and.tr(),
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: Colors.white,
+                            )),
+                        TextSpan(
+                            text: LocaleKeys.privacy_policy.tr(),
+                            style: TextStyle(
+                              fontSize: 10.sp,
+                              color: const Color(0xff36BCB3),
+                              decoration: TextDecoration.underline,
+                              decorationStyle: TextDecorationStyle.solid,
+                              decorationThickness: 1,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                LogUtil.d('点击了隐私政策');
+                              }),
+                      ]),
+                      strutStyle: const StrutStyle(
+                          forceStrutHeight: true, height: 2, leading: 0),
+                    )),
+              ],
+            )))
+      ],
     );
   }
 }
