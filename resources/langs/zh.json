@@ -163,5 +163,6 @@
     "nearby":"附近",
     "google_map_not_installed":"本机未安装谷歌地图",
     "geographical_distance":"距离",
-    "no_map_destination_tips":"请搜索并在列表中选择终点"
+    "no_map_destination_tips":"请搜索并在列表中选择终点",
+    "nearby_devices":"附近设备"
 }

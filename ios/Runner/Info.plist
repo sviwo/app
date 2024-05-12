@@ -46,13 +46,13 @@
 		<true/>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>获取蓝牙权限</string>
+	<string>App needs Bluetooth access to connect to devices.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>获取蓝牙权限</string>
+	<string>Need Bluetooth permission to connect to peripherals.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>应用将访问你相机获取上传图片</string>
+	<string>应用将访问你相机扫一扫或拍照</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>应用使用时开启定位获取楼宇坐标位置</string>
+	<string>应用使用时开启定位获取坐标位置</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>始终开启定位获取坐标位置</string>
 	<key>NSLocationUsageDescription</key>
@@ -77,9 +77,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-    <string>App needs Bluetooth access to connect to devices.</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>Need Bluetooth permission to connect to peripherals.</string>
 </dict>
 </plist>

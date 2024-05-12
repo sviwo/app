@@ -178,7 +178,7 @@ abstract class LocaleKeys {
   static const sure_want_to_delete_car_key = "sure_want_to_delete_car_key";
   static const illegal_operation = "illegal_operation";
   static const no_map_destination_tips = "no_map_destination_tips";
-// static const  = "";
+  static const nearby_devices = "nearby_devices";
 // static const  = "";
 // static const  = "";
 // static const  = "";

@@ -481,6 +481,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
+                  pagePush(AppRoute.bluetoothDevicesPage);
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(

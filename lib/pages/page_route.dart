@@ -6,6 +6,7 @@ import 'package:atv/pages/Login/login_register_page.dart';
 import 'package:atv/pages/MainPage/energy_model_page.dart';
 import 'package:atv/pages/MainPage/main_page.dart';
 import 'package:atv/pages/MainPage/map_navi_page.dart';
+import 'package:atv/pages/MainPage/nearby_bluetooth_device_page.dart';
 import 'package:atv/pages/MainPage/remote_control_page.dart';
 import 'package:atv/pages/MainPage/safety_info_page.dart';
 import 'package:atv/pages/MainPage/service_info_page.dart';
@@ -95,4 +96,7 @@ void globalRegisterRoutes() {
 
   /// 地图页
   RouteManager.instance.registerRoute(AppRoute.mapNavi, () => MapNaviPage());
+
+  /// 地图页
+  RouteManager.instance.registerRoute(AppRoute.bluetoothDevicesPage, () => NearByBluetoothDevicesPage());
 }
