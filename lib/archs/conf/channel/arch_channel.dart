@@ -43,7 +43,7 @@ class ArchChannel {
     if (LWArch.mixDevelop) {
       return _common.invokeMethod(methodName, params);
     } else {
-      LWToast.show('纯Flutter项目，不支持原生调用(sendNative)');
+      // LWToast.show('纯Flutter项目，不支持原生调用(sendNative)');
       return Future(() => null);
     }
   }

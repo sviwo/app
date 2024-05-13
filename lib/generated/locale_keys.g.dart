@@ -179,8 +179,8 @@ abstract class LocaleKeys {
   static const illegal_operation = "illegal_operation";
   static const no_map_destination_tips = "no_map_destination_tips";
   static const nearby_devices = "nearby_devices";
-// static const  = "";
-// static const  = "";
+  static const scan_code = "scan_code";
+  static const qrcode_format_error_tips = "qrcode_format_error_tips";
 // static const  = "";
 // static const  = "";
 // static const  = "";

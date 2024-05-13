@@ -115,6 +115,7 @@ abstract class BasePageState<T extends BasePage> extends State<T> {
       // Navigator.of(context).popUntil((route) => route.settings.name == '/');
 
       LogUtil.d('pagePop: sendNative, ${toString()}');
+      // LogUtil.d('+++++++++++++++++++++=1111111');
       ArchChannel.sendNative(ArchChannelMsgSend.commonNativePop,
           params: resultParams);
     }

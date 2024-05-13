@@ -9,6 +9,7 @@ import 'package:atv/pages/MainPage/map_navi_page.dart';
 import 'package:atv/pages/MainPage/nearby_bluetooth_device_page.dart';
 import 'package:atv/pages/MainPage/remote_control_page.dart';
 import 'package:atv/pages/MainPage/safety_info_page.dart';
+import 'package:atv/pages/MainPage/scan_code_page.dart';
 import 'package:atv/pages/MainPage/service_info_page.dart';
 import 'package:atv/pages/MainPage/trip_recorder_page.dart';
 import 'package:atv/pages/MainPage/upgrade_info_page.dart';
@@ -21,6 +22,7 @@ import 'package:atv/pages/Mine/multi_language_page.dart';
 import 'package:atv/pages/Login/reset_password_page.dart';
 import 'package:atv/pages/Mine/user_info_edit_page.dart';
 import 'package:atv/pages/Mine/user_info_page.dart';
+import 'package:flutter/material.dart';
 
 void globalRegisterRoutes() {
   /// 登录主页
@@ -97,6 +99,11 @@ void globalRegisterRoutes() {
   /// 地图页
   RouteManager.instance.registerRoute(AppRoute.mapNavi, () => MapNaviPage());
 
-  /// 地图页
-  RouteManager.instance.registerRoute(AppRoute.bluetoothDevicesPage, () => NearByBluetoothDevicesPage());
+  /// 蓝牙列表页
+  RouteManager.instance.registerRoute(
+      AppRoute.bluetoothDevicesPage, () => NearByBluetoothDevicesPage());
+
+  /// 扫一扫页面
+  RouteManager.instance
+      .registerRoute(AppRoute.scanQrCodePage, () => ScanCodePage());
 }
