@@ -39,8 +39,21 @@ class _VehicleConditionInformationPageState extends BaseMvvmPageState<
     var placeHodler = '-';
     return Column(
       children: [
+        // SizedBox(
+        //   height: 250.dp,
+        // ),
         SizedBox(
-          height: 250.dp,
+          height: 40.dp,
+        ),
+        Center(
+          child: Image.asset(
+            AppIcons.imgMainPageCarIcon,
+            width: 203.dp,
+            height: 158.dp,
+          ),
+        ),
+        SizedBox(
+          height: 70.dp,
         ),
         _buildRowItem(LocaleKeys.vehicle_name.tr(),
             viewModel.dataModel?.nickname ?? placeHodler),

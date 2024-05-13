@@ -77,12 +77,12 @@ class MinePageViewModel extends BaseViewModel {
     };
     return map[currentLauguage];
   }
-
-  final List<String> productImageUrls = [
-    'https://pics2.baidu.com/feed/9922720e0cf3d7cae34495d5a83b0e046a63a991.jpeg@f_auto?token=e07c40ef947d14020572427f40fb8603',
-    'https://pics0.baidu.com/feed/7af40ad162d9f2d364fc170294c83a1e6227cc1b.jpeg@f_auto?token=a25a3e922eefd55bfb6253c399ea00df',
-    'https://pics6.baidu.com/feed/8d5494eef01f3a29070a9f34a4010c3c5d607c3f.jpeg@f_auto?token=35ad6360b103f077d32f372000c92b70',
+  final List<String> productImageNames = [
+    AppIcons.imgMinePageCarIcon,
+    AppIcons.imgMinePageChargingIcon,
+    AppIcons.imgMinePageMallIcon
   ];
+
   final List<String> productTitles = [
     LocaleKeys.vehicle.tr(),
     LocaleKeys.charge.tr(),

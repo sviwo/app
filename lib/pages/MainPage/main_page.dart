@@ -378,7 +378,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
 
   Widget _buildCar() {
     return SizedBox(
-      height: 165.dp,
+      height: 158.dp,
       child: Center(
         child: Image.asset(
           AppIcons.imgMainPageCarIcon,

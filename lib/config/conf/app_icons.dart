@@ -130,6 +130,10 @@ class AppIcons {
       'assets/images/mine_page_language_icon.png';
   static const String imgMinePageAC = 'assets/images/mine_page_ac_icon.png';
   static const String imgMinePageQuit = 'assets/images/mine_page_quit_icon.png';
+  static const String imgMinePageCarIcon = 'assets/images/mine_car_icon.png';
+  static const String imgMinePageChargingIcon =
+      'assets/images/mine_charging_icon.png';
+  static const String imgMinePageMallIcon = 'assets/images/mine_mall_icon.png';
 
   /// 账户
   static const String imgAccountContactIcon =

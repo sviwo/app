@@ -7,20 +7,15 @@ import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/config/data/entity/vehicle/vehicle_list_model.dart';
 import 'package:atv/generated/locale_keys.g.dart';
-import 'package:atv/main.dart';
 import 'package:atv/pages/Mine/viewModel/mine_page_view_model.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/complex/file/lw_image_loader.dart';
-import 'package:atv/widgetLibrary/complex/titleBar/lw_title_bar.dart';
-import 'package:atv/widgetLibrary/form/lw_form_text_multiple.dart';
 import 'package:atv/widgetLibrary/form/ui_form_label.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
 
 class MinePage extends BaseMvvmPage {
   @override
@@ -449,12 +444,8 @@ class _MinePageState
                         child: Stack(
                           fit: StackFit.loose,
                           children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(7.5.dp),
-                                child: LWImageLoader.network(
-                                    imageUrl: viewModel.productImageUrls[index],
-                                    width: 171.33.dp,
-                                    height: 87.03.dp)),
+                            Image.asset(viewModel.productImageNames[index],
+                                width: 166.33.dp, height: 84.33.dp),
                             Positioned(
                               left: 14.dp,
                               top: 16.dp,
