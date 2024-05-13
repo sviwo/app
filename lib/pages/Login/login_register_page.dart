@@ -1,6 +1,7 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
+import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModel/register_view_model.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
@@ -385,6 +386,13 @@ class _LoginRegisterPageState
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 LogUtil.d('点击了用户协议');
+                                viewModel.requestMediaData(
+                                  type: 0,
+                                  callback: (p0) {
+                                    pagePush(AppRoute.webPage,
+                                        params: p0?.toJson());
+                                  },
+                                );
                               }),
                         TextSpan(
                             text: LocaleKeys.and.tr(),
@@ -404,6 +412,13 @@ class _LoginRegisterPageState
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 LogUtil.d('点击了隐私政策');
+                                viewModel.requestMediaData(
+                                  type: 1,
+                                  callback: (p0) {
+                                    pagePush(AppRoute.webPage,
+                                        params: p0?.toJson());
+                                  },
+                                );
                               }),
                       ]),
                       strutStyle: const StrutStyle(

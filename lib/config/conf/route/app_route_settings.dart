@@ -70,4 +70,7 @@ class AppRoute {
 
   /// 扫一扫页面
   static const String scanQrCodePage = '/home/scanQrCode';
+
+  /// web页面
+  static const String webPage = '/home/webPage';
 }

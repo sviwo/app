@@ -103,8 +103,7 @@ class RegisterViewModel extends BaseViewModel {
   }
 
   /// 0表示用户协议 1表示隐私政策  苟架构表示已经严格排序
-  void requestMediaData(
-      {int type = 0, Function(int, String?)? callback}) async {
+  void requestMediaData({int type = 0, Function(MediaTree?)? callback}) async {
     if (treeData.isEmpty) {
       await requestData();
     }
@@ -115,21 +114,29 @@ class RegisterViewModel extends BaseViewModel {
     if (data.displayType == 1) {
       // 跳转外链
       if (callback != null) {
-        callback(1, data.content);
+        callback(data);
       }
     } else if (data.displayType == 0) {
       // 加载html字符串
       // 获取html内容
-      await loadApiData<MediaContent>(
-        ApiPublic.getHttpPageContent(data.id ?? ''),
-        showLoading: true,
-        handlePageState: false,
-        dataSuccess: (data1) {
-          if (callback != null) {
-            callback(0, data1.content);
-          }
-        },
-      );
+      if (data.content?.isNotEmpty == true) {
+        //已经获取过存进来了，就不用再请求接口了
+        if (callback != null) {
+          callback(data);
+        }
+      } else {
+        await loadApiData<MediaContent>(
+          ApiPublic.getHttpPageContent(data.id ?? ''),
+          showLoading: true,
+          handlePageState: false,
+          dataSuccess: (data1) {
+            data.content = data1.content;
+            if (callback != null) {
+              callback(data);
+            }
+          },
+        );
+      }
     }
   }
 

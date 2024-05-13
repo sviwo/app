@@ -20,6 +20,7 @@ import 'package:atv/pages/Mine/help_info_page.dart';
 import 'package:atv/pages/Mine/mine_page.dart';
 import 'package:atv/pages/Mine/multi_language_page.dart';
 import 'package:atv/pages/Login/reset_password_page.dart';
+import 'package:atv/pages/Mine/unitive_webview_page.dart';
 import 'package:atv/pages/Mine/user_info_edit_page.dart';
 import 'package:atv/pages/Mine/user_info_page.dart';
 import 'package:flutter/material.dart';
@@ -106,4 +107,8 @@ void globalRegisterRoutes() {
   /// 扫一扫页面
   RouteManager.instance
       .registerRoute(AppRoute.scanQrCodePage, () => ScanCodePage());
+
+  /// web页面
+  RouteManager.instance
+      .registerRoute(AppRoute.webPage, () => UnitiveWebViewPage());
 }

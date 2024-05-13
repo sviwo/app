@@ -286,12 +286,9 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
                                 LogUtil.d('点击了用户协议');
                                 viewModel.requestMediaData(
                                   type: 0,
-                                  callback: (p0, p1) {
-                                    if (p0 == 1) {
-                                      //跳url外链
-                                    } else if (p0 == 0) {
-                                      //跳加载html
-                                    }
+                                  callback: (p0) {
+                                    pagePush(AppRoute.webPage,
+                                        params: p0?.toJson());
                                   },
                                 );
                               }),
@@ -315,12 +312,9 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
                                 LogUtil.d('点击了隐私政策');
                                 viewModel.requestMediaData(
                                   type: 1,
-                                  callback: (p0, p1) {
-                                    if (p0 == 1) {
-                                      //跳url外链
-                                    } else if (p0 == 0) {
-                                      //跳加载html
-                                    }
+                                  callback: (p0) {
+                                    pagePush(AppRoute.webPage,
+                                        params: p0?.toJson());
                                   },
                                 );
                               }),

@@ -50,6 +50,8 @@ class _HelpInfoPageState
     );
   }
 
+  
+
   Widget _buildAlertRow() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 40.dp, vertical: 10.dp),
