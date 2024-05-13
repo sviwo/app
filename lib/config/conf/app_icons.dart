@@ -91,8 +91,6 @@ class AppIcons {
       'assets/images/trip_recorder_location_icon.png';
 
   /// 安全性
-  static const String imgSafetyCarIcon =
-      'assets/images/safety_page_car_icon.png';
   static const String imgSafetySpeedLimitIcon =
       'assets/images/safety_speed_limit_icon.png';
   static const String imgSafetyLockIcon =

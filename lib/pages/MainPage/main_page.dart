@@ -382,8 +382,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
       child: Center(
         child: Image.asset(
           AppIcons.imgMainPageCarIcon,
-          width: 212.dp,
-          height: 165.dp,
+          width: 203.dp,
+          height: 158.dp,
         ),
       ),
     );

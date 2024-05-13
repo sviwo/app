@@ -47,9 +47,9 @@ class _SafetyInfoPageState
         ),
         Center(
           child: Image.asset(
-            AppIcons.imgSafetyCarIcon,
-            width: 212.dp,
-            height: 164.5.dp,
+            AppIcons.imgMainPageCarIcon,
+            width: 203.dp,
+            height: 158.dp,
           ),
         ),
         SizedBox(
