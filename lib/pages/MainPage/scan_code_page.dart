@@ -101,9 +101,7 @@ class _ScanCodePageState
 
   _handleBarcode(BarcodeCapture barcodes) {
     if (mounted) {
-      setState(() {
-        _barcode = barcodes.barcodes.firstOrNull;
-      });
+      _barcode = barcodes.barcodes.firstOrNull;
     }
   }
 
