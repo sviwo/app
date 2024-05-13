@@ -29,6 +29,7 @@ Depends on all your plugins, and provides a function to register them.
   s.dependency 'image_cropper'
   s.dependency 'image_picker_ios'
   s.dependency 'map_launcher'
+  s.dependency 'mobile_scanner'
   s.dependency 'package_info'
   s.dependency 'package_info_plus'
   s.dependency 'permission_handler_apple'

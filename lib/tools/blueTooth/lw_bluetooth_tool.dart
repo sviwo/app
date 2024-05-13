@@ -1,6 +1,11 @@
-
-
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
+class ttt {
+  void ddddd() {
+    MobileScannerController(autoStart: true);
+  }
+}
 
 // class ScanDevice {
 //   static const int SCAN_TIMEOUT = 10000;

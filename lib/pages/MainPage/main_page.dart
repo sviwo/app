@@ -46,6 +46,11 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
+            pagePush(AppRoute.scanQrCodePage, callback: (data) {
+              if (data != null && data is Map<String, dynamic>) {
+                var codeString = data['code'];
+              }
+            });
           },
           child: Center(
             child: Image.asset(
@@ -481,6 +486,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
+                  pagePush(AppRoute.bluetoothDevicesPage);
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(

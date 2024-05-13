@@ -64,4 +64,10 @@ class AppRoute {
 
   /// 地图页面
   static const String mapNavi = '/home/mapNavi';
+
+  /// 蓝牙设备列表页面
+  static const String bluetoothDevicesPage = '/home/bluetoothDevices';
+
+  /// 扫一扫页面
+  static const String scanQrCodePage = '/home/scanQrCode';
 }

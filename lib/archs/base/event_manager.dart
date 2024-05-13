@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:atv/archs/utils/log_util.dart';
+
 import '../lw_arch.dart';
 import 'event_bus.dart';
 import '../conf/channel/arch_channel.dart';
+
 class EventManager {
   EventManager._internal();
 
@@ -17,10 +20,10 @@ class EventManager {
   static void post(eventName, {Map<String, dynamic>? data}) {
     // 事件直接分发给本flutterEngine内的页面
     EventBus.instance().post(eventName, data);
-
     // 事件通过channel分发给native和其他flutterEngine
     if (LWArch.mixDevelop) {
-      ArchChannel.sendEvent(eventName, data: data == null ? null : jsonEncode(data));
+      ArchChannel.sendEvent(eventName,
+          data: data == null ? null : jsonEncode(data));
     }
   }
 }
