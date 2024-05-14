@@ -62,7 +62,7 @@ class HomePageModel {
   String? bluetoothAddress;
 
   /// 蓝牙握手秘钥
-  String? bluetoothSecrectKey;
+  String? bluetoothSecretKey;
 
   HomePageModel(
       {this.nickname,
@@ -81,7 +81,7 @@ class HomePageModel {
       this.version = const [],
       this.servicePhone,
       this.bluetoothAddress,
-      this.bluetoothSecrectKey});
+      this.bluetoothSecretKey});
 
   factory HomePageModel.fromJson(Map<String, dynamic> srcJson) =>
       _$HomePageModelFromJson(srcJson);

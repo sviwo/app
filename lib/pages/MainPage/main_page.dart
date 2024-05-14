@@ -225,7 +225,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 var bluetoothAddress =
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
-                    viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                    viewModel.dataModel?.bluetoothSecretKey ?? '';
               }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
@@ -515,7 +515,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
-                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                        viewModel.dataModel?.bluetoothSecretKey ?? '';
                   }
                 },
                 iconSize: 41.dp,
@@ -541,7 +541,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
-                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                        viewModel.dataModel?.bluetoothSecretKey ?? '';
                   }
                 },
                 iconSize: 41.dp,
@@ -567,7 +567,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
-                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                        viewModel.dataModel?.bluetoothSecretKey ?? '';
                   }
                 },
                 iconSize: 41.dp,

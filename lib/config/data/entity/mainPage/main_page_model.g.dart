@@ -36,7 +36,7 @@ HomePageModel _$HomePageModelFromJson(Map<String, dynamic> json) =>
           [],
       servicePhone: json['servicePhone'] as String?,
       bluetoothAddress: json['bluetoothAddress'] as String?,
-      bluetoothSecrectKey: json['bluetoothSecrectKey'] as String?,
+      bluetoothSecretKey: json['bluetoothSecretKey'] as String?,
     );
 
 Map<String, dynamic> _$HomePageModelToJson(HomePageModel instance) =>
@@ -57,7 +57,7 @@ Map<String, dynamic> _$HomePageModelToJson(HomePageModel instance) =>
       'version': instance.version.map((e) => e.toJson()).toList(),
       'servicePhone': instance.servicePhone,
       'bluetoothAddress': instance.bluetoothAddress,
-      'bluetoothSecrectKey': instance.bluetoothSecrectKey,
+      'bluetoothSecretKey': instance.bluetoothSecretKey,
     };
 
 HomePageVersion _$HomePageVersionFromJson(Map<String, dynamic> json) =>

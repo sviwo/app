@@ -63,6 +63,20 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     );
   }
 
+  /// 通知服务器车辆注册成功
+  notifyDeviceRegistSuccess({VoidCallback? callback}) {
+    loadApiData(
+      ApiDevice.vehicleRegisterSuccess(deviceName),
+      handlePageState: false,
+      showLoading: true,
+      voidSuccess: () {
+        if (callback != null) {
+          callback();
+        }
+      },
+    );
+  }
+
   @override
   void initialize(args) {
     // TODO: implement initialize
