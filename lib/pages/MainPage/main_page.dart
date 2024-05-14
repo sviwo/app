@@ -49,6 +49,14 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             pagePush(AppRoute.scanQrCodePage, callback: (data) {
               if (data != null && data is Map<String, dynamic>) {
                 var codeString = data['code'];
+                viewModel.checkDeviceName(
+                  deviceName: codeString,
+                  callback: () {
+                    // 车架号后台初验通过，跳转蓝牙列表页面
+                    pagePush(AppRoute.bluetoothDevicesPage,
+                        params: {'deviceName': codeString});
+                  },
+                );
               }
             });
           },
@@ -207,7 +215,18 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           ),
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
-              pagePush(AppRoute.remoteControl);
+              //YGTODO: 判断蓝牙是否已经连接了车辆
+              var isConnectBluetooth = false;
+              if (isConnectBluetooth) {
+                //跳转到控制器页面
+                pagePush(AppRoute.remoteControl);
+              } else {
+                //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
+                var bluetoothAddress =
+                    viewModel.dataModel?.bluetoothAddress ?? '';
+                var bluetoothSecrectKey =
+                    viewModel.dataModel?.bluetoothSecrectKey ?? '';
+              }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
               LWToast.show(
@@ -298,7 +317,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             height: 19.dp,
           ),
           callback: () {
-            pagePush(AppRoute.serviceInfo);
+            pagePush(AppRoute.serviceInfo,
+                params: {'servicePhone': viewModel.dataModel?.servicePhone});
           },
         ),
         _buildItem(
@@ -486,7 +506,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
-                  pagePush(AppRoute.bluetoothDevicesPage);
+                  //YGTODO: 判断蓝牙是否已经连接了车辆
+                  var isConnectBluetooth = false;
+                  if (isConnectBluetooth) {
+                    //YGTODO: 控制蓝牙去解锁
+                  } else {
+                    //YGTODO: 去连接蓝牙，走快速连接流程
+                    var bluetoothAddress =
+                        viewModel.dataModel?.bluetoothAddress ?? '';
+                    var bluetoothSecrectKey =
+                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                  }
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(
@@ -502,7 +532,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了喇叭图标');
-                  viewModel.controlVehicle(1);
+                  //YGTODO: 判断蓝牙是否已经连接了车辆
+                  var isConnectBluetooth = false;
+                  if (isConnectBluetooth) {
+                    //YGTODO: 控制蓝牙响喇叭
+                  } else {
+                    //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
+                    var bluetoothAddress =
+                        viewModel.dataModel?.bluetoothAddress ?? '';
+                    var bluetoothSecrectKey =
+                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                  }
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(
@@ -518,7 +558,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了灯光图标');
-                  viewModel.controlVehicle(0);
+                  //YGTODO: 判断蓝牙是否已经连接了车辆
+                  var isConnectBluetooth = false;
+                  if (isConnectBluetooth) {
+                    //YGTODO: 控制蓝牙响车灯
+                  } else {
+                    //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
+                    var bluetoothAddress =
+                        viewModel.dataModel?.bluetoothAddress ?? '';
+                    var bluetoothSecrectKey =
+                        viewModel.dataModel?.bluetoothSecrectKey ?? '';
+                  }
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(

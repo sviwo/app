@@ -7,7 +7,9 @@ import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/data/entity/mainPage/main_page_model.dart';
+import 'package:atv/config/net/api_device_.dart';
 import 'package:atv/config/net/api_home_page.dart';
+import 'package:atv/config/net/api_public.dart';
 import 'package:atv/config/net/api_vehicle.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/tools/map/lw_map_tool.dart';
@@ -163,6 +165,20 @@ class MainPageViewModel extends BaseViewModel {
       handlePageState: false,
       showLoading: true,
       voidSuccess: () {},
+    );
+  }
+
+  /// 车辆绑定前置判断车架号是否合法
+  checkDeviceName({String deviceName = '', VoidCallback? callback}) {
+    loadApiData(
+      ApiDevice.checkVehicleRegisterValid(deviceName),
+      handlePageState: false,
+      showLoading: true,
+      voidSuccess: () {
+        if (callback != null) {
+          callback();
+        }
+      },
     );
   }
 }

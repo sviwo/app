@@ -92,6 +92,7 @@ class _RemoteControlPageState
                       width: 18.7.dp,
                       height: 8.dp,
                     ),
+                    //YGTODO: 剩余电量，从设备获取
                     '30',
                     '%',
                     LocaleKeys.remaining_battery.tr()),
@@ -101,6 +102,7 @@ class _RemoteControlPageState
                       width: 17.7.dp,
                       height: 15.3.dp,
                     ),
+                    //YGTODO: 运行速度，从设备获取
                     '36',
                     'km/h',
                     LocaleKeys.speed.tr()),
@@ -120,6 +122,7 @@ class _RemoteControlPageState
                       width: 9.dp,
                       height: 22.dp,
                     ),
+                    //YGTODO: 剩余里程，从设备获取
                     '99',
                     'km',
                     LocaleKeys.remaining_mileage.tr()),
@@ -129,6 +132,7 @@ class _RemoteControlPageState
                       width: 12.3.dp,
                       height: 21.dp,
                     ),
+                    //YGTODO: 遥控距离，从设备获取
                     '9',
                     'm',
                     LocaleKeys.remote_control_distance.tr()),
@@ -146,6 +150,7 @@ class _RemoteControlPageState
           ),
           onTap: () {
             LogUtil.d('点击了向前');
+            //YGTODO: 蓝牙控制向前
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
@@ -166,6 +171,7 @@ class _RemoteControlPageState
           )),
           onTap: () {
             LogUtil.d('点击了向后');
+            //YGTODO: 蓝牙控制向后
           },
           onLongPress: () {
             LogUtil.d('长按了向后');
@@ -187,7 +193,8 @@ class _RemoteControlPageState
                         viewModel.bornIsOn = !(viewModel.bornIsOn);
                       });
                       LogUtil.d('点击了喇叭图标');
-                      viewModel.controlVehicle(1);
+                      //YGTODO: 蓝牙控制喇叭
+                      // viewModel.controlVehicle(1);
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlHorn,
@@ -207,7 +214,8 @@ class _RemoteControlPageState
                         viewModel.lightIsOn = !(viewModel.lightIsOn);
                       });
                       LogUtil.d('点击了灯光图标');
-                      viewModel.controlVehicle(0);
+                      //YGTODO: 蓝牙控制灯光
+                      // viewModel.controlVehicle(0);
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlLight,

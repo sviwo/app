@@ -55,22 +55,33 @@ class HomePageModel {
   @JsonKey(defaultValue: [])
   List<HomePageVersion> version;
 
-  HomePageModel({
-    this.nickname,
-    this.remainMile = 0,
-    this.electricity = 0,
-    this.batteryStatus = false,
-    this.lockedStatus = false,
-    this.geoLocation,
-    this.isHavingCar = false,
-    this.userDeviceType,
-    this.authStatus,
-    this.mobileKey,
-    this.speedLimit,
-    this.drivingMode,
-    this.energyRecovery,
-    this.version = const [],
-  });
+  /// 服务电话号码
+  String? servicePhone;
+
+  /// 蓝牙mac地址
+  String? bluetoothAddress;
+
+  /// 蓝牙握手秘钥
+  String? bluetoothSecrectKey;
+
+  HomePageModel(
+      {this.nickname,
+      this.remainMile = 0,
+      this.electricity = 0,
+      this.batteryStatus = false,
+      this.lockedStatus = false,
+      this.geoLocation,
+      this.isHavingCar = false,
+      this.userDeviceType,
+      this.authStatus,
+      this.mobileKey,
+      this.speedLimit,
+      this.drivingMode,
+      this.energyRecovery,
+      this.version = const [],
+      this.servicePhone,
+      this.bluetoothAddress,
+      this.bluetoothSecrectKey});
 
   factory HomePageModel.fromJson(Map<String, dynamic> srcJson) =>
       _$HomePageModelFromJson(srcJson);

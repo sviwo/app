@@ -60,7 +60,7 @@ class _NearByBluetoothDevicesPageState extends BaseMvvmPageState<
                 // shrinkWrap: true,
                 // physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
-                  var string = viewModel.deviceNames[index];
+                  var string = viewModel.peripherals[index];
                   var isCurrent = viewModel.isCurrent(string);
                   return InkWell(
                       onTap: () {
@@ -101,7 +101,7 @@ class _NearByBluetoothDevicesPageState extends BaseMvvmPageState<
                     height: 1.dp,
                   );
                 },
-                itemCount: viewModel.deviceNames.length))
+                itemCount: viewModel.peripherals.length))
       ],
     );
   }

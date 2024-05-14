@@ -5,8 +5,9 @@ import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class RemoteControlPageViewModel extends BaseViewModel {
+  //YGTODO: 这个标识 如果蓝牙断开  需要把它设置为false
   /// 蓝牙是否连接
-  bool blueToothIsConnected = false;
+  bool blueToothIsConnected = true;
 
   /// 喇叭是否打开
   bool bornIsOn = false;
