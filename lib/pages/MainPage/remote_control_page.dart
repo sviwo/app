@@ -8,6 +8,7 @@ import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 
 class RemoteControlPage extends BaseMvvmPage {
   @override
@@ -93,7 +94,7 @@ class _RemoteControlPageState
                       height: 8.dp,
                     ),
                     //YGTODO: 剩余电量，从设备获取
-                    '30',
+                    BlueToothUtil.getInstance().getBattery(),
                     '%',
                     LocaleKeys.remaining_battery.tr()),
                 _buildInfoItem(
@@ -103,7 +104,7 @@ class _RemoteControlPageState
                       height: 15.3.dp,
                     ),
                     //YGTODO: 运行速度，从设备获取
-                    '36',
+                    BlueToothUtil.getInstance().getSpeed(),
                     'km/h',
                     LocaleKeys.speed.tr()),
               ],
@@ -123,7 +124,7 @@ class _RemoteControlPageState
                       height: 22.dp,
                     ),
                     //YGTODO: 剩余里程，从设备获取
-                    '99',
+                    BlueToothUtil.getInstance().getEndurance(),
                     'km',
                     LocaleKeys.remaining_mileage.tr()),
                 _buildInfoItem(
@@ -133,7 +134,7 @@ class _RemoteControlPageState
                       height: 21.dp,
                     ),
                     //YGTODO: 遥控距离，从设备获取
-                    '9',
+                    BlueToothUtil.getInstance().getControllerDistance(),
                     'm',
                     LocaleKeys.remote_control_distance.tr()),
               ],
@@ -151,6 +152,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向前');
             //YGTODO: 蓝牙控制向前
+            BlueToothUtil.getInstance().controllerForward();
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
@@ -172,6 +174,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向后');
             //YGTODO: 蓝牙控制向后
+            BlueToothUtil.getInstance().controllerBackwards();
           },
           onLongPress: () {
             LogUtil.d('长按了向后');
@@ -195,6 +198,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了喇叭图标');
                       //YGTODO: 蓝牙控制喇叭
                       // viewModel.controlVehicle(1);
+                      BlueToothUtil.getInstance().controllerBlueVoice();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlHorn,
@@ -216,6 +220,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了灯光图标');
                       //YGTODO: 蓝牙控制灯光
                       // viewModel.controlVehicle(0);
+                      BlueToothUtil.getInstance().controllerBlueLight();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlLight,
