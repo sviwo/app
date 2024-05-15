@@ -16,6 +16,7 @@ import 'package:atv/pages/MainPage/upgrade_info_page.dart';
 import 'package:atv/pages/MainPage/vehicle_condition_information_page.dart';
 import 'package:atv/pages/Mine/account_info_page.dart';
 import 'package:atv/pages/Mine/authentication_center_page.dart';
+import 'package:atv/pages/Mine/children_webview_page.dart';
 import 'package:atv/pages/Mine/help_info_page.dart';
 import 'package:atv/pages/Mine/mine_page.dart';
 import 'package:atv/pages/Mine/multi_language_page.dart';
@@ -111,4 +112,8 @@ void globalRegisterRoutes() {
   /// web页面
   RouteManager.instance
       .registerRoute(AppRoute.webPage, () => UnitiveWebViewPage());
+
+  /// 含多个web子页面的列表
+  RouteManager.instance
+      .registerRoute(AppRoute.childrenWebPage, () => ChildrenWebViewPage());
 }

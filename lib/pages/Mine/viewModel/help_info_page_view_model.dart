@@ -1,4 +1,5 @@
 import 'package:atv/archs/base/base_view_model.dart';
+import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/config/data/entity/common/media_content.dart';
 import 'package:atv/config/data/entity/common/media_tree.dart';
 import 'package:atv/config/net/api_public.dart';
@@ -19,37 +20,35 @@ class HelpInfoPageViewModel extends BaseViewModel {
     );
   }
 
-  /// 0表示用户协议 1表示隐私政策  苟架构表示已经严格排序
-  void requestMediaData({int type = 0, Function(MediaTree?)? callback}) async {
-    if (treeData.isEmpty) {
-      await requestData();
-    }
-    if (treeData.length <= type) {
+  /// 获取跳转链接或者内容
+  void requestMediaData(
+      {required MediaTree model, Function(MediaTree?)? callback}) async {
+    if (model.children?.isNotEmpty == true) {
+      pagePush(AppRoute.childrenWebPage, params: model.toJson());
       return;
     }
-    MediaTree data = treeData[type];
-    if (data.displayType == 1) {
+    if (model.displayType == 1) {
       // 跳转外链
       if (callback != null) {
-        callback(data);
+        callback(model);
       }
-    } else if (data.displayType == 0) {
+    } else if (model.displayType == 0) {
       // 加载html字符串
       // 获取html内容
-      if (data.content?.isNotEmpty == true) {
+      if (model.content?.isNotEmpty == true) {
         //已经获取过存进来了，就不用再请求接口了
         if (callback != null) {
-          callback(data);
+          callback(model);
         }
       } else {
         await loadApiData<MediaContent>(
-          ApiPublic.getHttpPageContent(data.id ?? ''),
+          ApiPublic.getHttpPageContent(model.id ?? ''),
           showLoading: true,
           handlePageState: false,
           dataSuccess: (data1) {
-            data.content = data1.content;
+            model.content = data1.content;
             if (callback != null) {
-              callback(data);
+              callback(model);
             }
           },
         );

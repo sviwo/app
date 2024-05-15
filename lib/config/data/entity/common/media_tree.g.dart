@@ -14,6 +14,10 @@ MediaTree _$MediaTreeFromJson(Map<String, dynamic> json) => MediaTree(
       mediaDesc: json['mediaDesc'] as String?,
       smallImg: json['smallImg'] as String?,
       content: json['content'] as String?,
+      icon: json['icon'] as String?,
+      children: (json['children'] as List<dynamic>?)
+          ?.map((e) => MediaTree.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$MediaTreeToJson(MediaTree instance) => <String, dynamic>{
@@ -24,4 +28,6 @@ Map<String, dynamic> _$MediaTreeToJson(MediaTree instance) => <String, dynamic>{
       'mediaDesc': instance.mediaDesc,
       'smallImg': instance.smallImg,
       'content': instance.content,
+      'icon': instance.icon,
+      'children': instance.children?.map((e) => e.toJson()).toList(),
     };

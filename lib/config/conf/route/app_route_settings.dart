@@ -73,4 +73,7 @@ class AppRoute {
 
   /// web页面
   static const String webPage = '/home/webPage';
+
+  /// 含多个web子项的列表
+  static const String childrenWebPage = '/home/childrenWebPage';
 }
