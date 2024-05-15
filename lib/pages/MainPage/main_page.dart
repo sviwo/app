@@ -18,6 +18,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 
 class MainPage extends BaseMvvmPage {
   @override
@@ -216,7 +217,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
               //YGTODO: 判断蓝牙是否已经连接了车辆
-              var isConnectBluetooth = false;
+              var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isConnectBluetooth) {
                 //跳转到控制器页面
                 pagePush(AppRoute.remoteControl);
@@ -226,6 +227,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
+                BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
               }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
@@ -507,15 +509,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = false;
+                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙去解锁
+                    BlueToothUtil.getInstance().controllerBlueUnLock();
                   } else {
                     //YGTODO: 去连接蓝牙，走快速连接流程
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -533,15 +537,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了喇叭图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = false;
+                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙响喇叭
+                    BlueToothUtil.getInstance().controllerBlueVoice();
                   } else {
                     //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -559,15 +565,17 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了灯光图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = false;
+                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙响车灯
+                    BlueToothUtil.getInstance().controllerBlueLight();
                   } else {
                     //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
                     var bluetoothAddress =
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,

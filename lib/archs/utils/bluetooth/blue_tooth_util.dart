@@ -78,6 +78,66 @@ class BlueToothUtil {
     return _instanceBlueToothUtil!;
   }
 
+  /// 获取蓝牙连接状态    YGTODO
+  bool getBlueConnectStatus(){
+    return _isConnecting;
+  }
+
+  /// 根据蓝牙mac和key去连接蓝牙  YGTODO
+  void speedConnectBlue(String mac,String key){
+
+  }
+
+  /// 控制蓝牙解锁   YGTODO
+  void controllerBlueUnLock(){
+
+  }
+
+  /// 控制蓝牙响喇叭   YGTODO
+  void controllerBlueVoice(){
+
+  }
+
+  /// 控制蓝牙响车灯   YGTODO
+  void controllerBlueLight(){
+
+  }
+
+  /// 剩余电量 YGTODO
+  String getBattery(){
+
+    return "";
+  }
+
+  /// 行车速度 YGTODO
+  String getSpeed(){
+
+    return "";
+  }
+
+
+  /// 剩余里程 YGTODO
+  String getEndurance(){
+
+    return "";
+  }
+
+  /// 遥控距离 YGTODO
+  String getControllerDistance(){
+
+    return "";
+  }
+
+  /// 向前  YGTODO
+  void controllerForward(){
+
+  }
+
+  /// 向后  YGTODO
+  void controllerBackwards(){
+
+  }
+
   /// 获取蓝牙是否开启 true 开启， false 关闭
   bool blueToothIsOpen() {
     return _adapterState == BluetoothAdapterState.on;
@@ -248,6 +308,7 @@ class BlueToothUtil {
       });
     }
   }
+
 
   /// 蓝牙连接状态  0连接中，1已连接，-1未连接
   int getBlueToothConnectState() {
