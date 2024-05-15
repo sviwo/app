@@ -58,12 +58,9 @@ class _ServiceInfoPageState
             textSize: 16.dp,
             backgroundColor: Colors.white,
             borderRadius: 25.dp,
-            onPressed: () async {
+            onPressed: () {
               LogUtil.d('点击了服务预约');
-              var address = await LWMapTool.reverseGeocoding(GeoLocationDefine(
-                  latitude: 30.976311, longitude: 103.644539));
-              LogUtil.d('------------');
-              LogUtil.d(address);
+              viewModel.callNumber();
             },
           ),
         ),
