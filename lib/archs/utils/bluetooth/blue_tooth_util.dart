@@ -10,6 +10,13 @@ import 'blue_accept_data_listener.dart';
 import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 
 class BlueToothUtil {
+  // 车速
+  double carSpeed = 0;
+  // 剩余里程
+  double endurance = 0;
+  // 电池电量
+  int battery = 100;
+
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -90,36 +97,32 @@ class BlueToothUtil {
 
   /// 控制蓝牙解锁   YGTODO
   void controllerBlueUnLock(){
-
+    sendDataToBlueTooth(sendPackToBluetooth46(lockCarStatus: 1));
   }
 
   /// 控制蓝牙响喇叭   YGTODO
   void controllerBlueVoice(){
-
+    sendDataToBlueTooth(sendPackToBluetooth46(voice: 1));
   }
 
   /// 控制蓝牙响车灯   YGTODO
   void controllerBlueLight(){
-
+    sendDataToBlueTooth(sendPackToBluetooth46(lightStatus: 2));
   }
 
   /// 剩余电量 YGTODO
   String getBattery(){
-
-    return "";
+    return battery.toString();
   }
 
   /// 行车速度 YGTODO
   String getSpeed(){
-
-    return "";
+    return carSpeed.toString();
   }
-
 
   /// 剩余里程 YGTODO
   String getEndurance(){
-
-    return "";
+    return endurance.toString();
   }
 
   /// 遥控距离 YGTODO
@@ -130,12 +133,12 @@ class BlueToothUtil {
 
   /// 向前  YGTODO
   void controllerForward(){
-
+    sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 1));
   }
 
   /// 向后  YGTODO
   void controllerBackwards(){
-
+    sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 2));
   }
 
   /// 获取蓝牙是否开启 true 开启， false 关闭
@@ -587,7 +590,7 @@ class BlueToothUtil {
     // 电机转速
     int motorSpeed = DataExchangeUtils.fourByteListToInt(dataList.sublist(8, 12));
     // 车速
-    double carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
+    carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
 
     Map<String, Object> map = HashMap();
     map["motorSpeed"] = motorSpeed;
@@ -599,9 +602,9 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型38
   void decodeBlueToothData38(List<int> dataList) {
     // 剩余里程float
-    double range = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
+    endurance = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 电池电量%
-    int battery = dataList[12] & 0xff;
+    battery = dataList[12] & 0xff;
     //bit0：电池状态 13
     int batteryStatus = dataList[13] & 0x01;
     // bit1：充电状态 13
@@ -624,7 +627,7 @@ class BlueToothUtil {
     int bmsCode = dataList[15] & 0xff;
 
     Map<String, Object> map = HashMap();
-    map["range"] = range;
+    map["range"] = endurance;
     map["battery"] = battery;
     map["batteryStatus"] = batteryStatus;
     map["chargingStatus"] = chargingStatus;
