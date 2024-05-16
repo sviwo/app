@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:atv/archs/utils/bluetooth/extra.dart';
+import 'package:atv/archs/utils/log_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'blue_accept_data_listener.dart';
@@ -12,10 +14,18 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   // 车速
   double carSpeed = 0;
+
   // 剩余里程
   double endurance = 0;
+
   // 电池电量
   int battery = 100;
+
+  // 当前蓝牙mac
+  String currentblueMac = "";
+
+  // 当前蓝牙
+  BluetoothDevice? currentBlue = null;
 
   // 私有的命名构造函数
   BlueToothUtil._internal();
@@ -86,58 +96,64 @@ class BlueToothUtil {
   }
 
   /// 获取蓝牙连接状态    YGTODO
-  bool getBlueConnectStatus(){
+  bool getBlueConnectStatus() {
     return _isConnecting;
   }
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
-  void speedConnectBlue(String mac,String key){
-
+  void speedConnectBlue(String mac, String key) {
+    // 判断蓝牙是否开启
+    if (!blueToothIsOpen()) {
+      // 开启蓝牙
+      openBlueTooth();
+    }
+    currentblueMac = mac;
+    // 扫描蓝牙
+    startScanBlueTooth();
   }
 
   /// 控制蓝牙解锁   YGTODO
-  void controllerBlueUnLock(){
+  void controllerBlueUnLock() {
     sendDataToBlueTooth(sendPackToBluetooth46(lockCarStatus: 1));
   }
 
   /// 控制蓝牙响喇叭   YGTODO
-  void controllerBlueVoice(){
+  void controllerBlueVoice() {
     sendDataToBlueTooth(sendPackToBluetooth46(voice: 1));
   }
 
   /// 控制蓝牙响车灯   YGTODO
-  void controllerBlueLight(){
+  void controllerBlueLight() {
     sendDataToBlueTooth(sendPackToBluetooth46(lightStatus: 2));
   }
 
   /// 剩余电量 YGTODO
-  String getBattery(){
+  String getBattery() {
     return battery.toString();
   }
 
   /// 行车速度 YGTODO
-  String getSpeed(){
+  String getSpeed() {
     return carSpeed.toString();
   }
 
   /// 剩余里程 YGTODO
-  String getEndurance(){
+  String getEndurance() {
     return endurance.toString();
   }
 
   /// 遥控距离 YGTODO
-  String getControllerDistance(){
-
+  String getControllerDistance() {
     return "";
   }
 
   /// 向前  YGTODO
-  void controllerForward(){
+  void controllerForward() {
     sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 1));
   }
 
   /// 向后  YGTODO
-  void controllerBackwards(){
+  void controllerBackwards() {
     sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 2));
   }
 
@@ -165,6 +181,18 @@ class BlueToothUtil {
     }
     _scanResultsSubscription ??= FlutterBluePlus.scanResults.listen((results) {
       _scanResults = results;
+      debugPrint("scan:" + jsonEncode(results));
+      if (_scanResults != null && _scanResults.length > 0) {
+        for (int i = 0; i < _scanResults.length; i++) {
+          if (currentblueMac.compareTo(_scanResults[i].device.remoteId.str) ==
+              0) {
+            // 停止扫描
+            FlutterBluePlus.stopScan();
+            // 连接蓝牙
+            connectBluetooth(_scanResults[i].device);
+          }
+        }
+      }
     }, onError: (e) {
       print("Scan Error:${e.toString()}");
     });
@@ -179,6 +207,7 @@ class BlueToothUtil {
 
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
+      debugPrint("scan connect:" + jsonEncode(_systemDevices));
     } catch (e) {
       print("System Devices Error:${e.toString()}");
     }
@@ -257,6 +286,11 @@ class BlueToothUtil {
 
       _isConnectingSubscription = mdevice.isConnecting.listen((value) {
         _isConnecting = value;
+        if (_isConnecting) {
+          currentBlue = mdevice;
+        } else {
+          currentBlue = null;
+        }
       });
 
       _isDisconnectingSubscription = mdevice.isDisconnecting.listen((value) {
@@ -311,7 +345,6 @@ class BlueToothUtil {
       });
     }
   }
-
 
   /// 蓝牙连接状态  0连接中，1已连接，-1未连接
   int getBlueToothConnectState() {
@@ -502,7 +535,6 @@ class BlueToothUtil {
     blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
   }
 
-
   /// 解析蓝牙发送过来的数据  消息类型34
   void decodeBlueToothData34(List<int> dataList) {
     // 维度
@@ -588,7 +620,8 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型37
   void decodeBlueToothData37(List<int> dataList) {
     // 电机转速
-    int motorSpeed = DataExchangeUtils.fourByteListToInt(dataList.sublist(8, 12));
+    int motorSpeed =
+        DataExchangeUtils.fourByteListToInt(dataList.sublist(8, 12));
     // 车速
     carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
 
@@ -643,13 +676,13 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型39
   void decodeBlueToothData39(List<int> dataList) {
     // 遥感距离1
-    int rangeOne = DataExchangeUtils.twoByteToInt(dataList[8],dataList[9]);
+    int rangeOne = DataExchangeUtils.twoByteToInt(dataList[8], dataList[9]);
     // 遥感距离2
-    int rangeTwo = DataExchangeUtils.twoByteToInt(dataList[10],dataList[11]);
+    int rangeTwo = DataExchangeUtils.twoByteToInt(dataList[10], dataList[11]);
     // 遥感距离3
-    int rangeThree = DataExchangeUtils.twoByteToInt(dataList[12],dataList[13]);
+    int rangeThree = DataExchangeUtils.twoByteToInt(dataList[12], dataList[13]);
     // 遥感距离4
-    int rangeFour = DataExchangeUtils.twoByteToInt(dataList[14],dataList[15]);
+    int rangeFour = DataExchangeUtils.twoByteToInt(dataList[14], dataList[15]);
 
     Map<String, Object> map = HashMap();
     map["rangeOne"] = rangeOne;

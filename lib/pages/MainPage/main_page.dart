@@ -47,19 +47,20 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            pagePush(AppRoute.scanQrCodePage, callback: (data) {
-              if (data != null && data is Map<String, dynamic>) {
-                var codeString = data['code'];
-                viewModel.checkDeviceName(
-                  deviceName: codeString,
-                  callback: () {
-                    // 车架号后台初验通过，跳转蓝牙列表页面
-                    pagePush(AppRoute.bluetoothDevicesPage,
-                        params: {'deviceName': codeString});
-                  },
-                );
-              }
-            });
+            BlueToothUtil.getInstance().speedConnectBlue("","");
+            // pagePush(AppRoute.scanQrCodePage, callback: (data) {
+            //   if (data != null && data is Map<String, dynamic>) {
+            //     var codeString = data['code'];
+            //     viewModel.checkDeviceName(
+            //       deviceName: codeString,
+            //       callback: () {
+            //         // 车架号后台初验通过，跳转蓝牙列表页面
+            //         pagePush(AppRoute.bluetoothDevicesPage,
+            //             params: {'deviceName': codeString});
+            //       },
+            //     );
+            //   }
+            // });
           },
           child: Center(
             child: Image.asset(
