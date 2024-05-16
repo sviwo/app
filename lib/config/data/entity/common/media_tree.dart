@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'media_tree.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class MediaTree {
   MediaTree(
       {this.id,
@@ -13,7 +13,9 @@ class MediaTree {
       this.title,
       this.mediaDesc,
       this.smallImg,
-      this.content});
+      this.content,
+      this.icon,
+      this.children});
   String? id;
   String? parentId;
 
@@ -32,6 +34,11 @@ class MediaTree {
 
   /// 内容（当显示类型为0的时候content为空，为1的时content为链接地址）
   String? content;
+
+  /// 图表的标记
+  String? icon;
+
+  List<MediaTree>? children;
 
   factory MediaTree.fromJson(Map<String, dynamic> srcJson) =>
       _$MediaTreeFromJson(srcJson);

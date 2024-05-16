@@ -1,9 +1,12 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
+import 'package:atv/config/conf/route/app_route_settings.dart';
+import 'package:atv/config/data/entity/common/media_tree.dart';
 import 'package:atv/config/data/entity/mainPage/geo_location_define.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/service_info_page_view_model.dart';
+import 'package:atv/pages/Mine/define/web_list_config_tool.dart';
 import 'package:atv/tools/map/lw_map_tool.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
@@ -64,15 +67,64 @@ class _ServiceInfoPageState
             },
           ),
         ),
-        SizedBox(
-          height: 40.dp,
-        ),
-        _buildVideoRow(),
-        SizedBox(
-          height: 20.dp,
-        ),
-        _buildSettingRow()
+        // SizedBox(
+        //   height: 40.dp,
+        // ),
+        // _buildVideoRow(),
+        // SizedBox(
+        //   height: 20.dp,
+        // ),
+        // _buildSettingRow(),
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.only(top: 40.dp),
+          itemBuilder: (context, index) {
+            return _buildItem((viewModel.treeData[index]));
+          },
+          separatorBuilder: (context, index) {
+            return SizedBox(
+              height: 30.dp,
+            );
+          },
+          itemCount: viewModel.treeData.length,
+        )
       ],
+    );
+  }
+
+  Widget _buildItem(MediaTree model) {
+    var iconName = model.icon ?? '';
+    Widget img = WebListConfigTool.iconImage(name: iconName);
+    Widget space = WebListConfigTool.iconSpace(name: iconName);
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 40.dp, vertical: 10.dp),
+      child: InkWell(
+          onTap: () {
+            viewModel.requestMediaData(
+              model: model,
+              callback: (p0) {
+                pagePush(AppRoute.webPage, params: p0?.toJson());
+              },
+            );
+          },
+          child: Row(
+            children: [
+              img,
+              space,
+              Expanded(
+                child: Text(
+                  model.title ?? '-',
+                  style: TextStyle(fontSize: 14.dp, color: Colors.white),
+                ),
+              ),
+              Image.asset(
+                AppIcons.imgServiceIndicatorIcon,
+                width: 7.4.dp,
+                height: 12.4.dp,
+              ),
+            ],
+          )),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:atv/archs/data/entity/res_data.dart';
 import 'package:atv/archs/data/entity/res_empty.dart';
 import 'package:atv/archs/data/net/http.dart';
 import 'package:atv/archs/data/net/http_helper.dart';
+import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/data/entity/common/media_content.dart';
 import 'package:atv/config/data/entity/common/media_tree.dart';
 
@@ -38,7 +39,7 @@ class ApiPublic {
       var data =
           await Http.instance().get('app/media/get/detail', params: {'id': id});
       return await HttpHelper.httpDataConvert(
-          data, (json) => MediaContent.fromJson(data));
+          data, (json) => MediaContent.fromJson(json));
     } catch (e) {
       throw HttpHelper.handleException(e);
     }

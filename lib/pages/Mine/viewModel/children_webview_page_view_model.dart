@@ -1,44 +1,17 @@
 import 'package:atv/archs/base/base_view_model.dart';
-import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/config/data/entity/common/media_content.dart';
 import 'package:atv/config/data/entity/common/media_tree.dart';
 import 'package:atv/config/net/api_public.dart';
 
-import 'package:url_launcher/url_launcher.dart';
-
-class ServiceInfoPageViewModel extends BaseViewModel {
-  String servicePhone = '';
-
-  void callNumber() async {
-    LogUtil.d('-----phone:$servicePhone');
-    if (servicePhone.isEmpty) {
-      return;
+class ChildrenWebViewPageViewModel extends BaseViewModel {
+  MediaTree? treeData;
+  @override
+  void initialize(args) {
+    if (args != null && args is Map<String, dynamic>) {
+      treeData = MediaTree.fromJson(args);
+      pageRefresh();
     }
-    try {
-      if (await canLaunchUrl(Uri(scheme: 'tel', path: servicePhone))) {
-        await launchUrl(Uri(scheme: 'tel', path: servicePhone));
-      } else {
-        LogUtil.d('Cannot launch phone number');
-      }
-    } catch (e) {
-      LogUtil.d(e);
-    }
-  }
-
-  List<MediaTree> treeData = [];
-
-  requestData({bool showLoading = true}) async {
-    return await loadApiData<List<MediaTree>>(
-      ApiPublic.getHttpPageTree(2),
-      showLoading: showLoading,
-      handlePageState: false,
-      dataSuccess: (data) {
-        treeData.clear();
-        treeData.addAll(data);
-        pageRefresh();
-      },
-    );
   }
 
   /// 获取跳转链接或者内容
@@ -75,15 +48,6 @@ class ServiceInfoPageViewModel extends BaseViewModel {
         );
       }
     }
-  }
-
-  @override
-  void initialize(args) {
-    // TODO: implement initialize
-    if (args != null && args is Map<String, dynamic>) {
-      servicePhone = args['servicePhone'];
-    }
-    requestData();
   }
 
   @override
