@@ -27,6 +27,19 @@ class BlueToothUtil {
   // 当前蓝牙
   BluetoothDevice? currentBlue = null;
 
+  // 选择蓝牙的连接状态，默认断开连接
+  BluetoothConnectionState _currentBlueConnectionState =
+      BluetoothConnectionState.disconnected;
+
+  // 读特征
+  BluetoothCharacteristic? readCharacteristic;
+
+  // 写特征
+  BluetoothCharacteristic? writeCharacteristic;
+
+  // 蓝牙特征
+  List<BluetoothService> _services = [];
+
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -47,9 +60,7 @@ class BlueToothUtil {
   // 连接蓝牙
   int? _rssi;
   int? _mtuSize;
-  BluetoothConnectionState _connectionState =
-      BluetoothConnectionState.disconnected;
-  List<BluetoothService> _services = [];
+
   bool _isConnecting = false;
   bool _isDisconnecting = false;
 
@@ -57,7 +68,6 @@ class BlueToothUtil {
   StreamSubscription<bool>? _isConnectingSubscription;
   StreamSubscription<bool>? _isDisconnectingSubscription;
   StreamSubscription<int>? _mtuSubscription;
-  BluetoothDevice? device;
 
   BluetoothCharacteristic? readChart;
   BluetoothCharacteristic? sendChart;
@@ -86,13 +96,18 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._isConnectingSubscription = null;
           _instanceBlueToothUtil?._isDisconnectingSubscription = null;
           _instanceBlueToothUtil?._mtuSubscription = null;
-          _instanceBlueToothUtil?.device = null;
+          _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
         }
       });
     }
     return _instanceBlueToothUtil!;
+  }
+
+  /// 获取蓝牙是否开启 true 开启， false 关闭
+  bool blueToothIsOpen() {
+    return _adapterState == BluetoothAdapterState.on;
   }
 
   /// 获取蓝牙连接状态    YGTODO
@@ -157,11 +172,6 @@ class BlueToothUtil {
     sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 2));
   }
 
-  /// 获取蓝牙是否开启 true 开启， false 关闭
-  bool blueToothIsOpen() {
-    return _adapterState == BluetoothAdapterState.on;
-  }
-
   /// 开启蓝牙
   void openBlueTooth() async {
     try {
@@ -182,6 +192,8 @@ class BlueToothUtil {
     _scanResultsSubscription ??= FlutterBluePlus.scanResults.listen((results) {
       _scanResults = results;
       debugPrint("scan:" + jsonEncode(results));
+      // device.platformName 蓝牙名称
+      // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.length > 0) {
         for (int i = 0; i < _scanResults.length; i++) {
           if (currentblueMac.compareTo(_scanResults[i].device.remoteId.str) ==
@@ -264,12 +276,37 @@ class BlueToothUtil {
       });
       _connectionStateSubscription =
           mdevice.connectionState.listen((state) async {
-        _connectionState = state;
+        _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
-          this.device = mdevice;
+          this.currentBlue = mdevice;
           _services = []; // must rediscover services
           try {
             _services = await mdevice.discoverServices();
+            for (int i = 0; i < _services.length; i++) {
+              _services[i].uuid.str;
+              List<BluetoothCharacteristic> characteristics =
+                  _services[i].characteristics;
+              for (int j = 0; j < characteristics.length; j++) {
+                if (characteristics[j].properties.read) {
+                  readCharacteristic = characteristics[j];
+                  // 读
+                  var subscription =
+                      readCharacteristic?.onValueReceived.listen((value) {
+                    decodeBlueToothData(value);
+                  });
+
+                  if (subscription != null) {
+                    currentBlue?.cancelWhenDisconnected(subscription);
+                  }
+
+                  await readCharacteristic?.setNotifyValue(true);
+                }
+                if (characteristics[j].properties.write) {
+                  // 写
+                  writeCharacteristic = characteristics[j];
+                }
+              }
+            }
             print("Discover Services: Success");
           } catch (e) {
             print("Discover Services: Success:${e.toString()}");
@@ -301,9 +338,9 @@ class BlueToothUtil {
 
   /// 取消连接
   Future onCancelPressed() async {
-    if (device != null && _isConnecting) {
+    if (currentBlue != null && _isConnecting) {
       try {
-        await device?.disconnectAndUpdateStream(queue: false);
+        await currentBlue?.disconnectAndUpdateStream(queue: false);
         print("Cancel: Success");
       } catch (e) {
         print("Cancel Error:${e.toString()}");
@@ -313,10 +350,10 @@ class BlueToothUtil {
 
   /// 断开链接
   Future onDisconnectPressed() async {
-    if (device != null &&
-        _connectionState == BluetoothConnectionState.connected) {
+    if (currentBlue != null &&
+        _currentBlueConnectionState == BluetoothConnectionState.connected) {
       try {
-        await device?.disconnectAndUpdateStream();
+        await currentBlue?.disconnectAndUpdateStream();
         print("Disconnect: Success");
       } catch (e) {
         print("Disconnect Error:${e.toString()}");
@@ -350,7 +387,8 @@ class BlueToothUtil {
   int getBlueToothConnectState() {
     if (_isConnecting) {
       return 0;
-    } else if (_connectionState == BluetoothConnectionState.connected) {
+    } else if (_currentBlueConnectionState ==
+        BluetoothConnectionState.connected) {
       return 1;
     } else {
       return -1;
