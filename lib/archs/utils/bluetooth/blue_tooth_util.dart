@@ -117,6 +117,7 @@ class BlueToothUtil {
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
   void speedConnectBlue(String mac, String key) {
+    mac = "C0:04:01:94:00:78";
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
@@ -126,6 +127,10 @@ class BlueToothUtil {
     // 扫描蓝牙
     startScanBlueTooth();
   }
+
+  /// 获取搜索蓝牙列表
+ Stream<List<ScanResult>> get bluetoothDeviceList => FlutterBluePlus.scanResults
+     .asBroadcastStream();
 
   /// 控制蓝牙解锁   YGTODO
   void controllerBlueUnLock() {
@@ -189,15 +194,19 @@ class BlueToothUtil {
       print("please open blueTooth");
       return;
     }
-    _scanResultsSubscription ??= FlutterBluePlus.scanResults.listen((results) {
+    _scanResults = [];
+    _scanResultsSubscription ??= FlutterBluePlus.scanResults.asBroadcastStream().listen(
+            (results) {
       _scanResults = results;
-      debugPrint("scan:" + jsonEncode(results));
+      LogUtil.d("scanblue:搜索结果:${results}");
       // device.platformName 蓝牙名称
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.length > 0) {
         for (int i = 0; i < _scanResults.length; i++) {
+          LogUtil.d("scanblue:蓝牙列表MAC:${_scanResults[i].device.remoteId.str}");
           if (currentblueMac.compareTo(_scanResults[i].device.remoteId.str) ==
               0) {
+            LogUtil.d("scanblue:搜索到了指定蓝牙");
             // 停止扫描
             FlutterBluePlus.stopScan();
             // 连接蓝牙
