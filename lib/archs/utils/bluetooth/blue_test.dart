@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:js_util';
 
 import 'package:atv/archs/utils/bluetooth/blue_accept_data_listener.dart';
 import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
@@ -12,6 +11,7 @@ class BlueTest {
   String TAG = "BlueTest:";
   static BlueTest? _instanceBlueTest;
   FlutterBlue? flutterBlue;
+  BluetoothDevice? currentBlue;
   // 扫描蓝牙结果
   List<ScanResult> scanResult = [];
   // 回调
@@ -85,7 +85,7 @@ class BlueTest {
   /// 连接蓝牙
   void connectBlue(BluetoothDevice device) async {
     await device.connect();
-
+    currentBlue = device;
     List<BluetoothService> services = await device.discoverServices();
     services.forEach((service) {
       // do something with service
@@ -106,6 +106,17 @@ class BlueTest {
         }
       }
     });
+  }
+
+  /// 获取蓝牙连接状态    YGTODO
+  bool getBlueConnectStatus() {
+    if(currentBlue == null){
+      return false;
+    }
+    if(BluetoothDeviceState.connected  == currentBlue!.state){
+      return true;
+    }
+    return false;
   }
 
   /// 控制蓝牙解锁   YGTODO
@@ -147,6 +158,8 @@ class BlueTest {
   // 释放蓝牙资源
   void dispostBlue() {
     controller.close();
+    currentBlue?.disconnect();
+    currentBlue = null;
   }
 
   /// 蓝牙连接后第一步，发送时间戳到蓝牙
