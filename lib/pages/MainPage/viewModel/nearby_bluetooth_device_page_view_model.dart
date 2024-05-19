@@ -35,6 +35,9 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     "dsndfdklsdnfksanslfnk"
   ];
 
+  Stream<List<ScanResult>> get bluetoothDeviceList =>
+      BlueToothUtil.getInstance().bluetoothDeviceList;
+
   String? currentDevice;
 
   bool isCurrent(ScanResult device) =>
@@ -49,8 +52,10 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   chooseDevice(ScanResult device) async {
     currentDevice = device.device.remoteId.str;
     pageRefresh();
-
-    BlueToothUtil.getInstance().readChart;
+    await Future.delayed(Duration.zero, () {
+      // BlueToothUtil.
+    });
+    // BlueToothUtil.getInstance().readChart;
   }
 
   //YGTODO: 扫描附近蓝牙外设 扫描到的数据保存到外设数组数组 并在界面上配置显示数据
