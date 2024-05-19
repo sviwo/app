@@ -21,6 +21,8 @@ class BlueTest {
   // 蓝牙数据传输流
   StreamController<BlueDataVO> controller = StreamController<BlueDataVO>();
   Stream<BlueDataVO> get dataStream => controller.stream.asBroadcastStream();
+  // 充电枪连接
+  int chargeConnect = 0;
   // 车速
   double carSpeed = 0;
   // 剩余里程
@@ -424,24 +426,27 @@ class BlueTest {
     // 右灯闪
     int rightLightFlash = (dataList[15] >> 3) & 0x01;
 
-    Map<String, Object> map = HashMap();
-    map["lockCarStatus"] = lockCarStatus;
-    map["setLock"] = setLock;
-    map["wheelDrive"] = wheelDrive;
-    map["shake"] = shake;
-    map["voice"] = voice;
-    map["alarm"] = alarm;
-    map["alarmContinue"] = alarmContinue;
-    map["deviceDefaultAlarm"] = deviceDefaultAlarm;
-    map["carTemperatureHigh"] = carTemperatureHigh;
-    map["chargeConnect"] = chargeConnect;
-    map["lowPower"] = lowPower;
-    map["lightStatus"] = lightStatus;
-    map["doubleLightFlash"] = doubleLightFlash;
-    map["leftLightFlash"] = leftLightFlash;
-    map["rightLightFlash"] = rightLightFlash;
+    blueDataVO.chargeConnect = chargeConnect;
+    controller.add(blueDataVO);
 
-    blueAcceptDataListener?.acceptBlueToothData(map, 36);
+    // Map<String, Object> map = HashMap();
+    // map["lockCarStatus"] = lockCarStatus;
+    // map["setLock"] = setLock;
+    // map["wheelDrive"] = wheelDrive;
+    // map["shake"] = shake;
+    // map["voice"] = voice;
+    // map["alarm"] = alarm;
+    // map["alarmContinue"] = alarmContinue;
+    // map["deviceDefaultAlarm"] = deviceDefaultAlarm;
+    // map["carTemperatureHigh"] = carTemperatureHigh;
+    // map["chargeConnect"] = chargeConnect;
+    // map["lowPower"] = lowPower;
+    // map["lightStatus"] = lightStatus;
+    // map["doubleLightFlash"] = doubleLightFlash;
+    // map["leftLightFlash"] = leftLightFlash;
+    // map["rightLightFlash"] = rightLightFlash;
+    //
+    // blueAcceptDataListener?.acceptBlueToothData(map, 36);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -1040,4 +1045,7 @@ class BlueDataVO {
 
   // 遥感距离
   String distance = "0";
+
+  // 充电枪连接
+  int chargeConnect = 0;
 }
