@@ -37,10 +37,13 @@ class BlueToothUtil {
       BluetoothConnectionState.disconnected;
 
   // 读特征
-  BluetoothCharacteristic? readCharacteristic;
+  // BluetoothCharacteristic? readCharacteristic;
 
   // 写特征
-  BluetoothCharacteristic? writeCharacteristic;
+  // BluetoothCharacteristic? writeCharacteristic;
+
+  BluetoothCharacteristic? readChart;
+  BluetoothCharacteristic? sendChart;
 
   // 蓝牙特征
   List<BluetoothService> _services = [];
@@ -74,8 +77,6 @@ class BlueToothUtil {
   StreamSubscription<bool>? _isDisconnectingSubscription;
   StreamSubscription<int>? _mtuSubscription;
 
-  BluetoothCharacteristic? readChart;
-  BluetoothCharacteristic? sendChart;
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
   /// 获取示例
@@ -296,39 +297,55 @@ class BlueToothUtil {
           _services = []; // must rediscover services
           try {
             _services = await mdevice.discoverServices();
+            LogUtil.d('-============-=====================_services'
+                '.length:${_services.length}');
             for (int i = 0; i < _services.length; i++) {
               LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}---");
-              if (_services[i].uuid.str.toLowerCase().contains("ffeo")) {
-                List<BluetoothCharacteristic> characteristics =
-                    _services[i].characteristics;
-                for (int j = 0; j < characteristics.length; j++) {
+
+              List<BluetoothCharacteristic> characteristics =
+                  _services[i].characteristics;
+              LogUtil.d('-============-=====================characteristics:'
+                  '${characteristics
+                  .length}');
+              for (int j = 0; j < characteristics.length; j++) {
+                LogUtil.d(
+                    "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
+                if (characteristics[j].properties.read &&
+                    (_services[i].uuid.str.toLowerCase() == "ffe0")) {
+                  readChart = characteristics[j];
+                  // 读
                   LogUtil.d(
-                      "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
-                  if (characteristics[j].properties.read) {
-                    readCharacteristic = characteristics[j];
-                    // 读
-                    LogUtil.d("$TAG readcharacteristics:${characteristics[j]
-                        .uuid.toString()}");
-                    var subscription =
-                        readCharacteristic?.onValueReceived.listen((value) {
-                      decodeBlueToothData(value);
-                    });
+                      "$TAG readcharacteristics:${characteristics[j].uuid.toString()}");
+                  var subscription = readChart?.onValueReceived.listen((value) {
+                    // LogUtil.d("$TAG 接收蓝牙数据:${value}");
+                    decodeBlueToothData(value);
+                  });
 
-                    if (subscription != null) {
-                      currentBlue?.cancelWhenDisconnected(subscription);
-                    }
+                  if (subscription != null) {
+                    currentBlue?.cancelWhenDisconnected(subscription);
+                  }
 
-                    await readCharacteristic?.setNotifyValue(true);
-                  }
-                  if (characteristics[j].properties.write) {
-                    // 写
-                    LogUtil.d("$TAG writecharacteristics:${characteristics[j]
-                        .uuid.toString()}");
-                    writeCharacteristic = characteristics[j];
-                  }
+                  await readChart?.setNotifyValue(true);
                 }
-              } else {
-                continue;
+
+                  LogUtil.d(
+                      "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
+                  sendChart = characteristics[j];
+
+                  List<int> list = getStepOneBluetoothCarNumber1();
+
+                  sendDataToBlueTooth(list,i: i,j: j);
+
+                if (characteristics[j].properties.write) {
+                  // 写
+                  // LogUtil.d(
+                  //     "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
+                  // sendChart = characteristics[j];
+                  //
+                  // List<int> list = getStepOneBluetoothCarNumber1();
+                  //
+                  // sendDataToBlueTooth(list);
+                }
               }
             }
             LogUtil.d("$TAG Discover Services: Success");
@@ -386,11 +403,18 @@ class BlueToothUtil {
   }
 
   /// 发送数据
-  Future sendDataToBlueTooth(List<int> sendData) async {
+  Future sendDataToBlueTooth(List<int> sendData,{int i = -1 ,int j = -1})
+  async {
     if (sendChart == null) {
       LogUtil.d("$TAG sendChart is null");
     } else {
-      await sendChart?.write(sendData);
+      LogUtil.d("$TAG 发送数据到蓝牙：${sendData}");
+      try{
+        await sendChart?.write(sendData);
+      }catch(e){
+        LogUtil.d("-============-=====================$TAG i=$i "
+            "j=$j");
+      }
     }
   }
 
@@ -433,7 +457,6 @@ class BlueToothUtil {
 
   /// 解析蓝牙发送的数据
   void decodeBlueToothData(List<int> dataList) {
-    LogUtil.d("$TAG acept blueTooth data:$dataList");
     if (dataList.length != 17) {
       LogUtil.d("$TAG dataList length must is 17");
       return;
@@ -501,7 +524,7 @@ class BlueToothUtil {
     sendPack[position++] = 0x03;
     sendPack[position++] = 1;
     sendPack[position++] = 8;
-    var second = DateTime.now().second;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
     sendPack[12] = (second >> 24) & 0xff;
     sendPack[13] = (second >> 16) & 0xff;
     sendPack[14] = (second >> 8) & 0xff;
@@ -761,6 +784,28 @@ class BlueToothUtil {
     blueAcceptDataListener?.acceptBlueToothData(shakeHandsKey, 44);
   }
 
+  /// 蓝牙连接后第一步，发送时间戳到蓝牙
+  List<int> getStepOneBluetoothCarNumber1() {
+    List<int> sendPack = List.filled(17, 0);
+    int position = 0;
+    int count = 0;
+    sendPack[position++] = 0xa5;
+    sendPack[position++] = 0x03;
+    sendPack[position++] = 1;
+    sendPack[position++] = 8;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
+    sendPack[12] = (second >> 24) & 0xff;
+    sendPack[13] = (second >> 16) & 0xff;
+    sendPack[14] = (second >> 8) & 0xff;
+    sendPack[15] = second & 0xff;
+
+    for (int i = 0; i < 16; i++) {
+      count += sendPack[i];
+    }
+    sendPack[16] = count & 0xff;
+    return sendPack;
+  }
+
   /// 获取 发送车架号 的 数据包 产品名称
   List<List<int>> getPackToBluetoothCarNumber2_4(String cardNumberString) {
     if (cardNumberString.length != 20) {
@@ -780,7 +825,7 @@ class BlueToothUtil {
       sendPack[position++] = 0x03;
       sendPack[position++] = ((i + 2) & 0xff);
       sendPack[position++] = 8;
-      var second = DateTime.now().second;
+      var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
       sendPack[position++] = (second >> 24) & 0xff;
       sendPack[position++] = (second >> 16) & 0xff;
       sendPack[position++] = (second >> 8) & 0xff;
@@ -825,7 +870,7 @@ class BlueToothUtil {
       sendPack[position++] = 0x03;
       sendPack[position++] = ((i + 5) & 0xff);
       sendPack[position++] = 8;
-      var second = DateTime.now().second;
+      var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
       sendPack[position++] = (second >> 24) & 0xff;
       sendPack[position++] = (second >> 16) & 0xff;
       sendPack[position++] = (second >> 8) & 0xff;
@@ -872,7 +917,7 @@ class BlueToothUtil {
       sendPack[position++] = 0x03;
       sendPack[position++] = ((i + 10) & 0xff);
       sendPack[position++] = 8;
-      var second = DateTime.now().second;
+      var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
       sendPack[position++] = (second >> 24) & 0xff;
       sendPack[position++] = (second >> 16) & 0xff;
       sendPack[position++] = (second >> 8) & 0xff;
@@ -920,7 +965,7 @@ class BlueToothUtil {
       sendPack[position++] = 0x03;
       sendPack[position++] = ((i + 15) & 0xff);
       sendPack[position++] = 8;
-      var second = DateTime.now().second;
+      var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
       sendPack[position++] = (second >> 24) & 0xff;
       sendPack[position++] = (second >> 16) & 0xff;
       sendPack[position++] = (second >> 8) & 0xff;
@@ -967,7 +1012,7 @@ class BlueToothUtil {
       sendPack[position++] = 0x03;
       sendPack[position++] = ((i + 24) & 0xff);
       sendPack[position++] = 8;
-      var second = DateTime.now().second;
+      var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
       sendPack[position++] = (second >> 24) & 0xff;
       sendPack[position++] = (second >> 16) & 0xff;
       sendPack[position++] = (second >> 8) & 0xff;
@@ -1015,7 +1060,7 @@ class BlueToothUtil {
     sendPack[position++] = 0x03;
     sendPack[position++] = ((33) & 0xff);
     sendPack[position++] = 8;
-    var second = DateTime.now().second;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
     sendPack[position++] = (second >> 24) & 0xff;
     sendPack[position++] = (second >> 16) & 0xff;
     sendPack[position++] = (second >> 8) & 0xff;
@@ -1055,7 +1100,7 @@ class BlueToothUtil {
     sendPack[position++] = 0x03;
     sendPack[position++] = (45 & 0xff);
     sendPack[position++] = 8;
-    var second = DateTime.now().second;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
     sendPack[position++] = (second >> 24) & 0xff;
     sendPack[position++] = (second >> 16) & 0xff;
     sendPack[position++] = (second >> 8) & 0xff;
@@ -1168,7 +1213,7 @@ class BlueToothUtil {
     sendPack[position++] = 0x03;
     sendPack[position++] = 46;
     sendPack[position++] = 8;
-    var second = DateTime.now().second;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
     sendPack[position++] = (second >> 24) & 0xff;
     sendPack[position++] = (second >> 16) & 0xff;
     sendPack[position++] = (second >> 8) & 0xff;
@@ -1232,7 +1277,7 @@ class BlueToothUtil {
     sendPack[position++] = 0x03;
     sendPack[position++] = (num & 0xff);
     sendPack[position++] = 8;
-    var second = DateTime.now().second;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
     sendPack[position++] = (second >> 24) & 0xff;
     sendPack[position++] = (second >> 16) & 0xff;
     sendPack[position++] = (second >> 8) & 0xff;
