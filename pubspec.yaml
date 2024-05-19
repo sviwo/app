@@ -66,6 +66,7 @@ dependencies:
   svgaplayer_flutter: ^2.2.0
   crypton: ^2.1.0
   flutter_blue_plus: ^1.31.15
+  flutter_blue: ^0.8.0
   pointycastle: ^3.7.3
   basic_utils: ^5.5.4
   # json_serializable: ^6.6.2

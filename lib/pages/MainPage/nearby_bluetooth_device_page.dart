@@ -1,5 +1,4 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
-import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/nearby_bluetooth_device_page_view_model.dart';
@@ -8,7 +7,7 @@ import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 
 class NearByBluetoothDevicesPage extends BaseMvvmPage {
   @override

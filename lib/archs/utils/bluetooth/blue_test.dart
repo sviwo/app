@@ -1,144 +1,112 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
+import 'dart:js_util';
 
-import 'package:atv/archs/utils/bluetooth/extra.dart';
-import 'package:atv/archs/utils/log_util.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-
-import 'blue_accept_data_listener.dart';
+import 'package:atv/archs/utils/bluetooth/blue_accept_data_listener.dart';
 import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
+import 'package:atv/archs/utils/log_util.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 
-class BlueToothUtil {
-  String TAG = "BlueToothUtil:";
-
+class BlueTest {
+  String TAG = "BlueTest:";
+  static BlueTest? _instanceBlueTest;
+  FlutterBlue? flutterBlue;
+  // 扫描蓝牙结果
+  List<ScanResult> scanResult = [];
+  // 回调
+  BlueAcceptDataListener? blueAcceptDataListener = null;
+  // 蓝牙传输过来的数据
+  BlueDataVO blueDataVO = BlueDataVO();
+  // 蓝牙数据传输流
+  StreamController<BlueDataVO> controller = StreamController<BlueDataVO>();
+  Stream<BlueDataVO> get dataStream => controller.stream.asBroadcastStream();
   // 车速
   double carSpeed = 0;
-
   // 剩余里程
   double endurance = 0;
-
   // 电池电量
   int battery = 100;
-
+  // 遥感距离
+  String distance = "0";
   // 当前蓝牙mac
   String currentblueMac = "";
-
   // 当前蓝牙mac
   String currentBlueName = "";
-
-  // 当前蓝牙
-  BluetoothDevice? currentBlue = null;
-
-  // 选择蓝牙的连接状态，默认断开连接
-  BluetoothConnectionState _currentBlueConnectionState =
-      BluetoothConnectionState.disconnected;
-
-  // 读特征
-  // BluetoothCharacteristic? readCharacteristic;
-
-  // 写特征
-  // BluetoothCharacteristic? writeCharacteristic;
-
-  BluetoothCharacteristic? readChart;
-  BluetoothCharacteristic? sendChart;
-
-  // 蓝牙特征
-  List<BluetoothService> _services = [];
-
   // 私有的命名构造函数
-  BlueToothUtil._internal();
+  BlueTest._internal();
 
-  BlueAcceptDataListener? blueAcceptDataListener = null;
+  BluetoothCharacteristic? sendchart;
+  BluetoothCharacteristic? readchart;
 
-  // 初始化
-  static BlueToothUtil? _instanceBlueToothUtil;
-  BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-  StreamSubscription<BluetoothAdapterState>? _adapterStateStateSubscription;
-
-  // 蓝牙开启状态
-  List<BluetoothDevice> _systemDevices = []; // 当前已经连接的蓝牙设备
-  List<ScanResult> _scanResults = []; // 扫描到的蓝牙设备
-  bool _isScanning = false;
-  StreamSubscription<List<ScanResult>>? _scanResultsSubscription;
-  StreamSubscription<bool>? _isScanningSubscription;
-
-  // 连接蓝牙
-  int? _rssi;
-  int? _mtuSize;
-
-  bool _isConnecting = false;
-  bool _isDisconnecting = false;
-
-  StreamSubscription<BluetoothConnectionState>? _connectionStateSubscription;
-  StreamSubscription<bool>? _isConnectingSubscription;
-  StreamSubscription<bool>? _isDisconnectingSubscription;
-  StreamSubscription<int>? _mtuSubscription;
-
-  List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
-
-  /// 获取示例
-  static BlueToothUtil getInstance() {
-    if (_instanceBlueToothUtil == null) {
-      _instanceBlueToothUtil = BlueToothUtil._internal();
-      FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-      _instanceBlueToothUtil?._adapterStateStateSubscription =
-          FlutterBluePlus.adapterState.listen((state) {
-        _instanceBlueToothUtil?._adapterState = state;
-        if (state == BluetoothAdapterState.off) {
-          _instanceBlueToothUtil?._scanResultsSubscription = null;
-          _instanceBlueToothUtil?._isScanningSubscription = null;
-
-          _instanceBlueToothUtil?._systemDevices = [];
-          _instanceBlueToothUtil?._scanResults = [];
-          _instanceBlueToothUtil?._isScanning = false;
-
-          _instanceBlueToothUtil?._services = [];
-          _instanceBlueToothUtil?._isConnecting = false;
-          _instanceBlueToothUtil?._isDisconnecting = false;
-          _instanceBlueToothUtil?._connectionStateSubscription = null;
-          _instanceBlueToothUtil?._isConnectingSubscription = null;
-          _instanceBlueToothUtil?._isDisconnectingSubscription = null;
-          _instanceBlueToothUtil?._mtuSubscription = null;
-          _instanceBlueToothUtil?.currentBlue = null;
-          _instanceBlueToothUtil?.readChart = null;
-          _instanceBlueToothUtil?.sendChart = null;
-        }
-      });
+  static BlueTest getInstance() {
+    if (_instanceBlueTest == null) {
+      _instanceBlueTest = BlueTest._internal();
+      _instanceBlueTest!.flutterBlue = FlutterBlue.instance;
     }
-    return _instanceBlueToothUtil!;
-  }
-
-  /// 获取蓝牙是否开启 true 开启， false 关闭
-  bool blueToothIsOpen() {
-    return _adapterState == BluetoothAdapterState.on;
-  }
-
-  /// 获取蓝牙连接状态    YGTODO
-  bool getBlueConnectStatus() {
-    return _isConnecting;
-  }
-
-  /// 根据蓝牙mac和key去连接蓝牙  YGTODO
-  void speedConnectBlue(String mac, String key) {
-    // mac = "E0:02:7F:AB:00:29";
-    // currentBlueName = "SVIWO00000001";
-    // 判断蓝牙是否开启
-    if (!blueToothIsOpen()) {
-      // 开启蓝牙
-      openBlueTooth();
-    }
-    currentblueMac = mac;
-    // 扫描蓝牙
-    startScanBlueTooth();
+    return _instanceBlueTest!;
   }
 
   /// 获取搜索蓝牙列表
   Stream<List<ScanResult>> get bluetoothDeviceList =>
-      FlutterBluePlus.scanResults.asBroadcastStream();
+      flutterBlue!.scanResults.asBroadcastStream();
+
+  ///  扫描蓝牙
+  void scanBlue() async {
+    var connectedDevices = await flutterBlue?.connectedDevices;
+    if (connectedDevices != null) {
+      for (BluetoothDevice d in connectedDevices) {
+        d.disconnect();
+      }
+    }
+
+    // Start scanning
+    flutterBlue?.startScan(timeout: Duration(seconds: 4));
+
+    // Listen to scan results
+    var subscription =
+        flutterBlue?.scanResults.asBroadcastStream().listen((results) {
+      scanResult = results;
+      // do something with scan results
+      // for (ScanResult r in results) {
+      //   print('${r.device.name} found! rssi: ${r.rssi}');
+      // }
+    });
+
+    // Stop scanning
+    flutterBlue?.stopScan();
+  }
+
+  /// 停止搜索
+  void stopScan() {
+    flutterBlue?.stopScan();
+  }
+
+  /// 连接蓝牙
+  void connectBlue(BluetoothDevice device) async {
+    await device.connect();
+
+    List<BluetoothService> services = await device.discoverServices();
+    services.forEach((service) {
+      // do something with service
+      if (service.uuid.toString().contains("ffe0")) {
+        // Reads all characteristics
+        var characteristics = service.characteristics;
+        for (BluetoothCharacteristic c in characteristics) {
+          readchart = c;
+          readchart?.setNotifyValue(true);
+          readchart?.value.listen((value) {
+            // LogUtil.d("$TAG 接收：$value");
+            decodeBlueToothData(value);
+          });
+          sendchart = c;
+          List<int> sendDate = getStepOneBluetoothCarNumber1();
+          LogUtil.d("$TAG 发送：$sendDate");
+          sendchart?.write(sendDate);
+        }
+      }
+    });
+  }
 
   /// 控制蓝牙解锁   YGTODO
   void controllerBlueUnLock() {
@@ -155,26 +123,6 @@ class BlueToothUtil {
     sendDataToBlueTooth(sendPackToBluetooth46(lightStatus: 2));
   }
 
-  /// 剩余电量 YGTODO
-  String getBattery() {
-    return battery.toString();
-  }
-
-  /// 行车速度 YGTODO
-  String getSpeed() {
-    return carSpeed.toString();
-  }
-
-  /// 剩余里程 YGTODO
-  String getEndurance() {
-    return endurance.toString();
-  }
-
-  /// 遥控距离 YGTODO
-  String getControllerDistance() {
-    return "";
-  }
-
   /// 向前  YGTODO
   void controllerForward() {
     sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 1));
@@ -185,290 +133,42 @@ class BlueToothUtil {
     sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 2));
   }
 
-  /// 开启蓝牙
-  void openBlueTooth() async {
-    try {
-      if (Platform.isAndroid) {
-        await FlutterBluePlus.turnOn();
-      }
-    } catch (e) {
-      LogUtil.d("$TAG open blueTooth error:$e");
-    }
-  }
-
-  /// 扫描蓝牙
-  void startScanBlueTooth() async {
-    if (_adapterState != BluetoothAdapterState.on) {
-      LogUtil.d("$TAG please open blueTooth");
-      return;
-    }
-    _scanResults = [];
-    _scanResultsSubscription ??=
-        FlutterBluePlus.scanResults.asBroadcastStream().listen((results) {
-      _scanResults = results;
-      LogUtil.d("$TAG搜索结果:${results}");
-      // device.platformName 蓝牙名称
-      // device.remoteId.str 蓝牙mac
-      if (_scanResults != null && _scanResults.length > 0) {
-        for (int i = 0; i < _scanResults.length; i++) {
-          if (currentblueMac == _scanResults[i].device.remoteId.str) {
-            LogUtil.d("$TAG搜索到了指定蓝牙");
-            // 停止扫描
-            FlutterBluePlus.stopScan();
-            // 连接蓝牙
-            connectBluetooth(_scanResults[i].device);
-            break;
-          }
-        }
-      }
-    }, onError: (e) {
-      LogUtil.d("$TAG Scan Error:${e.toString()}");
-    });
-
-    _isScanningSubscription ??= FlutterBluePlus.isScanning.listen((state) {
-      _isScanning = state;
-    });
-
-    if (FlutterBluePlus.isScanningNow) {
-      stopScanBlueTooth();
-    }
-
-    try {
-      _systemDevices = await FlutterBluePlus.systemDevices;
-      LogUtil.d("$TAG scan connect:" + jsonEncode(_systemDevices));
-    } catch (e) {
-      LogUtil.d("$TAG System Devices Error:${e.toString()}");
-    }
-    try {
-      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
-    } catch (e) {
-      LogUtil.d("$TAG Start Scan Error:${e.toString()}");
-    }
-  }
-
-  /// 停止蓝牙扫描
-  void stopScanBlueTooth() async {
-    if (_adapterState != BluetoothAdapterState.on) {
-      LogUtil.d("$TAG please open blueTooth");
-      return;
-    }
-    try {
-      FlutterBluePlus.stopScan();
-    } catch (e) {
-      LogUtil.d("$TAG Stop Scan Error:${e.toString()}");
-    }
-  }
-
-  /// 刷新扫描
-  void onRefresh() {
-    if (_adapterState != BluetoothAdapterState.on) {
-      LogUtil.d("$TAG please open blueTooth");
-      return;
-    }
-    if (_scanResultsSubscription == null || _isScanningSubscription == null) {
-      startScanBlueTooth();
-    } else {
-      if (_isScanning == false) {
-        FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
-      }
-    }
-  }
-
-  /// 修改mtu
-  Future onRequestMtuPressed(BluetoothDevice device) async {
-    try {
-      await device.requestMtu(223, predelay: 0);
-      LogUtil.d("$TAG Request Mtu: Success");
-    } catch (e) {
-      LogUtil.d("$TAG Change Mtu Error:${e.toString()}");
-    }
-  }
-
-  /// 连接蓝牙
-  Future connectBluetooth(BluetoothDevice mdevice) async {
-    if (getBlueToothConnectState() == -1) {
-      mdevice.connectAndUpdateStream().catchError((e) {
-        LogUtil.d("$TAG Connect Error:${e.toString()}");
-      });
-      _connectionStateSubscription =
-          mdevice.connectionState.listen((state) async {
-        _currentBlueConnectionState = state;
-        if (state == BluetoothConnectionState.connected) {
-          this.currentBlue = mdevice;
-          _services = []; // must rediscover services
-
-          await onRequestMtuPressed(mdevice);
-          try {
-            _services = await mdevice.discoverServices();
-            LogUtil.d('-============-=====================_services'
-                '.length:${_services.length}');
-            for (int i = 0; i < _services.length; i++) {
-              LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}---");
-
-              List<BluetoothCharacteristic> characteristics =
-                  _services[i].characteristics;
-              LogUtil.d('-============-=====================characteristics:'
-                  '${characteristics
-                  .length}');
-              for (int j = 0; j < characteristics.length; j++) {
-                LogUtil.d(
-                    "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
-                if (characteristics[j].properties.read &&
-                    (_services[i].uuid.str.toLowerCase() == "ffe0")) {
-                  readChart = characteristics[j];
-                  // 读
-                  LogUtil.d(
-                      "$TAG readcharacteristics:${characteristics[j].uuid.toString()}");
-                  var subscription = readChart?.onValueReceived.listen((value) {
-                    // LogUtil.d("$TAG 接收蓝牙数据:${value}");
-                    decodeBlueToothData(value);
-                  });
-
-                  if (subscription != null) {
-                    currentBlue?.cancelWhenDisconnected(subscription);
-                  }
-
-                  await readChart?.setNotifyValue(true);
-
-                  LogUtil.d(
-                      "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  sendChart = characteristics[j];
-
-                  List<int> list = getStepOneBluetoothCarNumber1();
-
-                  sendDataToBlueTooth(list,i: i,j: j);
-                }
-
-                  // LogUtil.d(
-                  //     "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  // sendChart = characteristics[j];
-                  //
-                  // List<int> list = getStepOneBluetoothCarNumber1();
-                  //
-                  // sendDataToBlueTooth(list,i: i,j: j);
-
-                if (characteristics[j].properties.write || characteristics[j]
-                    .properties.writeWithoutResponse) {
-                  // 写
-                  // LogUtil.d(
-                  //     "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  // sendChart = characteristics[j];
-                  //
-                  // List<int> list = getStepOneBluetoothCarNumber1();
-                  //
-                  // sendDataToBlueTooth(list,i: i,j: j);
-                }
-              }
-            }
-            LogUtil.d("$TAG Discover Services: Success");
-          } catch (e) {
-            LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
-          }
-        }
-        if (state == BluetoothConnectionState.connected && _rssi == null) {
-          _rssi = await mdevice.readRssi();
-        }
-      });
-
-      _mtuSubscription = mdevice.mtu.listen((value) {
-        _mtuSize = value;
-      });
-
-      _isConnectingSubscription = mdevice.isConnecting.listen((value) {
-        _isConnecting = value;
-        if (_isConnecting) {
-          currentBlue = mdevice;
-        } else {
-          currentBlue = null;
-        }
-      });
-
-      _isDisconnectingSubscription = mdevice.isDisconnecting.listen((value) {
-        _isDisconnecting = value;
-      });
-    }
-  }
-
-  /// 取消连接
-  Future onCancelPressed() async {
-    if (currentBlue != null && _isConnecting) {
-      try {
-        await currentBlue?.disconnectAndUpdateStream(queue: false);
-        LogUtil.d("$TAG Cancel: Success");
-      } catch (e) {
-        LogUtil.d("$TAG Cancel Error:${e.toString()}");
-      }
-    }
-  }
-
-  /// 断开链接
-  Future onDisconnectPressed() async {
-    if (currentBlue != null &&
-        _currentBlueConnectionState == BluetoothConnectionState.connected) {
-      try {
-        await currentBlue?.disconnectAndUpdateStream();
-        LogUtil.d("$TAG Disconnect: Success");
-      } catch (e) {
-        LogUtil.d("$TAG Disconnect Error:${e.toString()}");
-      }
-    }
-  }
-
   /// 发送数据
-  Future sendDataToBlueTooth(List<int> sendData,{int i = -1 ,int j = -1})
-  async {
-    if (sendChart == null) {
+  Future sendDataToBlueTooth(List<int> sendData,
+      {int i = -1, int j = -1}) async {
+    if (sendchart == null) {
       LogUtil.d("$TAG sendChart is null");
     } else {
       LogUtil.d("$TAG 发送数据到蓝牙：${sendData}");
-      try{
-        LogUtil.d("descriptors:${sendChart?.descriptors.length}");
-        final math = Random();
-        List<int> listdata = [math.nextInt(255), math.nextInt(255), math
-            .nextInt(255), math.nextInt(255)];
-        await sendChart?.descriptors[0].write(listdata);
-      }catch(e){
-        LogUtil.d("-============-=====================$TAG i=$i "
-            "j=$j");
-      }
+      await sendchart?.descriptors[0].write(sendData);
     }
   }
 
-  /// 监听蓝牙特征
-  void listenerBlueToothReadChart() async {
-    if (readChart == null) {
-      LogUtil.d("$TAG readChart is null");
-    } else {
-      await readChart?.setNotifyValue(true);
-      readChart?.lastValueStream.listen((event) {
-        receiveData.add(event);
-        decodeBlueToothData(event);
-      });
-    }
+  // 释放蓝牙资源
+  void dispostBlue() {
+    controller.close();
   }
 
-  /// 蓝牙连接状态  0连接中，1已连接，-1未连接
-  int getBlueToothConnectState() {
-    if (_isConnecting) {
-      return 0;
-    } else if (_currentBlueConnectionState ==
-        BluetoothConnectionState.connected) {
-      return 1;
-    } else {
-      return -1;
+  /// 蓝牙连接后第一步，发送时间戳到蓝牙
+  List<int> getStepOneBluetoothCarNumber1() {
+    List<int> sendPack = List.filled(17, 0);
+    int position = 0;
+    int count = 0;
+    sendPack[position++] = 0xa5;
+    sendPack[position++] = 0x03;
+    sendPack[position++] = 1;
+    sendPack[position++] = 8;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
+    sendPack[12] = (second >> 24) & 0xff;
+    sendPack[13] = (second >> 16) & 0xff;
+    sendPack[14] = (second >> 8) & 0xff;
+    sendPack[15] = second & 0xff;
+
+    for (int i = 0; i < 16; i++) {
+      count += sendPack[i];
     }
-  }
-
-  void dispose() {
-    _connectionStateSubscription?.cancel();
-    _mtuSubscription?.cancel();
-    _isConnectingSubscription?.cancel();
-    _isDisconnectingSubscription?.cancel();
-
-    _scanResultsSubscription?.cancel();
-    _isScanningSubscription?.cancel();
-
-    _adapterStateStateSubscription?.cancel();
+    sendPack[16] = count & 0xff;
+    return sendPack;
   }
 
   /// 解析蓝牙发送的数据
@@ -497,6 +197,8 @@ class BlueToothUtil {
       LogUtil.d("$TAG sum check failed");
       return;
     }
+
+    LogUtil.d("$TAG 接收 消息类型：${(dataList[2] & 0xff)} 数据：$dataList");
 
     if ((dataList[2] & 0xff) == 1) {
       decodeBlueToothData1(dataList);
@@ -726,11 +428,14 @@ class BlueToothUtil {
     // 车速
     carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
 
-    Map<String, Object> map = HashMap();
-    map["motorSpeed"] = motorSpeed;
-    map["carSpeed"] = carSpeed;
+    blueDataVO.carSpeed = carSpeed;
+    controller.add(blueDataVO);
 
-    blueAcceptDataListener?.acceptBlueToothData(map, 37);
+    // Map<String, Object> map = HashMap();
+    // map["motorSpeed"] = motorSpeed;
+    // map["carSpeed"] = carSpeed;
+    //
+    // blueAcceptDataListener?.acceptBlueToothData(map, 37);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型38
@@ -760,18 +465,23 @@ class BlueToothUtil {
     // BMS故障码
     int bmsCode = dataList[15] & 0xff;
 
-    Map<String, Object> map = HashMap();
-    map["range"] = endurance;
-    map["battery"] = battery;
-    map["batteryStatus"] = batteryStatus;
-    map["chargingStatus"] = chargingStatus;
-    map["lackOfPowerStatus"] = lackOfPowerStatus;
-    map["readyStatus"] = readyStatus;
-    map["dischargeContactorStatus"] = dischargeContactorStatus;
-    map["chargingContactorStatus"] = chargingContactorStatus;
-    map["batteryDefaultLeve"] = batteryDefaultLeve;
-    map["bmsCode"] = bmsCode;
-    blueAcceptDataListener?.acceptBlueToothData(map, 38);
+    blueDataVO.endurance = endurance;
+    blueDataVO.battery = battery;
+    controller.add(blueDataVO);
+
+
+    // Map<String, Object> map = HashMap();
+    // map["range"] = endurance;
+    // map["battery"] = battery;
+    // map["batteryStatus"] = batteryStatus;
+    // map["chargingStatus"] = chargingStatus;
+    // map["lackOfPowerStatus"] = lackOfPowerStatus;
+    // map["readyStatus"] = readyStatus;
+    // map["dischargeContactorStatus"] = dischargeContactorStatus;
+    // map["chargingContactorStatus"] = chargingContactorStatus;
+    // map["batteryDefaultLeve"] = batteryDefaultLeve;
+    // map["bmsCode"] = bmsCode;
+    // blueAcceptDataListener?.acceptBlueToothData(map, 38);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型39
@@ -798,28 +508,6 @@ class BlueToothUtil {
     // 握手秘钥
     String shakeHandsKey = utf8.decode(dataList.sublist(12, 16));
     blueAcceptDataListener?.acceptBlueToothData(shakeHandsKey, 44);
-  }
-
-  /// 蓝牙连接后第一步，发送时间戳到蓝牙
-  List<int> getStepOneBluetoothCarNumber1() {
-    List<int> sendPack = List.filled(17, 0);
-    int position = 0;
-    int count = 0;
-    sendPack[position++] = 0xa5;
-    sendPack[position++] = 0x03;
-    sendPack[position++] = 1;
-    sendPack[position++] = 8;
-    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
-    sendPack[12] = (second >> 24) & 0xff;
-    sendPack[13] = (second >> 16) & 0xff;
-    sendPack[14] = (second >> 8) & 0xff;
-    sendPack[15] = second & 0xff;
-
-    for (int i = 0; i < 16; i++) {
-      count += sendPack[i];
-    }
-    sendPack[16] = count & 0xff;
-    return sendPack;
   }
 
   /// 获取 发送车架号 的 数据包 产品名称
@@ -1314,4 +1002,18 @@ class BlueToothUtil {
 
     return sendPack;
   }
+}
+
+class BlueDataVO {
+  // 车速
+  double carSpeed = 0;
+
+  // 剩余里程
+  double endurance = 0;
+
+  // 电池电量
+  int battery = 100;
+
+  // 遥感距离
+  String distance = "0";
 }
