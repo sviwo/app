@@ -40,12 +40,6 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     // BlueToothUtil.getInstance().readChart;
   }
 
-  //YGTODO: 扫描附近蓝牙外设 扫描到的数据保存到外设数组数组 并在界面上配置显示数据
-  scanNearbyBluetoothPeripheral() {
-    // device.platformName 蓝牙名称
-    // device.remoteId.str 蓝牙mac
-  }
-
   /// 获取注册设备到指定产品下所需要的证书
   getDeviceCertificate({Function(DeviceRegistParam)? callback}) {
     loadApiData<DeviceRegistParam>(

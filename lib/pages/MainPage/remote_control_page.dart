@@ -1,4 +1,5 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
+import 'package:atv/archs/utils/bluetooth/blue_test.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
@@ -82,63 +83,80 @@ class _RemoteControlPageState
         SizedBox(
           height: 25.dp,
         ),
-        Padding(
-            padding: EdgeInsets.symmetric(horizontal: 60.dp),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildInfoItem(
-                    Image.asset(
-                      AppIcons.imgRemoteControlElectricQuantity,
-                      width: 18.7.dp,
-                      height: 8.dp,
-                    ),
-                    //YGTODO: 剩余电量，从设备获取
-                    BlueToothUtil.getInstance().getBattery(),
-                    '%',
-                    LocaleKeys.remaining_battery.tr()),
-                _buildInfoItem(
-                    Image.asset(
-                      AppIcons.imgRemoteControlspeed,
-                      width: 17.7.dp,
-                      height: 15.3.dp,
-                    ),
-                    //YGTODO: 运行速度，从设备获取
-                    BlueToothUtil.getInstance().getSpeed(),
-                    'km/h',
-                    LocaleKeys.speed.tr()),
-              ],
-            )),
+        StreamBuilder<BlueDataVO>(
+          stream: BlueTest.getInstance().dataStream,
+          initialData: BlueTest.getInstance().blueDataVO,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            BlueDataVO model = snapshot.data;
+            return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 60.dp),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildInfoItem(
+                        Image.asset(
+                          AppIcons.imgRemoteControlElectricQuantity,
+                          width: 18.7.dp,
+                          height: 8.dp,
+                        ),
+                        //YGTODO: 剩余电量，从设备获取
+                        // BlueToothUtil.getInstance().getBattery(),
+                        '${model.battery}',
+                        '%',
+                        LocaleKeys.remaining_battery.tr()),
+                    _buildInfoItem(
+                        Image.asset(
+                          AppIcons.imgRemoteControlspeed,
+                          width: 17.7.dp,
+                          height: 15.3.dp,
+                        ),
+                        //YGTODO: 运行速度，从设备获取
+                        // BlueToothUtil.getInstance().getSpeed(),
+                        '${model.carSpeed}',
+                        'km/h',
+                        LocaleKeys.speed.tr()),
+                  ],
+                ));
+          },
+        ),
         SizedBox(
           height: 19.dp,
         ),
-        Padding(
-            padding: EdgeInsets.symmetric(horizontal: 60.dp),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildInfoItem(
-                    Image.asset(
-                      AppIcons.imgRemoteControlEdurance,
-                      width: 9.dp,
-                      height: 22.dp,
-                    ),
-                    //YGTODO: 剩余里程，从设备获取
-                    BlueToothUtil.getInstance().getEndurance(),
-                    'km',
-                    LocaleKeys.remaining_mileage.tr()),
-                _buildInfoItem(
-                    Image.asset(
-                      AppIcons.imgRemoteControlDistance,
-                      width: 12.3.dp,
-                      height: 21.dp,
-                    ),
-                    //YGTODO: 遥控距离，从设备获取
-                    BlueToothUtil.getInstance().getControllerDistance(),
-                    'm',
-                    LocaleKeys.remote_control_distance.tr()),
-              ],
-            )),
+        StreamBuilder<BlueDataVO>(
+            stream: BlueTest.getInstance().dataStream,
+            initialData: BlueTest.getInstance().blueDataVO,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              BlueDataVO model = snapshot.data;
+              return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 60.dp),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildInfoItem(
+                          Image.asset(
+                            AppIcons.imgRemoteControlEdurance,
+                            width: 9.dp,
+                            height: 22.dp,
+                          ),
+                          //YGTODO: 剩余里程，从设备获取
+                          // BlueToothUtil.getInstance().getEndurance(),
+                          '${model.endurance}',
+                          'km',
+                          LocaleKeys.remaining_mileage.tr()),
+                      _buildInfoItem(
+                          Image.asset(
+                            AppIcons.imgRemoteControlDistance,
+                            width: 12.3.dp,
+                            height: 21.dp,
+                          ),
+                          //YGTODO: 遥控距离，从设备获取
+                          // BlueToothUtil.getInstance().getControllerDistance(),
+                          model.distance,
+                          'm',
+                          LocaleKeys.remote_control_distance.tr()),
+                    ],
+                  ));
+            }),
         SizedBox(
           height: 78.dp,
         ),
@@ -152,7 +170,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向前');
             //YGTODO: 蓝牙控制向前
-            BlueToothUtil.getInstance().controllerForward();
+            BlueTest.getInstance().controllerForward();
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
@@ -174,7 +192,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向后');
             //YGTODO: 蓝牙控制向后
-            BlueToothUtil.getInstance().controllerBackwards();
+            BlueTest.getInstance().controllerBackwards();
           },
           onLongPress: () {
             LogUtil.d('长按了向后');
@@ -198,7 +216,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了喇叭图标');
                       //YGTODO: 蓝牙控制喇叭
                       // viewModel.controlVehicle(1);
-                      BlueToothUtil.getInstance().controllerBlueVoice();
+                      BlueTest.getInstance().controllerBlueVoice();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlHorn,
@@ -220,7 +238,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了灯光图标');
                       //YGTODO: 蓝牙控制灯光
                       // viewModel.controlVehicle(0);
-                      BlueToothUtil.getInstance().controllerBlueLight();
+                      BlueTest.getInstance().controllerBlueLight();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlLight,
