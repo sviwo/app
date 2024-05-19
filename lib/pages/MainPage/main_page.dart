@@ -98,6 +98,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
 
   @override
   void initState() {
+    BlueToothUtil.getInstance();
     viewModel = MainPageViewModel();
     super.initState();
     // AppConf.isMainPage = true;
