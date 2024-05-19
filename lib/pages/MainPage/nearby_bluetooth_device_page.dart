@@ -60,7 +60,7 @@ class _NearByBluetoothDevicesPageState extends BaseMvvmPageState<
         Expanded(
             child: StreamBuilder<List<ScanResult>>(
           initialData: const [],
-          // stream: BlueToothUtil.getInstance().,
+          stream: BlueToothUtil.getInstance().bluetoothDeviceList,
           builder: (context, snapshot) {
             var peripherals = snapshot.data ?? [];
             return ListView.separated(

@@ -94,10 +94,12 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     if (args != null && args is Map<String, dynamic>) {
       deviceName = args['deviceName'];
     }
+    BlueToothUtil.getInstance().speedConnectBlue("", "");
   }
 
   @override
   void release() {
     // TODO: implement release
+    BlueToothUtil.getInstance().stopScanBlueTooth();
   }
 }
