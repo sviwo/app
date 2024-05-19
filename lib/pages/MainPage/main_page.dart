@@ -1,6 +1,7 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/conf/arch_event.dart';
+import 'package:atv/archs/utils/bluetooth/blue_test.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
@@ -48,7 +49,6 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           onTap: () {
             LogUtil.d('点击了扫码');
             pagePush(AppRoute.bluetoothDevicesPage);
-            // BlueToothUtil.getInstance().speedConnectBlue("","");
             // {
             //                     // 车架号后台初验通过，跳转蓝牙列表页面
             //                     pagePush(AppRoute.bluetoothDevicesPage,
@@ -108,7 +108,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
 
   @override
   void initState() {
-    BlueToothUtil.getInstance();
+    BlueTest.getInstance();
     viewModel = MainPageViewModel();
     super.initState();
     // AppConf.isMainPage = true;

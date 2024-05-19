@@ -15,26 +15,6 @@ import 'package:flutter_blue/flutter_blue.dart';
 class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   /// 车架号
   String deviceName = '';
-  List<String> peripherals = [
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk",
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk",
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk",
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk",
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk",
-    "ddddd",
-    "你的老师卡菲纳萨勒芬妮扩散法三开发卢萨卡放哪",
-    "dsndfdklsdnfksanslfnk"
-  ];
 
   Stream<List<ScanResult>> get bluetoothDeviceList =>
       BlueTest.getInstance().bluetoothDeviceList;
