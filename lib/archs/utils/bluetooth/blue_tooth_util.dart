@@ -12,6 +12,8 @@ import 'blue_accept_data_listener.dart';
 import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 
 class BlueToothUtil {
+  String TAG = "BlueToothUtil:";
+
   // 车速
   double carSpeed = 0;
 
@@ -23,6 +25,9 @@ class BlueToothUtil {
 
   // 当前蓝牙mac
   String currentblueMac = "";
+
+  // 当前蓝牙mac
+  String currentBlueName = "";
 
   // 当前蓝牙
   BluetoothDevice? currentBlue = null;
@@ -117,7 +122,8 @@ class BlueToothUtil {
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
   void speedConnectBlue(String mac, String key) {
-    mac = "C0:04:01:94:00:78";
+    mac = "C0:02:64:32:00:11";
+    currentBlueName = "SVIWO00000001";
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
@@ -184,38 +190,40 @@ class BlueToothUtil {
         await FlutterBluePlus.turnOn();
       }
     } catch (e) {
-      print("open blueTooth error:$e");
+      LogUtil.d("$TAG open blueTooth error:$e");
     }
   }
 
   /// 扫描蓝牙
   void startScanBlueTooth() async {
     if (_adapterState != BluetoothAdapterState.on) {
-      print("please open blueTooth");
+      LogUtil.d("$TAG please open blueTooth");
       return;
     }
     _scanResults = [];
     _scanResultsSubscription ??= FlutterBluePlus.scanResults.asBroadcastStream().listen(
             (results) {
       _scanResults = results;
-      LogUtil.d("scanblue:搜索结果:${results}");
+      LogUtil.d("$TAG搜索结果:${results}");
       // device.platformName 蓝牙名称
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.length > 0) {
         for (int i = 0; i < _scanResults.length; i++) {
-          LogUtil.d("scanblue:蓝牙列表MAC:${_scanResults[i].device.remoteId.str}");
-          if (currentblueMac.compareTo(_scanResults[i].device.remoteId.str) ==
+          LogUtil.d("$TAG 蓝牙名称：$currentBlueName ${_scanResults[i].device
+              .platformName}");
+          if (currentBlueName.compareTo(_scanResults[i].device.platformName) ==
               0) {
-            LogUtil.d("scanblue:搜索到了指定蓝牙");
+            LogUtil.d("$TAG搜索到了指定蓝牙");
             // 停止扫描
             FlutterBluePlus.stopScan();
+            _scanResults[i].device.platformName;
             // 连接蓝牙
             connectBluetooth(_scanResults[i].device);
           }
         }
       }
     }, onError: (e) {
-      print("Scan Error:${e.toString()}");
+      LogUtil.d("$TAG Scan Error:${e.toString()}");
     });
 
     _isScanningSubscription ??= FlutterBluePlus.isScanning.listen((state) {
@@ -228,34 +236,34 @@ class BlueToothUtil {
 
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
-      debugPrint("scan connect:" + jsonEncode(_systemDevices));
+      LogUtil.d("$TAG scan connect:" + jsonEncode(_systemDevices));
     } catch (e) {
-      print("System Devices Error:${e.toString()}");
+      LogUtil.d("$TAG System Devices Error:${e.toString()}");
     }
     try {
       await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
     } catch (e) {
-      print("Start Scan Error:${e.toString()}");
+      LogUtil.d("$TAG Start Scan Error:${e.toString()}");
     }
   }
 
   /// 停止蓝牙扫描
   void stopScanBlueTooth() async {
     if (_adapterState != BluetoothAdapterState.on) {
-      print("please open blueTooth");
+      LogUtil.d("$TAG please open blueTooth");
       return;
     }
     try {
       FlutterBluePlus.stopScan();
     } catch (e) {
-      print("Stop Scan Error:${e.toString()}");
+      LogUtil.d("$TAG Stop Scan Error:${e.toString()}");
     }
   }
 
   /// 刷新扫描
   void onRefresh() {
     if (_adapterState != BluetoothAdapterState.on) {
-      print("please open blueTooth");
+      LogUtil.d("$TAG please open blueTooth");
       return;
     }
     if (_scanResultsSubscription == null || _isScanningSubscription == null) {
@@ -271,9 +279,9 @@ class BlueToothUtil {
   Future onRequestMtuPressed(BluetoothDevice device) async {
     try {
       await device.requestMtu(223, predelay: 0);
-      print("Request Mtu: Success");
+      LogUtil.d("$TAG Request Mtu: Success");
     } catch (e) {
-      print("Change Mtu Error:${e.toString()}");
+      LogUtil.d("$TAG Change Mtu Error:${e.toString()}");
     }
   }
 
@@ -281,7 +289,7 @@ class BlueToothUtil {
   Future connectBluetooth(BluetoothDevice mdevice) async {
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
-        print("Connect Error:${e.toString()}");
+        LogUtil.d("$TAG Connect Error:${e.toString()}");
       });
       _connectionStateSubscription =
           mdevice.connectionState.listen((state) async {
@@ -316,9 +324,9 @@ class BlueToothUtil {
                 }
               }
             }
-            print("Discover Services: Success");
+            LogUtil.d("$TAG Discover Services: Success");
           } catch (e) {
-            print("Discover Services: Success:${e.toString()}");
+            LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
@@ -350,9 +358,9 @@ class BlueToothUtil {
     if (currentBlue != null && _isConnecting) {
       try {
         await currentBlue?.disconnectAndUpdateStream(queue: false);
-        print("Cancel: Success");
+        LogUtil.d("$TAG Cancel: Success");
       } catch (e) {
-        print("Cancel Error:${e.toString()}");
+        LogUtil.d("$TAG Cancel Error:${e.toString()}");
       }
     }
   }
@@ -363,9 +371,9 @@ class BlueToothUtil {
         _currentBlueConnectionState == BluetoothConnectionState.connected) {
       try {
         await currentBlue?.disconnectAndUpdateStream();
-        print("Disconnect: Success");
+        LogUtil.d("$TAG Disconnect: Success");
       } catch (e) {
-        print("Disconnect Error:${e.toString()}");
+        LogUtil.d("$TAG Disconnect Error:${e.toString()}");
       }
     }
   }
@@ -373,7 +381,7 @@ class BlueToothUtil {
   /// 发送数据
   Future sendDataToBlueTooth(List<int> sendData) async {
     if (sendChart == null) {
-      print("sendChart is null");
+      LogUtil.d("$TAG sendChart is null");
     } else {
       await sendChart?.write(sendData);
     }
@@ -382,7 +390,7 @@ class BlueToothUtil {
   /// 监听蓝牙特征
   void listenerBlueToothReadChart() async {
     if (readChart == null) {
-      print("readChart is null");
+      LogUtil.d("$TAG readChart is null");
     } else {
       await readChart?.setNotifyValue(true);
       readChart?.lastValueStream.listen((event) {
@@ -418,17 +426,17 @@ class BlueToothUtil {
 
   /// 解析蓝牙发送的数据
   void decodeBlueToothData(List<int> dataList) {
-    print("acept blueTooth data:$dataList");
+    LogUtil.d("$TAG acept blueTooth data:$dataList");
     if (dataList.length != 17) {
-      print("dataList length must is 17");
+      LogUtil.d("$TAG dataList length must is 17");
       return;
     }
     if ((dataList[0] & 0xff) != 0xa5) {
-      print("data index 0 must is 0xa5");
+      LogUtil.d("$TAG data index 0 must is 0xa5");
       return;
     }
     if ((dataList[1] & 0xff) != 0x10) {
-      print("data index 1 must is 0x10");
+      LogUtil.d("$TAG data index 1 must is 0x10");
       return;
     }
 
@@ -440,7 +448,7 @@ class BlueToothUtil {
       count += dataList[i];
     }
     if ((count & 0xff) != (dataList[16] & 0xff)) {
-      print("sum check failed");
+      LogUtil.d("$TAG sum check failed");
       return;
     }
 
@@ -473,7 +481,7 @@ class BlueToothUtil {
     } else if ((dataList[2] & 0xff) == 44) {
       decodeBlueToothData44(dataList);
     } else {
-      print("blueTooth messageType error");
+      LogUtil.d("$TAG blueTooth messageType error");
     }
   }
 
@@ -561,22 +569,22 @@ class BlueToothUtil {
     if ((dataList[9] & 0x01) == 1) {
     } else {
       checkResult = false;
-      print("ProductKey check error");
+      LogUtil.d("$TAG ProductKey check error");
     }
     if (((dataList[9] >> 1) & 0x01) == 1) {
     } else {
       checkResult = false;
-      print("DeviceName check error");
+      LogUtil.d("$TAG DeviceName check error");
     }
     if (((dataList[9] >> 2) & 0x01) == 1) {
     } else {
       checkResult = false;
-      print("DeviceSecret check error");
+      LogUtil.d("$TAG DeviceSecret check error");
     }
     if (((dataList[9] >> 3) & 0x01) == 1) {
     } else {
       checkResult = false;
-      print("URL check error");
+      LogUtil.d("$TAG URL check error");
     }
 
     blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
