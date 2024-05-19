@@ -47,20 +47,20 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            BlueToothUtil.getInstance().speedConnectBlue("","");
-            // pagePush(AppRoute.scanQrCodePage, callback: (data) {
-            //   if (data != null && data is Map<String, dynamic>) {
-            //     var codeString = data['code'];
-            //     viewModel.checkDeviceName(
-            //       deviceName: codeString,
-            //       callback: () {
-            //         // 车架号后台初验通过，跳转蓝牙列表页面
-            //         pagePush(AppRoute.bluetoothDevicesPage,
-            //             params: {'deviceName': codeString});
-            //       },
-            //     );
-            //   }
-            // });
+            // BlueToothUtil.getInstance().speedConnectBlue("","");
+            pagePush(AppRoute.scanQrCodePage, callback: (data) {
+              if (data != null && data is Map<String, dynamic>) {
+                var codeString = data['code'];
+                viewModel.checkDeviceName(
+                  deviceName: codeString,
+                  callback: () {
+                    // 车架号后台初验通过，跳转蓝牙列表页面
+                    pagePush(AppRoute.bluetoothDevicesPage,
+                        params: {'deviceName': codeString});
+                  },
+                );
+              }
+            });
           },
           child: Center(
             child: Image.asset(
@@ -219,7 +219,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
               //YGTODO: 判断蓝牙是否已经连接了车辆
-              var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
+              var isConnectBluetooth =
+                  BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isConnectBluetooth) {
                 //跳转到控制器页面
                 pagePush(AppRoute.remoteControl);
@@ -229,7 +230,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
-                BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
+                BlueToothUtil.getInstance()
+                    .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
               }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
@@ -511,7 +513,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
+                  var isConnectBluetooth =
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙去解锁
                     BlueToothUtil.getInstance().controllerBlueUnLock();
@@ -521,7 +524,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
-                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
+                    BlueToothUtil.getInstance().speedConnectBlue(
+                        bluetoothAddress, bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -539,7 +543,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了喇叭图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
+                  var isConnectBluetooth =
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙响喇叭
                     BlueToothUtil.getInstance().controllerBlueVoice();
@@ -549,7 +554,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
-                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
+                    BlueToothUtil.getInstance().speedConnectBlue(
+                        bluetoothAddress, bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -567,7 +573,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了灯光图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth = BlueToothUtil.getInstance().getBlueConnectStatus();
+                  var isConnectBluetooth =
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙响车灯
                     BlueToothUtil.getInstance().controllerBlueLight();
@@ -577,7 +584,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                         viewModel.dataModel?.bluetoothAddress ?? '';
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
-                    BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,bluetoothSecrectKey);
+                    BlueToothUtil.getInstance().speedConnectBlue(
+                        bluetoothAddress, bluetoothSecrectKey);
                   }
                 },
                 iconSize: 41.dp,

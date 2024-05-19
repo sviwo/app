@@ -9,6 +9,7 @@ import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/tools/language/lw_language_tool.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   /// 车架号
@@ -36,10 +37,17 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
 
   String? currentDevice;
 
-  bool isCurrent(String code) => currentDevice == code;
+  bool isCurrent(ScanResult device) =>
+      currentDevice == device.device.remoteId.str;
 
-  chooseDevice(String code) async {
-    currentDevice = code;
+  String bluetoothName(ScanResult device) {
+    // device.platformName 蓝牙名称
+    // device.remoteId.str 蓝牙mac
+    return device.device.platformName + device.device.remoteId.str;
+  }
+
+  chooseDevice(ScanResult device) async {
+    currentDevice = device.device.remoteId.str;
     pageRefresh();
 
     BlueToothUtil.getInstance().readChart;
@@ -86,10 +94,12 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     if (args != null && args is Map<String, dynamic>) {
       deviceName = args['deviceName'];
     }
+    BlueToothUtil.getInstance().speedConnectBlue("", "");
   }
 
   @override
   void release() {
     // TODO: implement release
+    BlueToothUtil.getInstance().stopScanBlueTooth();
   }
 }
