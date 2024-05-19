@@ -68,9 +68,12 @@ class BlueTest {
         flutterBlue?.scanResults.asBroadcastStream().listen((results) {
       scanResult = results;
       // do something with scan results
-      // for (ScanResult r in results) {
-      //   print('${r.device.name} found! rssi: ${r.rssi}');
-      // }
+      for (ScanResult r in results) {
+        if(currentblueMac == r.device.name){
+          flutterBlue?.stopScan();
+          connectBlue(r.device);
+        }
+      }
     });
 
     // Stop scanning
@@ -106,6 +109,14 @@ class BlueTest {
         }
       }
     });
+  }
+
+  /// 根据蓝牙mac和key去连接蓝牙  YGTODO
+  void speedConnectBlue(String mac, String key) {
+    // 判断蓝牙是否开启
+    currentblueMac = mac;
+    // 扫描蓝牙
+    scanBlue();
   }
 
   /// 获取蓝牙连接状态    YGTODO
