@@ -122,8 +122,8 @@ class BlueToothUtil {
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
   void speedConnectBlue(String mac, String key) {
-    mac = "E0:02:7F:AB:00:29";
-    currentBlueName = "SVIWO00000001";
+    // mac = "E0:02:7F:AB:00:29";
+    // currentBlueName = "SVIWO00000001";
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
@@ -135,8 +135,8 @@ class BlueToothUtil {
   }
 
   /// 获取搜索蓝牙列表
- Stream<List<ScanResult>> get bluetoothDeviceList => FlutterBluePlus.scanResults
-     .asBroadcastStream();
+  Stream<List<ScanResult>> get bluetoothDeviceList =>
+      FlutterBluePlus.scanResults.asBroadcastStream();
 
   /// 控制蓝牙解锁   YGTODO
   void controllerBlueUnLock() {
@@ -201,8 +201,8 @@ class BlueToothUtil {
       return;
     }
     _scanResults = [];
-    _scanResultsSubscription ??= FlutterBluePlus.scanResults.asBroadcastStream().listen(
-            (results) {
+    _scanResultsSubscription ??=
+        FlutterBluePlus.scanResults.asBroadcastStream().listen((results) {
       _scanResults = results;
       LogUtil.d("$TAG搜索结果:${results}");
       // device.platformName 蓝牙名称
@@ -297,30 +297,38 @@ class BlueToothUtil {
           try {
             _services = await mdevice.discoverServices();
             for (int i = 0; i < _services.length; i++) {
-              _services[i].uuid.str;
-              List<BluetoothCharacteristic> characteristics =
-                  _services[i].characteristics;
-              for (int j = 0; j < characteristics.length; j++) {
-                LogUtil.d("$TAG characteristics:${characteristics[j].serviceUuid
-                    .str}");
-                if (characteristics[j].properties.read) {
-                  readCharacteristic = characteristics[j];
-                  // 读
-                  var subscription =
-                      readCharacteristic?.onValueReceived.listen((value) {
-                    decodeBlueToothData(value);
-                  });
+              LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}---");
+              if (_services[i].uuid.str.toLowerCase().contains("ffeo")) {
+                List<BluetoothCharacteristic> characteristics =
+                    _services[i].characteristics;
+                for (int j = 0; j < characteristics.length; j++) {
+                  LogUtil.d(
+                      "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
+                  if (characteristics[j].properties.read) {
+                    readCharacteristic = characteristics[j];
+                    // 读
+                    LogUtil.d("$TAG readcharacteristics:${characteristics[j]
+                        .uuid.toString()}");
+                    var subscription =
+                        readCharacteristic?.onValueReceived.listen((value) {
+                      decodeBlueToothData(value);
+                    });
 
-                  if (subscription != null) {
-                    currentBlue?.cancelWhenDisconnected(subscription);
+                    if (subscription != null) {
+                      currentBlue?.cancelWhenDisconnected(subscription);
+                    }
+
+                    await readCharacteristic?.setNotifyValue(true);
                   }
-
-                  await readCharacteristic?.setNotifyValue(true);
+                  if (characteristics[j].properties.write) {
+                    // 写
+                    LogUtil.d("$TAG writecharacteristics:${characteristics[j]
+                        .uuid.toString()}");
+                    writeCharacteristic = characteristics[j];
+                  }
                 }
-                if (characteristics[j].properties.write) {
-                  // 写
-                  writeCharacteristic = characteristics[j];
-                }
+              } else {
+                continue;
               }
             }
             LogUtil.d("$TAG Discover Services: Success");
