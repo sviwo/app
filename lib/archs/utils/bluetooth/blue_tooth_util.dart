@@ -122,7 +122,7 @@ class BlueToothUtil {
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
   void speedConnectBlue(String mac, String key) {
-    mac = "C0:02:64:32:00:11";
+    mac = "E0:02:7F:AB:00:29";
     currentBlueName = "SVIWO00000001";
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
@@ -209,16 +209,13 @@ class BlueToothUtil {
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.length > 0) {
         for (int i = 0; i < _scanResults.length; i++) {
-          LogUtil.d("$TAG 蓝牙名称：$currentBlueName ${_scanResults[i].device
-              .platformName}");
-          if (currentBlueName.compareTo(_scanResults[i].device.platformName) ==
-              0) {
+          if (currentblueMac == _scanResults[i].device.remoteId.str) {
             LogUtil.d("$TAG搜索到了指定蓝牙");
             // 停止扫描
             FlutterBluePlus.stopScan();
-            _scanResults[i].device.platformName;
             // 连接蓝牙
             connectBluetooth(_scanResults[i].device);
+            break;
           }
         }
       }
@@ -304,6 +301,8 @@ class BlueToothUtil {
               List<BluetoothCharacteristic> characteristics =
                   _services[i].characteristics;
               for (int j = 0; j < characteristics.length; j++) {
+                LogUtil.d("$TAG characteristics:${characteristics[j].serviceUuid
+                    .str}");
                 if (characteristics[j].properties.read) {
                   readCharacteristic = characteristics[j];
                   // 读
