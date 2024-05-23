@@ -558,21 +558,22 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     }
 
                     LogUtil.d('点击了喇叭图标');
+                    viewModel.controlVehicle(1);
                     //YGTODO: 判断蓝牙是否已经连接了车辆
-                    var isConnectBluetooth =
-                        BlueTest.getInstance().getBlueConnectStatus();
-                    if (isConnectBluetooth) {
-                      //YGTODO: 控制蓝牙响喇叭
-                      BlueTest.getInstance().controllerBlueVoice();
-                    } else {
-                      //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
-                      var bluetoothAddress =
-                          viewModel.dataModel?.bluetoothAddress ?? '';
-                      var bluetoothSecrectKey =
-                          viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      BlueTest.getInstance().speedConnectBlue(
-                          bluetoothAddress, bluetoothSecrectKey);
-                    }
+                    // var isConnectBluetooth =
+                    //     BlueTest.getInstance().getBlueConnectStatus();
+                    // if (isConnectBluetooth) {
+                    //   //YGTODO: 控制蓝牙响喇叭
+                    //   BlueTest.getInstance().controllerBlueVoice();
+                    // } else {
+                    //   //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
+                    //   var bluetoothAddress =
+                    //       viewModel.dataModel?.bluetoothAddress ?? '';
+                    //   var bluetoothSecrectKey =
+                    //       viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    //   BlueTest.getInstance().speedConnectBlue(
+                    //       bluetoothAddress, bluetoothSecrectKey);
+                    // }
                     setStateBorn(() => viewModel.bornIsOn = true);
 
                     Future.delayed(const Duration(seconds: 2), () {
@@ -602,21 +603,22 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       return;
                     }
                     LogUtil.d('点击了灯光图标');
-                    //YGTODO: 判断蓝牙是否已经连接了车辆
-                    var isConnectBluetooth =
-                        BlueTest.getInstance().getBlueConnectStatus();
-                    if (isConnectBluetooth) {
-                      //YGTODO: 控制蓝牙响车灯
-                      BlueTest.getInstance().controllerBlueLight();
-                    } else {
-                      //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
-                      var bluetoothAddress =
-                          viewModel.dataModel?.bluetoothAddress ?? '';
-                      var bluetoothSecrectKey =
-                          viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      BlueTest.getInstance().speedConnectBlue(
-                          bluetoothAddress, bluetoothSecrectKey);
-                    }
+                    viewModel.controlVehicle(0);
+                    // //YGTODO: 判断蓝牙是否已经连接了车辆
+                    // var isConnectBluetooth =
+                    //     BlueTest.getInstance().getBlueConnectStatus();
+                    // if (isConnectBluetooth) {
+                    //   //YGTODO: 控制蓝牙响车灯
+                    //   BlueTest.getInstance().controllerBlueLight();
+                    // } else {
+                    //   //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
+                    //   var bluetoothAddress =
+                    //       viewModel.dataModel?.bluetoothAddress ?? '';
+                    //   var bluetoothSecrectKey =
+                    //       viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    //   BlueTest.getInstance().speedConnectBlue(
+                    //       bluetoothAddress, bluetoothSecrectKey);
+                    // }
                     setStateLight(() => viewModel.lightIsOn = true);
 
                     Future.delayed(const Duration(seconds: 2), () {
@@ -629,7 +631,10 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     width: 25.dp,
                     height: 15.dp,
                     fit: BoxFit.contain,
-                    // color: (viewModel.dataModel?.lockedStatus ?? false)
+                    color: viewModel.lightIsOn
+                        ? const Color(0xff36BCB3)
+                        : Colors.white,
+                    // color: (viewModel.dataModel?.lockedStatus ?? false) && viewModel.lightIsOn
                     //     ? const Color(0xff36BCB3)
                     //     : Colors.white,
                   ));
