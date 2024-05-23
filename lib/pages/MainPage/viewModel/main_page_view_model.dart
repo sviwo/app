@@ -30,6 +30,12 @@ class MainPageViewModel extends BaseViewModel {
   /// 是否车主
   bool get isOwnerCar => dataModel?.userDeviceType == 0;
 
+  /// 喇叭是否打开
+  bool bornIsOn = false;
+
+  /// 灯光是否打开
+  bool lightIsOn = false;
+
   @override
   void initialize(args) {
     // TODO: implement initialize
@@ -163,7 +169,7 @@ class MainPageViewModel extends BaseViewModel {
     loadApiData(
       ApiVehicle.controlVehicle(instructions: instructions),
       handlePageState: false,
-      showLoading: true,
+      showLoading: false,
       voidSuccess: () {},
     );
   }
