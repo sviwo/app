@@ -2,6 +2,7 @@ class AppIcons {
   AppIcons._internal();
 
   /// 通用
+  static const String imgLauchImageIcon = 'assets/images/lanchImageSviwo.png';
   static const String imgCommonBackIcon = 'assets/images/ic_title_back.png';
 
   static const String imgCommonCheck = 'assets/images/common_check.png';

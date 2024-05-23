@@ -21,7 +21,7 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
     super.initState();
     AppConf.loginSuccess().then((value) {
       LogUtil.d('登录状态为$value');
-      // pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
+      pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
       if (value) {
         pagePush(AppRoute.main, needReplace: true, fullscreenDialog: true);
       } else {
@@ -34,14 +34,16 @@ class _SplashPageState extends BaseMvvmPageState<SplashPage, LoginViewModel> {
   Widget? headerBackgroundWidget() {
     // TODO: implement headerBackgroundWidget
     return Image.asset(
-      AppIcons.imgCommonBgDownStar,
+      AppIcons.imgLauchImageIcon,
       fit: BoxFit.cover,
     );
   }
 
   @override
   Widget buildBody(BuildContext context) {
-    return Container();
+    return Container(
+      color: Colors.transparent,
+    );
   }
 
   @override
