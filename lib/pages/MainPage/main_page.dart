@@ -136,6 +136,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     EventManager.unregister(context, ArchEvent.tokenInvalid);
     EventManager.unregister(context, AppEvent.userBaseInfoChange);
     EventManager.unregister(context, AppEvent.vehicleInfoChange);
+    EventManager.unregister(context, AppEvent.vehicleRegistSuccess);
     WidgetsBinding.instance.removeObserver(this);
     // BlueTest.getInstance().dispostBlue();
     // BlueToothUtil.getInstance().dispostBlue();
@@ -635,6 +636,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     width: 25.dp,
                     height: 15.dp,
                     fit: BoxFit.contain,
+                    color: viewModel.lightIsOn
+                        ? const Color(0xff36BCB3)
+                        : Colors.white,
                     // color: (viewModel.dataModel?.lockedStatus ?? false)
                     //     ? const Color(0xff36BCB3)
                     //     : Colors.white,
