@@ -64,6 +64,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
       handlePageState: false,
       showLoading: true,
       voidSuccess: () {
+        EventManager.post(AppEvent.vehicleRegistSuccess);
         if (callback != null) {
           callback();
         }

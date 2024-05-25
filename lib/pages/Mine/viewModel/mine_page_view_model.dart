@@ -99,14 +99,14 @@ class MinePageViewModel extends BaseViewModel {
     String? newErrorMsg;
     try {
       //
-      try {
-        await LWLoading.showLoading2();
-      } catch (e) {}
+      // try {
+      //   await LWLoading.showLoading2();
+      // } catch (e) {}
 
       //
       var res = await Future.wait(
           [ApiHomePage.getUserBasicInfo(), ApiVehicle.getVehicleList()]);
-      await LWLoading.dismiss(animation: false);
+      // await LWLoading.dismiss(animation: false);
 
       userInfo = res.first.data as UserBasicInfo?;
       vehicleList = res[1].data as List<VehicleListModel>;
@@ -115,7 +115,7 @@ class MinePageViewModel extends BaseViewModel {
 
       return res;
     } on HttpErrorException catch (e) {
-      await LWLoading.dismiss(animation: false);
+      // await LWLoading.dismiss(animation: false);
       newErrorMsg = e.message;
       if (e.code == '-1') {
         newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
@@ -124,7 +124,7 @@ class MinePageViewModel extends BaseViewModel {
       }
       LWToast.show(newErrorMsg);
     } on Exception catch (e) {
-      await LWLoading.dismiss(animation: false);
+      // await LWLoading.dismiss(animation: false);
 
       newErrorMsg = e.toString();
       LWToast.show(newErrorMsg);
