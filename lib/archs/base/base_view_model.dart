@@ -129,6 +129,7 @@ abstract class BaseViewModel with ChangeNotifier {
       Function(String? errorMsg)? onFailed}) async {
     String? newErrorMsg;
     var pageState = PageState.loading;
+    showLoading = false;
     try {
       //
       if (showLoading) {

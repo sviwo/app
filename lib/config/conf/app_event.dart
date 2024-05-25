@@ -19,4 +19,7 @@ class AppEvent {
 
   /// 车辆信息变更
   static String vehicleInfoChange = 'event/vehicleInfoChange';
+
+  /// 车辆注册成功
+  static String vehicleRegistSuccess = 'event/vehicleRegistSuccess';
 }

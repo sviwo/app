@@ -123,6 +123,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
       viewModel.loadData();
     });
+    EventManager.register(context, AppEvent.vehicleRegistSuccess, (args) {
+      viewModel.loadData();
+    });
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -528,7 +531,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                   LogUtil.d('点击了锁图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
                   var isConnectBluetooth =
-                  BlueToothUtil.getInstance().getBlueConnectStatus();
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙去解锁
                     BlueToothUtil.getInstance().controllerBlueUnLock();
@@ -563,7 +566,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     LogUtil.d('点击了喇叭图标');
                     //YGTODO: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
-                    BlueToothUtil.getInstance().getBlueConnectStatus();
+                        BlueToothUtil.getInstance().getBlueConnectStatus();
                     if (isConnectBluetooth) {
                       //YGTODO: 控制蓝牙响喇叭
                       BlueToothUtil.getInstance().controllerBlueVoice();
