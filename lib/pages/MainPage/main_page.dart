@@ -48,7 +48,16 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            pagePush(AppRoute.bluetoothDevicesPage);
+            var codeString = "sviwo_atv00000000001";
+            viewModel.checkDeviceName(
+              deviceName: codeString,
+              callback: () {
+                // 车架号后台初验通过，跳转蓝牙列表页面
+                pagePush(AppRoute.bluetoothDevicesPage,
+                    params: {'deviceName': codeString});
+              },
+            );
+            // pagePush(AppRoute.bluetoothDevicesPage);
             // {
             //                     // 车架号后台初验通过，跳转蓝牙列表页面
             //                     pagePush(AppRoute.bluetoothDevicesPage,
@@ -528,7 +537,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                   LogUtil.d('点击了锁图标');
                   //YGTODO: 判断蓝牙是否已经连接了车辆
                   var isConnectBluetooth =
-                  BlueToothUtil.getInstance().getBlueConnectStatus();
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isConnectBluetooth) {
                     //YGTODO: 控制蓝牙去解锁
                     BlueToothUtil.getInstance().controllerBlueUnLock();
@@ -563,7 +572,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     LogUtil.d('点击了喇叭图标');
                     //YGTODO: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
-                    BlueToothUtil.getInstance().getBlueConnectStatus();
+                        BlueToothUtil.getInstance().getBlueConnectStatus();
                     if (isConnectBluetooth) {
                       //YGTODO: 控制蓝牙响喇叭
                       BlueToothUtil.getInstance().controllerBlueVoice();

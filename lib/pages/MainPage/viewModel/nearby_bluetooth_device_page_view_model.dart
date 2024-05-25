@@ -12,7 +12,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-
 class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   /// 车架号
   String deviceName = '';
@@ -48,6 +47,8 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
       handlePageState: false,
       showLoading: true,
       dataSuccess: (data) {
+        BlueToothUtil.getInstance().setDeviceRegistParam(data);
+
         ///得到蓝牙从后台获取的证书
         if (callback != null) {
           callback(data);
@@ -75,6 +76,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     // TODO: implement initialize
     if (args != null && args is Map<String, dynamic>) {
       deviceName = args['deviceName'];
+      BlueToothUtil.getInstance().setDeviceName(deviceName);
     }
     BlueToothUtil.getInstance().startScanBlueTooth();
   }
