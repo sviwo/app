@@ -84,7 +84,7 @@ class _RemoteControlPageState
           height: 25.dp,
         ),
         StreamBuilder<BlueDataVO>(
-          stream: BlueTest.getInstance().dataStream,
+          // stream: BlueTest.getInstance().dataStream,
           initialData: BlueTest.getInstance().blueDataVO,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             BlueDataVO model = snapshot.data;
@@ -123,7 +123,7 @@ class _RemoteControlPageState
           height: 19.dp,
         ),
         StreamBuilder<BlueDataVO>(
-            stream: BlueTest.getInstance().dataStream,
+            // stream: BlueTest.getInstance().dataStream,
             initialData: BlueTest.getInstance().blueDataVO,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               BlueDataVO model = snapshot.data;

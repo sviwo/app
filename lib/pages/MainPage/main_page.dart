@@ -48,7 +48,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            pagePush(AppRoute.bluetoothDevicesPage);
+            // pagePush(AppRoute.bluetoothDevicesPage);
             // {
             //                     // 车架号后台初验通过，跳转蓝牙列表页面
             //                     pagePush(AppRoute.bluetoothDevicesPage,
@@ -58,19 +58,19 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             //               }
             //             });
             //           },
-            // pagePush(AppRoute.scanQrCodePage, callback: (data) {
-            //   if (data != null && data is Map<String, dynamic>) {
-            //     var codeString = data['code'];
-            //     viewModel.checkDeviceName(
-            //       deviceName: codeString,
-            //       callback: () {
-            //         // 车架号后台初验通过，跳转蓝牙列表页面
-            //         pagePush(AppRoute.bluetoothDevicesPage,
-            //             params: {'deviceName': codeString});
-            //       },
-            //     );
-            //   }
-            // });
+            pagePush(AppRoute.scanQrCodePage, callback: (data) {
+              if (data != null && data is Map<String, dynamic>) {
+                var codeString = data['code'];
+                viewModel.checkDeviceName(
+                  deviceName: codeString,
+                  callback: () {
+                    // 车架号后台初验通过，跳转蓝牙列表页面
+                    pagePush(AppRoute.bluetoothDevicesPage,
+                        params: {'deviceName': codeString});
+                  },
+                );
+              }
+            });
           },
           child: Center(
             child: Image.asset(
@@ -230,20 +230,21 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
               //YGTODO: 判断蓝牙是否已经连接了车辆
-              var isConnectBluetooth =
-                  BlueTest.getInstance().getBlueConnectStatus();
-              if (isConnectBluetooth) {
-                //跳转到控制器页面
-                pagePush(AppRoute.remoteControl);
-              } else {
-                //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
-                var bluetoothAddress =
-                    viewModel.dataModel?.bluetoothAddress ?? '';
-                var bluetoothSecrectKey =
-                    viewModel.dataModel?.bluetoothSecretKey ?? '';
-                BlueTest.getInstance()
-                    .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
-              }
+              pagePush(AppRoute.remoteControl);
+              // var isConnectBluetooth =
+              //     BlueTest.getInstance().getBlueConnectStatus();
+              // if (isConnectBluetooth) {
+              //   //跳转到控制器页面
+              //   pagePush(AppRoute.remoteControl);
+              // } else {
+              //   //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
+              //   var bluetoothAddress =
+              //       viewModel.dataModel?.bluetoothAddress ?? '';
+              //   var bluetoothSecrectKey =
+              //       viewModel.dataModel?.bluetoothSecretKey ?? '';
+              //   BlueTest.getInstance()
+              //       .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
+              // }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
               LWToast.show(

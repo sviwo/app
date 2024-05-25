@@ -65,7 +65,7 @@ class MapNaviPageViewModel extends BaseViewModel {
     if (address.isEmpty) {
       return;
     }
-    LWLoading.showLoading2();
+    // LWLoading.showLoading2();
     try {
       searchResult = await LWMapTool.geocoding(address);
       LogUtil.d('---------${searchResult.length}');
@@ -76,7 +76,7 @@ class MapNaviPageViewModel extends BaseViewModel {
       LWToast.show(e.toString());
       LogUtil.d('+++++++++++++出错了：${e.toString()}');
     } finally {
-      LWLoading.dismiss();
+      // LWLoading.dismiss();
     }
   }
 
