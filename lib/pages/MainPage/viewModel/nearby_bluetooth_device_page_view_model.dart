@@ -83,5 +83,6 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   void release() {
     // TODO: implement release
     BlueToothUtil.getInstance().stopScanBlueTooth();
+    BlueToothUtil.getInstance().dispose();
   }
 }

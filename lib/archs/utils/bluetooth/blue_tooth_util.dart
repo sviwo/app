@@ -243,7 +243,7 @@ class BlueToothUtil {
 
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
-      LogUtil.d("$TAG scan connect:" + jsonEncode(_systemDevices));
+      // LogUtil.d("$TAG scan connect:" + jsonEncode(_systemDevices));
     } catch (e) {
       LogUtil.d("$TAG System Devices Error:${e.toString()}");
     }
@@ -308,25 +308,22 @@ class BlueToothUtil {
           await onRequestMtuPressed(mdevice);
           try {
             _services = await mdevice.discoverServices();
-            LogUtil.d('-============-=====================_services'
-                '.length:${_services.length}');
             for (int i = 0; i < _services.length; i++) {
-              LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}---");
-
+              // LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}");
               List<BluetoothCharacteristic> characteristics =
                   _services[i].characteristics;
-              LogUtil.d('-============-=====================characteristics:'
-                  '${characteristics.length}');
+
               for (int j = 0; j < characteristics.length; j++) {
-                LogUtil.d(
-                    "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
                 if (characteristics[j].properties.read &&
                     (_services[i].uuid.str.toLowerCase() == "ffe0")) {
                   readChart = characteristics[j];
+
+                  await readChart?.setNotifyValue(true);
+
                   // 读
                   var subscription = readChart?.onValueReceived.listen((value) {
-                    LogUtil.d(
-                        "$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(value)}");
+                   // LogUtil.d(
+                        //"$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(value)}");
                     // decodeBlueToothData(value);
                   });
 
@@ -334,30 +331,28 @@ class BlueToothUtil {
                     currentBlue?.cancelWhenDisconnected(subscription);
                   }
 
-                  await readChart?.setNotifyValue(true);
+                //  await readChart?.setNotifyValue(true);
 
                   sendChart = characteristics[j];
 
+                  // onRequestMtuPressed(currentBlue!);
+                  // 读和写在同一个特征下面， 获取到特征后就发送数据
                   List<int> list = getStepOneBluetoothCarNumber1();
-
                   sendDataToBlueTooth(list, i: i, j: j);
+
+                  break;
                 }
-
-                if (characteristics[j].properties.write ||
-                    characteristics[j].properties.writeWithoutResponse) {
-                  onRequestMtuPressed(currentBlue!);
-                  // 写
-                  LogUtil.d(
-                      "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  sendChart = characteristics[j];
-
-                  List<int> list = getStepOneBluetoothCarNumber1();
-
-                  sendDataToBlueTooth(list, i: i, j: j);
-                }
+                // 或者这里，通过write 属性去发送数据，不过没有write的特征
+                // if (characteristics[j].properties.write ||
+                //     characteristics[j].properties.writeWithoutResponse) {
+                //   onRequestMtuPressed(currentBlue!);
+                //   // 写
+                //   sendChart = characteristics[j];
+                //   List<int> list = getStepOneBluetoothCarNumber1();
+                //   sendDataToBlueTooth(list, i: i, j: j);
+                // }
               }
             }
-            LogUtil.d("$TAG Discover Services: Success");
           } catch (e) {
             LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
@@ -419,9 +414,9 @@ class BlueToothUtil {
     } else {
       LogUtil.d("$TAG 发送数据到蓝牙：${DataExchangeUtils.bytesToHex(sendData)}");
       try {
-        await sendChart?.descriptors[0].write(sendData);
+        await sendChart?.write(sendData);
       } catch (e) {
-        LogUtil.d("$TAG i=$i j=$j ${e}");
+        LogUtil.d("$TAG ${e}");
       }
     }
   }
@@ -452,6 +447,7 @@ class BlueToothUtil {
   }
 
   void dispose() {
+    currentBlue?.disconnect();
     _connectionStateSubscription?.cancel();
     _mtuSubscription?.cancel();
     _isConnectingSubscription?.cancel();

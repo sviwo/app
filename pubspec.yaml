@@ -65,7 +65,10 @@ dependencies:
 
   svgaplayer_flutter: ^2.2.0
   crypton: ^2.1.0
-  flutter_blue_plus: ^1.31.15
+#  flutter_blue_plus: ^1.31.15
+  flutter_blue_plus:
+    git:
+      url: https://github.com/lwei667/flutter_blue_plus_plus.git
   pointycastle: ^3.7.3
   basic_utils: ^5.5.4
   # json_serializable: ^6.6.2
@@ -111,7 +114,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   json_serializable: 6.6.2
   build_runner: 2.3.3
-  test: 1.22.0
+#  test: 1.22.0
   mockito: 5.4.0
   # intl_generator: 0.4.1
 
