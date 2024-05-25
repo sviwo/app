@@ -49,6 +49,14 @@ class BlueToothUtil {
   // 蓝牙特征
   List<BluetoothService> _services = [];
 
+  // 蓝牙传输过来的数据
+  BlueDataVO blueDataVO = BlueDataVO();
+
+  // 蓝牙数据传输流
+  StreamController<BlueDataVO> controller = StreamController<BlueDataVO>();
+
+  Stream<BlueDataVO> get dataStream => controller.stream.asBroadcastStream();
+
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -206,7 +214,7 @@ class BlueToothUtil {
     _scanResultsSubscription ??=
         FlutterBluePlus.scanResults.asBroadcastStream().listen((results) {
       _scanResults = results;
-      LogUtil.d("$TAG搜索结果:${results}");
+      // LogUtil.d("$TAG搜索结果:${results}");
       // device.platformName 蓝牙名称
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.length > 0) {
@@ -308,8 +316,7 @@ class BlueToothUtil {
               List<BluetoothCharacteristic> characteristics =
                   _services[i].characteristics;
               LogUtil.d('-============-=====================characteristics:'
-                  '${characteristics
-                  .length}');
+                  '${characteristics.length}');
               for (int j = 0; j < characteristics.length; j++) {
                 LogUtil.d(
                     "$TAG characteristics:${characteristics[j].characteristicUuid.str}");
@@ -317,11 +324,10 @@ class BlueToothUtil {
                     (_services[i].uuid.str.toLowerCase() == "ffe0")) {
                   readChart = characteristics[j];
                   // 读
-                  LogUtil.d(
-                      "$TAG readcharacteristics:${characteristics[j].uuid.toString()}");
                   var subscription = readChart?.onValueReceived.listen((value) {
-                    // LogUtil.d("$TAG 接收蓝牙数据:${value}");
-                    decodeBlueToothData(value);
+                    LogUtil.d(
+                        "$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(value)}");
+                    // decodeBlueToothData(value);
                   });
 
                   if (subscription != null) {
@@ -330,33 +336,24 @@ class BlueToothUtil {
 
                   await readChart?.setNotifyValue(true);
 
+                  sendChart = characteristics[j];
+
+                  List<int> list = getStepOneBluetoothCarNumber1();
+
+                  sendDataToBlueTooth(list, i: i, j: j);
+                }
+
+                if (characteristics[j].properties.write ||
+                    characteristics[j].properties.writeWithoutResponse) {
+                  onRequestMtuPressed(currentBlue!);
+                  // 写
                   LogUtil.d(
                       "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
                   sendChart = characteristics[j];
 
                   List<int> list = getStepOneBluetoothCarNumber1();
 
-                  sendDataToBlueTooth(list,i: i,j: j);
-                }
-
-                  // LogUtil.d(
-                  //     "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  // sendChart = characteristics[j];
-                  //
-                  // List<int> list = getStepOneBluetoothCarNumber1();
-                  //
-                  // sendDataToBlueTooth(list,i: i,j: j);
-
-                if (characteristics[j].properties.write || characteristics[j]
-                    .properties.writeWithoutResponse) {
-                  // 写
-                  // LogUtil.d(
-                  //     "$TAG writecharacteristics:${characteristics[j].uuid.toString()}");
-                  // sendChart = characteristics[j];
-                  //
-                  // List<int> list = getStepOneBluetoothCarNumber1();
-                  //
-                  // sendDataToBlueTooth(list,i: i,j: j);
+                  sendDataToBlueTooth(list, i: i, j: j);
                 }
               }
             }
@@ -415,21 +412,16 @@ class BlueToothUtil {
   }
 
   /// 发送数据
-  Future sendDataToBlueTooth(List<int> sendData,{int i = -1 ,int j = -1})
-  async {
+  Future sendDataToBlueTooth(List<int> sendData,
+      {int i = -1, int j = -1}) async {
     if (sendChart == null) {
       LogUtil.d("$TAG sendChart is null");
     } else {
-      LogUtil.d("$TAG 发送数据到蓝牙：${sendData}");
-      try{
-        LogUtil.d("descriptors:${sendChart?.descriptors.length}");
-        final math = Random();
-        List<int> listdata = [math.nextInt(255), math.nextInt(255), math
-            .nextInt(255), math.nextInt(255)];
-        await sendChart?.descriptors[0].write(listdata);
-      }catch(e){
-        LogUtil.d("-============-=====================$TAG i=$i "
-            "j=$j");
+      LogUtil.d("$TAG 发送数据到蓝牙：${DataExchangeUtils.bytesToHex(sendData)}");
+      try {
+        await sendChart?.descriptors[0].write(sendData);
+      } catch (e) {
+        LogUtil.d("$TAG i=$i j=$j ${e}");
       }
     }
   }
@@ -698,24 +690,27 @@ class BlueToothUtil {
     // 右灯闪
     int rightLightFlash = (dataList[15] >> 3) & 0x01;
 
-    Map<String, Object> map = HashMap();
-    map["lockCarStatus"] = lockCarStatus;
-    map["setLock"] = setLock;
-    map["wheelDrive"] = wheelDrive;
-    map["shake"] = shake;
-    map["voice"] = voice;
-    map["alarm"] = alarm;
-    map["alarmContinue"] = alarmContinue;
-    map["deviceDefaultAlarm"] = deviceDefaultAlarm;
-    map["carTemperatureHigh"] = carTemperatureHigh;
-    map["chargeConnect"] = chargeConnect;
-    map["lowPower"] = lowPower;
-    map["lightStatus"] = lightStatus;
-    map["doubleLightFlash"] = doubleLightFlash;
-    map["leftLightFlash"] = leftLightFlash;
-    map["rightLightFlash"] = rightLightFlash;
+    blueDataVO.chargeConnect = chargeConnect;
+    controller.add(blueDataVO);
 
-    blueAcceptDataListener?.acceptBlueToothData(map, 36);
+    // Map<String, Object> map = HashMap();
+    // map["lockCarStatus"] = lockCarStatus;
+    // map["setLock"] = setLock;
+    // map["wheelDrive"] = wheelDrive;
+    // map["shake"] = shake;
+    // map["voice"] = voice;
+    // map["alarm"] = alarm;
+    // map["alarmContinue"] = alarmContinue;
+    // map["deviceDefaultAlarm"] = deviceDefaultAlarm;
+    // map["carTemperatureHigh"] = carTemperatureHigh;
+    // map["chargeConnect"] = chargeConnect;
+    // map["lowPower"] = lowPower;
+    // map["lightStatus"] = lightStatus;
+    // map["doubleLightFlash"] = doubleLightFlash;
+    // map["leftLightFlash"] = leftLightFlash;
+    // map["rightLightFlash"] = rightLightFlash;
+    //
+    // blueAcceptDataListener?.acceptBlueToothData(map, 36);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -726,11 +721,13 @@ class BlueToothUtil {
     // 车速
     carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
 
-    Map<String, Object> map = HashMap();
-    map["motorSpeed"] = motorSpeed;
-    map["carSpeed"] = carSpeed;
-
-    blueAcceptDataListener?.acceptBlueToothData(map, 37);
+    blueDataVO.carSpeed = carSpeed;
+    controller.add(blueDataVO);
+    // Map<String, Object> map = HashMap();
+    // map["motorSpeed"] = motorSpeed;
+    // map["carSpeed"] = carSpeed;
+    //
+    // blueAcceptDataListener?.acceptBlueToothData(map, 37);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型38
@@ -760,18 +757,22 @@ class BlueToothUtil {
     // BMS故障码
     int bmsCode = dataList[15] & 0xff;
 
-    Map<String, Object> map = HashMap();
-    map["range"] = endurance;
-    map["battery"] = battery;
-    map["batteryStatus"] = batteryStatus;
-    map["chargingStatus"] = chargingStatus;
-    map["lackOfPowerStatus"] = lackOfPowerStatus;
-    map["readyStatus"] = readyStatus;
-    map["dischargeContactorStatus"] = dischargeContactorStatus;
-    map["chargingContactorStatus"] = chargingContactorStatus;
-    map["batteryDefaultLeve"] = batteryDefaultLeve;
-    map["bmsCode"] = bmsCode;
-    blueAcceptDataListener?.acceptBlueToothData(map, 38);
+    blueDataVO.endurance = endurance;
+    blueDataVO.battery = battery;
+    controller.add(blueDataVO);
+
+    // Map<String, Object> map = HashMap();
+    // map["range"] = endurance;
+    // map["battery"] = battery;
+    // map["batteryStatus"] = batteryStatus;
+    // map["chargingStatus"] = chargingStatus;
+    // map["lackOfPowerStatus"] = lackOfPowerStatus;
+    // map["readyStatus"] = readyStatus;
+    // map["dischargeContactorStatus"] = dischargeContactorStatus;
+    // map["chargingContactorStatus"] = chargingContactorStatus;
+    // map["batteryDefaultLeve"] = batteryDefaultLeve;
+    // map["bmsCode"] = bmsCode;
+    // blueAcceptDataListener?.acceptBlueToothData(map, 38);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型39
@@ -1314,4 +1315,21 @@ class BlueToothUtil {
 
     return sendPack;
   }
+}
+
+class BlueDataVO {
+  // 车速
+  double carSpeed = 0;
+
+  // 剩余里程
+  double endurance = 0;
+
+  // 电池电量
+  int battery = 100;
+
+  // 遥感距离
+  String distance = "0";
+
+  // 充电枪连接
+  int chargeConnect = 0;
 }

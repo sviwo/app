@@ -1,6 +1,7 @@
 import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/utils/bluetooth/blue_test.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
@@ -9,7 +10,7 @@ import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/tools/language/lw_language_tool.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 
 class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
@@ -17,7 +18,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   String deviceName = '';
 
   Stream<List<ScanResult>> get bluetoothDeviceList =>
-      BlueTest.getInstance().bluetoothDeviceList;
+      BlueToothUtil.getInstance().bluetoothDeviceList;
 
   String? currentDevice;
 
@@ -35,7 +36,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     pageRefresh();
     await Future.delayed(Duration.zero, () {
       // 连接蓝牙.
-      BlueTest.getInstance().connectBlue(device.device);
+      BlueToothUtil.getInstance().connectBluetooth(device.device);
     });
     // BlueToothUtil.getInstance().readChart;
   }
@@ -75,12 +76,12 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     if (args != null && args is Map<String, dynamic>) {
       deviceName = args['deviceName'];
     }
-    BlueTest.getInstance().scanBlue();
+    BlueToothUtil.getInstance().startScanBlueTooth();
   }
 
   @override
   void release() {
     // TODO: implement release
-    BlueTest.getInstance().stopScan();
+    BlueToothUtil.getInstance().stopScanBlueTooth();
   }
 }

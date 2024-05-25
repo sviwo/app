@@ -1,6 +1,18 @@
 import 'dart:typed_data';
 
 class DataExchangeUtils {
+  /// bytes 转 String
+  static String bytesToHex(List<int> bytes) {
+    return bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  }
+
+  /// 16进制字符串转 bytes
+  static List<int> hexStringToListInt(String hexString) {
+    final RegExp pattern = RegExp(r'[0-9a-fA-F]{2}', caseSensitive: false);
+    return hexString.split('').where(pattern.hasMatch).map((hex) => int.parse(hex, radix: 16)).toList();
+  }
+
+
   /// byte数组转float
   static double bytesToFloat(List<int> bytes) {
     // 确保字节数组长度为4，因为一个float占4个字节

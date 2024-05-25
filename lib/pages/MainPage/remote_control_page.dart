@@ -84,8 +84,8 @@ class _RemoteControlPageState
           height: 25.dp,
         ),
         StreamBuilder<BlueDataVO>(
-          stream: BlueTest.getInstance().dataStream,
-          initialData: BlueTest.getInstance().blueDataVO,
+          stream: BlueToothUtil.getInstance().dataStream,
+          initialData: BlueToothUtil.getInstance().blueDataVO,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             BlueDataVO model = snapshot.data;
             return Padding(
@@ -123,8 +123,8 @@ class _RemoteControlPageState
           height: 19.dp,
         ),
         StreamBuilder<BlueDataVO>(
-            stream: BlueTest.getInstance().dataStream,
-            initialData: BlueTest.getInstance().blueDataVO,
+            stream: BlueToothUtil.getInstance().dataStream,
+            initialData: BlueToothUtil.getInstance().blueDataVO,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               BlueDataVO model = snapshot.data;
               return Padding(
@@ -170,7 +170,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向前');
             //YGTODO: 蓝牙控制向前
-            BlueTest.getInstance().controllerForward();
+            BlueToothUtil.getInstance().controllerForward();
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
@@ -192,7 +192,7 @@ class _RemoteControlPageState
           onTap: () {
             LogUtil.d('点击了向后');
             //YGTODO: 蓝牙控制向后
-            BlueTest.getInstance().controllerBackwards();
+            BlueToothUtil.getInstance().controllerBackwards();
           },
           onLongPress: () {
             LogUtil.d('长按了向后');
@@ -216,7 +216,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了喇叭图标');
                       //YGTODO: 蓝牙控制喇叭
                       // viewModel.controlVehicle(1);
-                      BlueTest.getInstance().controllerBlueVoice();
+                      BlueToothUtil.getInstance().controllerBlueVoice();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlHorn,
@@ -238,7 +238,7 @@ class _RemoteControlPageState
                       LogUtil.d('点击了灯光图标');
                       //YGTODO: 蓝牙控制灯光
                       // viewModel.controlVehicle(0);
-                      BlueTest.getInstance().controllerBlueLight();
+                      BlueToothUtil.getInstance().controllerBlueLight();
                     },
                     icon: Image.asset(
                       AppIcons.imgRemoteControlLight,
