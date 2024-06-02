@@ -48,7 +48,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            var codeString = "sviwo_atv00000000001";
+            var codeString = "sviwo-asdas546a4s6d5";
             viewModel.checkDeviceName(
               deviceName: codeString,
               callback: () {

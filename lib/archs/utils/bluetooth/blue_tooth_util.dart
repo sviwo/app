@@ -338,8 +338,6 @@ class BlueToothUtil {
 
                   // 读
                   var subscription = readChart?.onValueReceived.listen((value) {
-                    LogUtil.d(
-                        "$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(value)}");
                     decodeBlueToothData(value);
                   });
 
@@ -503,32 +501,46 @@ class BlueToothUtil {
     }
 
     if ((dataList[2] & 0xff) == 1) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData1(dataList);
     } else if ((dataList[2] & 0xff) == 4) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData4(dataList);
     } else if ((dataList[2] & 0xff) == 9) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData9(dataList);
     } else if ((dataList[2] & 0xff) == 14) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData14(dataList);
     } else if ((dataList[2] & 0xff) == 23) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData23(dataList);
     } else if ((dataList[2] & 0xff) == 32) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData32(dataList);
     } else if ((dataList[2] & 0xff) == 33) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData33(dataList);
     } else if ((dataList[2] & 0xff) == 34) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData34(dataList);
     } else if ((dataList[2] & 0xff) == 35) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData35(dataList);
     } else if ((dataList[2] & 0xff) == 36) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData36(dataList);
     } else if ((dataList[2] & 0xff) == 37) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData37(dataList);
     } else if ((dataList[2] & 0xff) == 38) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData38(dataList);
     } else if ((dataList[2] & 0xff) == 39) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData39(dataList);
     } else if ((dataList[2] & 0xff) == 44) {
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData44(dataList);
     } else {
       LogUtil.d("$TAG blueTooth messageType error");
@@ -570,7 +582,7 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型4  产品名称 应答
   void decodeBlueToothData4(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      LogUtil.d("产品名称:接收成功！");
+      LogUtil.d("$TAG 产品名称:接收成功！");
       if (blueConnectInfo != null &&
           blueConnectInfo!.productKey != null &&
           !blueConnectInfo!.productKey.isNullOrEmpty()) {
@@ -584,14 +596,14 @@ class BlueToothUtil {
       // blueAcceptDataListener?.acceptBlueToothData(true, 4);
     } else {
       // blueAcceptDataListener?.acceptBlueToothData(false, 4);
-      LogUtil.d("产品名称:接收失败！");
+      LogUtil.d("$TAG 产品名称:接收失败！");
     }
   }
 
   /// 解析蓝牙发送过来的数据  消息类型9  ProductKey
   void decodeBlueToothData9(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      LogUtil.d("ProductKey接收成功！");
+      LogUtil.d("$TAG ProductKey接收成功！");
       // blueAcceptDataListener?.acceptBlueToothData(true, 9);
       if (blueConnectInfo != null &&
           blueConnectInfo!.deviceName != null &&
@@ -604,14 +616,14 @@ class BlueToothUtil {
       }
     } else {
       // blueAcceptDataListener?.acceptBlueToothData(false, 9);
-      LogUtil.d("ProductKey接收失败！");
+      LogUtil.d("$TAG ProductKey接收失败！");
     }
   }
 
   /// 解析蓝牙发送过来的数据  消息类型14  DeviceName
   void decodeBlueToothData14(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      LogUtil.d("DeviceName接收成功！");
+      LogUtil.d("$TAG DeviceName接收成功！");
       if (blueConnectInfo != null &&
           blueConnectInfo!.deviceSecret != null &&
           !blueConnectInfo!.deviceSecret.isNullOrEmpty()) {
@@ -623,7 +635,7 @@ class BlueToothUtil {
       }
       // blueAcceptDataListener?.acceptBlueToothData(true, 14);
     } else {
-      LogUtil.d("DeviceName接收失败！");
+      LogUtil.d("$TAG DeviceName接收失败！");
       // blueAcceptDataListener?.acceptBlueToothData(false, 14);
     }
   }
@@ -631,7 +643,7 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型23 DeviceSecret
   void decodeBlueToothData23(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      LogUtil.d("DeviceName接收失败！");
+      LogUtil.d("$TAG DeviceName接收失败！");
       if (blueConnectInfo != null &&
           blueConnectInfo!.mqttHostUrl != null &&
           !blueConnectInfo!.mqttHostUrl.isNullOrEmpty()) {
@@ -643,7 +655,7 @@ class BlueToothUtil {
       }
       // blueAcceptDataListener?.acceptBlueToothData(true, 23);
     } else {
-      LogUtil.d("DeviceName接收失败！");
+      LogUtil.d("$TAG DeviceName接收失败！");
       // blueAcceptDataListener?.acceptBlueToothData(false, 23);
     }
   }
