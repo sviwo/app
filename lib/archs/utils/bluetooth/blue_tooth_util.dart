@@ -33,13 +33,16 @@ class BlueToothUtil {
   String currentBlueName = "";
 
   // 当前蓝牙
-  BluetoothDevice? currentBlue = null;
+  BluetoothDevice? currentBlue;
 
   // 蓝牙握手数据类
-  DeviceRegistParam? blueConnectInfo = null;
+  DeviceRegistParam? blueConnectInfo;
 
   // 握手第一步 产品名称
-  String? deviceName = null;
+  String? deviceName;
+
+  // 握手秘钥
+  String? keyString;
 
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
@@ -104,6 +107,8 @@ class BlueToothUtil {
 
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
+  List<List<int>> sendData = []; // 暂存发送的数据
+
   /// 获取示例
   static BlueToothUtil getInstance() {
     if (_instanceBlueToothUtil == null) {
@@ -132,8 +137,23 @@ class BlueToothUtil {
           _instanceBlueToothUtil?.sendChart = null;
         }
       });
+
+      // 每隔20毫秒钟执行一次myTask
+      Timer.periodic(const Duration(milliseconds: 100), (timer) {
+        _instanceBlueToothUtil?.myTask();
+      });
     }
     return _instanceBlueToothUtil!;
+  }
+
+  void myTask() {
+    if (sendData.isNotEmpty) {
+      if (sendChart != null) {
+        sendDataToBlueTooth(sendData[0]);
+        sendData.removeAt(0);
+      }
+    }
+    // 这里放置你需要定时执行的代码
   }
 
   /// 获取蓝牙是否开启 true 开启， false 关闭
@@ -166,17 +186,17 @@ class BlueToothUtil {
 
   /// 控制蓝牙解锁   YGTODO
   void controllerBlueUnLock() {
-    sendDataToBlueTooth(sendPackToBluetooth46(lockCarStatus: 1));
+    sendData.add(sendPackToBluetooth46(lockCarStatus: 1));
   }
 
   /// 控制蓝牙响喇叭   YGTODO
   void controllerBlueVoice() {
-    sendDataToBlueTooth(sendPackToBluetooth46(voice: 1));
+    sendData.add(sendPackToBluetooth46(voice: 1));
   }
 
   /// 控制蓝牙响车灯   YGTODO
   void controllerBlueLight() {
-    sendDataToBlueTooth(sendPackToBluetooth46(lightStatus: 2));
+    sendData.add(sendPackToBluetooth46(lightStatus: 2));
   }
 
   /// 剩余电量 YGTODO
@@ -201,12 +221,12 @@ class BlueToothUtil {
 
   /// 向前  YGTODO
   void controllerForward() {
-    sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 1));
+    sendData.add(sendPackToBluetooth46(carStatus: 1));
   }
 
   /// 向后  YGTODO
   void controllerBackwards() {
-    sendDataToBlueTooth(sendPackToBluetooth46(carStatus: 2));
+    sendData.add(sendPackToBluetooth46(carStatus: 2));
   }
 
   /// 开启蓝牙
@@ -233,7 +253,7 @@ class BlueToothUtil {
       // LogUtil.d("$TAG搜索结果:${results}");
       // device.platformName 蓝牙名称
       // device.remoteId.str 蓝牙mac
-      if (_scanResults != null && _scanResults.length > 0) {
+      if (_scanResults != null && _scanResults.isNotEmpty) {
         for (int i = 0; i < _scanResults.length; i++) {
           if (currentblueMac == _scanResults[i].device.remoteId.str) {
             LogUtil.d("$TAG搜索到了指定蓝牙");
@@ -328,11 +348,9 @@ class BlueToothUtil {
           this.currentBlue = mdevice;
           _services = []; // must rediscover services
 
-          // await onRequestMtuPressed(mdevice);
           try {
             _services = await mdevice.discoverServices();
             for (int i = 0; i < _services.length; i++) {
-              // LogUtil.d("$TAG _servicesuuid:${_services[i].uuid.str}");
               List<BluetoothCharacteristic> characteristics =
                   _services[i].characteristics;
 
@@ -352,26 +370,20 @@ class BlueToothUtil {
                     currentBlue?.cancelWhenDisconnected(subscription);
                   }
 
-                  //  await readChart?.setNotifyValue(true);
-
                   sendChart = characteristics[j];
 
-                  // onRequestMtuPressed(currentBlue!);
-                  // 读和写在同一个特征下面， 获取到特征后就发送数据
                   List<int> list = getStepOneBluetoothCarNumber1();
-                  sendDataToBlueTooth(list, i: i, j: j);
-
+                  sendData.add(list);
+                  // 发送车架号
+                  if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+                    List<List<int>> mList =
+                        getPackToBluetoothCarNumber2_4(deviceName!);
+                    for (int i = 0; i < mList.length; i++) {
+                      sendData.add(mList[i]);
+                    }
+                  }
                   break;
                 }
-                // 或者这里，通过write 属性去发送数据，不过没有write的特征
-                // if (characteristics[j].properties.write ||
-                //     characteristics[j].properties.writeWithoutResponse) {
-                //   onRequestMtuPressed(currentBlue!);
-                //   // 写
-                //   sendChart = characteristics[j];
-                //   List<int> list = getStepOneBluetoothCarNumber1();
-                //   sendDataToBlueTooth(list, i: i, j: j);
-                // }
               }
             }
           } catch (e) {
@@ -390,9 +402,9 @@ class BlueToothUtil {
       _isConnectingSubscription = mdevice.isConnecting.listen((value) {
         _isConnecting = value;
         if (_isConnecting) {
-          currentBlue = mdevice;
+          // currentBlue = mdevice;
         } else {
-          currentBlue = null;
+          // currentBlue = null;
         }
       });
 
@@ -468,20 +480,50 @@ class BlueToothUtil {
   }
 
   void dispose() {
-    currentBlue?.disconnect();
-    _connectionStateSubscription?.cancel();
-    _mtuSubscription?.cancel();
-    _isConnectingSubscription?.cancel();
-    _isDisconnectingSubscription?.cancel();
-
-    _scanResultsSubscription?.cancel();
-    _isScanningSubscription?.cancel();
-
-    _adapterStateStateSubscription?.cancel();
+    // currentBlue?.disconnect();
+    // _connectionStateSubscription?.cancel();
+    // _mtuSubscription?.cancel();
+    // _isConnectingSubscription?.cancel();
+    // _isDisconnectingSubscription?.cancel();
+    //
+    // _scanResultsSubscription?.cancel();
+    // _isScanningSubscription?.cancel();
+    //
+    // _adapterStateStateSubscription?.cancel();
   }
+
+  List<int> currentDat = [];
 
   /// 解析蓝牙发送的数据
   void decodeBlueToothData(List<int> dataList) {
+    // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataListTemp)}");
+    // if (currentDat.length > 17) {
+    //   currentDat.clear();
+    // }
+    //
+    // currentDat.addAll(dataListTemp);
+    //
+    // List<int> dataList = [];
+    // if (currentDat.length > 17) {
+    //   dataList = currentDat.sublist(0, 17);
+    //   currentDat = currentDat.sublist(17);
+    // } else if (currentDat.length == 17) {
+    //   dataList = currentDat.sublist(0);
+    //   currentDat.clear();
+    // } else {
+    //   return;
+    // }
+
+    LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+
+    if ((dataList[1] & 0xff) == 0x92) {
+      // LogUtil.d("$TAG 接收蓝牙数据心跳:${DataExchangeUtils.bytesToHex(dataList)}");
+      // 读和写在同一个特征下面， 获取到特征后就发送数据
+      // List<int> list = getStepOneBluetoothCarNumber1();
+      // sendData.add(list, i: 0, j: 0);
+    } else {
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+    }
     if (dataList.length != 17) {
       // LogUtil.d("$TAG dataList length must is 17");
       return;
@@ -508,49 +550,50 @@ class BlueToothUtil {
     }
 
     if ((dataList[2] & 0xff) == 1) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData1(dataList);
     } else if ((dataList[2] & 0xff) == 4) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData4(dataList);
     } else if ((dataList[2] & 0xff) == 9) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData9(dataList);
     } else if ((dataList[2] & 0xff) == 14) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData14(dataList);
     } else if ((dataList[2] & 0xff) == 23) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData23(dataList);
     } else if ((dataList[2] & 0xff) == 32) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData32(dataList);
     } else if ((dataList[2] & 0xff) == 33) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData33(dataList);
     } else if ((dataList[2] & 0xff) == 34) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData34(dataList);
     } else if ((dataList[2] & 0xff) == 35) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData35(dataList);
     } else if ((dataList[2] & 0xff) == 36) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData36(dataList);
     } else if ((dataList[2] & 0xff) == 37) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData37(dataList);
     } else if ((dataList[2] & 0xff) == 38) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData38(dataList);
     } else if ((dataList[2] & 0xff) == 39) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData39(dataList);
     } else if ((dataList[2] & 0xff) == 44) {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData44(dataList);
     } else {
-      LogUtil.d("$TAG blueTooth messageType error");
+      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // LogUtil.d("$TAG blueTooth messageType error");
     }
   }
 
@@ -596,7 +639,7 @@ class BlueToothUtil {
         List<List<int>> mList =
             getPackToBluetoothProductKey5_9(blueConnectInfo!.productKey!);
         for (int i = 0; i < mList.length; i++) {
-          sendDataToBlueTooth(mList[i]);
+          sendData.add(mList[i]);
         }
       }
 
@@ -604,6 +647,13 @@ class BlueToothUtil {
     } else {
       // blueAcceptDataListener?.acceptBlueToothData(false, 4);
       LogUtil.d("$TAG 产品名称:接收失败！");
+      // 发送车架号
+      if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+        List<List<int>> mList = getPackToBluetoothCarNumber2_4(deviceName!);
+        for (int i = 0; i < mList.length; i++) {
+          sendData.add(mList[i]);
+        }
+      }
     }
   }
 
@@ -618,12 +668,21 @@ class BlueToothUtil {
         List<List<int>> mList =
             getPackToBluetoothProductKey10_14(blueConnectInfo!.deviceName!);
         for (int i = 0; i < mList.length; i++) {
-          sendDataToBlueTooth(mList[i]);
+          sendData.add(mList[i]);
         }
       }
     } else {
       // blueAcceptDataListener?.acceptBlueToothData(false, 9);
       LogUtil.d("$TAG ProductKey接收失败！");
+      if (blueConnectInfo != null &&
+          blueConnectInfo!.productKey != null &&
+          !blueConnectInfo!.productKey.isNullOrEmpty()) {
+        List<List<int>> mList =
+            getPackToBluetoothProductKey5_9(blueConnectInfo!.productKey!);
+        for (int i = 0; i < mList.length; i++) {
+          sendData.add(mList[i]);
+        }
+      }
     }
   }
 
@@ -637,42 +696,73 @@ class BlueToothUtil {
         List<List<int>> mList =
             getPackToBluetoothDeviceSecret15_23(blueConnectInfo!.deviceSecret!);
         for (int i = 0; i < mList.length; i++) {
-          sendDataToBlueTooth(mList[i]);
+          sendData.add(mList[i]);
         }
       }
       // blueAcceptDataListener?.acceptBlueToothData(true, 14);
     } else {
       LogUtil.d("$TAG DeviceName接收失败！");
       // blueAcceptDataListener?.acceptBlueToothData(false, 14);
+      if (blueConnectInfo != null &&
+          blueConnectInfo!.deviceName != null &&
+          !blueConnectInfo!.deviceName.isNullOrEmpty()) {
+        List<List<int>> mList =
+            getPackToBluetoothProductKey10_14(blueConnectInfo!.deviceName!);
+        for (int i = 0; i < mList.length; i++) {
+          sendData.add(mList[i]);
+        }
+      }
     }
   }
 
   /// 解析蓝牙发送过来的数据  消息类型23 DeviceSecret
   void decodeBlueToothData23(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      LogUtil.d("$TAG DeviceName接收失败！");
+      LogUtil.d("$TAG DeviceSecret接收成功！");
       if (blueConnectInfo != null &&
           blueConnectInfo!.mqttHostUrl != null &&
           !blueConnectInfo!.mqttHostUrl.isNullOrEmpty()) {
         List<List<int>> mList =
             getPackToBluetoothURL24_32(blueConnectInfo!.mqttHostUrl!);
         for (int i = 0; i < mList.length; i++) {
-          sendDataToBlueTooth(mList[i]);
+          sendData.add(mList[i]);
         }
       }
       // blueAcceptDataListener?.acceptBlueToothData(true, 23);
     } else {
-      LogUtil.d("$TAG DeviceName接收失败！");
+      LogUtil.d("$TAG DeviceSecret接收失败！");
       // blueAcceptDataListener?.acceptBlueToothData(false, 23);
+      if (blueConnectInfo != null &&
+          blueConnectInfo!.deviceSecret != null &&
+          !blueConnectInfo!.deviceSecret.isNullOrEmpty()) {
+        List<List<int>> mList =
+            getPackToBluetoothDeviceSecret15_23(blueConnectInfo!.deviceSecret!);
+        for (int i = 0; i < mList.length; i++) {
+          sendData.add(mList[i]);
+        }
+      }
     }
   }
 
   /// 解析蓝牙发送过来的数据  消息类型32 URL
   void decodeBlueToothData32(List<int> dataList) {
     if ((dataList[14] & 0xff) == 0xa3) {
-      blueAcceptDataListener?.acceptBlueToothData(true, 32);
+      LogUtil.d("$TAG URL接收成功！");
+      List<int> activity = getPackToBluetoothActivities33();
+      sendData.add(activity);
+      // blueAcceptDataListener?.acceptBlueToothData(true, 32);
     } else {
-      blueAcceptDataListener?.acceptBlueToothData(false, 32);
+      LogUtil.d("$TAG URL接收失败！");
+      // blueAcceptDataListener?.acceptBlueToothData(false, 32);
+      if (blueConnectInfo != null &&
+          blueConnectInfo!.mqttHostUrl != null &&
+          !blueConnectInfo!.mqttHostUrl.isNullOrEmpty()) {
+        List<List<int>> mList =
+            getPackToBluetoothURL24_32(blueConnectInfo!.mqttHostUrl!);
+        for (int i = 0; i < mList.length; i++) {
+          sendData.add(mList[i]);
+        }
+      }
     }
   }
 
@@ -701,7 +791,10 @@ class BlueToothUtil {
       LogUtil.d("$TAG URL check error");
     }
 
-    blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
+    List<int> key = dataList.sublist(12, 16);
+    keyString = DataExchangeUtils.byteToString(key);
+    LogUtil.d("$TAG 激活成功！,key=$keyString");
+    // blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
   }
 
   /// 解析蓝牙发送过来的数据  消息类型34
@@ -872,15 +965,9 @@ class BlueToothUtil {
 
   /// 解析蓝牙发送过来的数据  消息类型44  请求车架号
   void decodeBlueToothData44(List<int> dataList) {
-    // 握手秘钥
-    // String shakeHandsKey = utf8.decode(dataList.sublist(12, 16));
-    // blueAcceptDataListener?.acceptBlueToothData(shakeHandsKey, 44);
-    if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-      List<List<int>> mList = getPackToBluetoothCarNumber2_4(deviceName!);
-      for (int i = 0; i < mList.length; i++) {
-        sendDataToBlueTooth(mList[i]);
-      }
-    }
+    List<int> key = dataList.sublist(12, 16);
+    keyString = DataExchangeUtils.byteToString(key);
+    LogUtil.d("$TAG 激活成功！,key=$keyString");
   }
 
   /// 蓝牙连接后第一步，发送时间戳到蓝牙
@@ -980,7 +1067,7 @@ class BlueToothUtil {
         if (temp >= dataArray.length) {
           if (i == 4 && j == 0) {
             sendPack[position++] = dataArray.length & 0xff;
-          } else if (i == 4 && j == 0) {
+          } else if (i == 4 && j == 1) {
             sendPack[position++] = dataLenght & 0xff;
           } else {
             sendPack[position++] = 0;
@@ -1073,9 +1160,9 @@ class BlueToothUtil {
       for (int j = 0; j < 8; j++) {
         int temp = i * 8 + j;
         if (temp >= dataArray.length) {
-          if (i == 7 && j == 0) {
+          if (i == 8 && j == 0) {
             sendPack[position++] = dataArray.length & 0xff;
-          } else if (i == 7 && j == 1) {
+          } else if (i == 8 && j == 1) {
             sendPack[position++] = dataLenght & 0xff;
           } else {
             sendPack[position++] = 0;
@@ -1120,9 +1207,9 @@ class BlueToothUtil {
       for (int j = 0; j < 8; j++) {
         int temp = i * 8 + j;
         if (temp >= dataArray.length) {
-          if (i == 7 && j == 0) {
+          if (i == 8 && j == 0) {
             sendPack[position++] = dataArray.length & 0xff;
-          } else if (i == 7 && j == 1) {
+          } else if (i == 8 && j == 1) {
             sendPack[position++] = dataLenght & 0xff;
           } else {
             sendPack[position++] = 0;
@@ -1144,13 +1231,7 @@ class BlueToothUtil {
   }
 
   /// 获取 激活 数据包
-  List<int> getPackToBluetoothActivities33(String privateKey) {
-    List<int> dataArray = utf8.encode(privateKey);
-
-    if (dataArray.length != 4) {
-      throw ArgumentError("privateKey length must is four");
-    }
-
+  List<int> getPackToBluetoothActivities33() {
     int count = 0;
     int position = 0;
     List<int> sendPack = List.filled(17, 0);
@@ -1165,18 +1246,11 @@ class BlueToothUtil {
     sendPack[position++] = (second >> 8) & 0xff;
     sendPack[position++] = second & 0xff;
     sendPack[position++] = 0x5a & 0xff;
-    sendPack[position++] = 0;
-    sendPack[position++] = 0;
-    sendPack[position++] = 0;
-
-    for (int i = 0; i < dataArray.length; i++) {
-      sendPack[position++] = dataArray[i] & 0xff;
-    }
 
     for (int i = 0; i < 16; i++) {
       count += sendPack[i];
     }
-    sendPack[position++] = count & 0xff;
+    sendPack[16] = count & 0xff;
     return sendPack;
   }
 

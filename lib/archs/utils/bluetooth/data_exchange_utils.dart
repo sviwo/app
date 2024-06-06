@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 class DataExchangeUtils {
-  /// bytes 转 String
+  /// bytes 转 HexString
   static String bytesToHex(List<int> bytes) {
     return bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
   }
@@ -51,5 +52,18 @@ class DataExchangeUtils {
     ((list[1] << 16) & 0xffffff) |
     ((list[2] << 8) & 0xffff) |
     (list[3] & 0xff);
+  }
+
+  /// byte转字符串
+  static String byteToString(List<int> list){
+    if(list.isEmpty){
+      return "";
+    }
+    return utf8.decode(list);
+  }
+
+  /// string 转byte
+  static List<int> stringToByte(String string){
+    return utf8.encode(string);
   }
 }
