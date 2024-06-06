@@ -310,6 +310,13 @@ class BlueToothUtil {
 
   /// 连接蓝牙
   Future connectBluetooth(BluetoothDevice mdevice) async {
+    DeviceRegistParam item = DeviceRegistParam();
+    item.deviceName = "sviwo-asdas546a4s6d5";
+    item.productKey = "k0ugjmf1ois";
+    item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
+    item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
+    BlueToothUtil.getInstance().setDeviceRegistParam(item);
+
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
         LogUtil.d("$TAG Connect Error:${e.toString()}");
