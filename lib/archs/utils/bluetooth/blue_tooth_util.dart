@@ -1478,6 +1478,36 @@ class BlueToothUtil {
     return sendPack;
   }
 
+  /// 提交蓝牙数据到服务器
+  Future<ResEmpty?> uploadBluetoothDataToServer(Map<String, dynamic> dataMap,
+      {VoidCallback? callback}) async {
+    if (dataMap.isEmpty) {
+      return null;
+    }
+
+    try {
+      //
+      var res = await ApiDevice.uploadBluetoothDataToServer(dataMap);
+      if (callback != null) {
+        callback();
+      }
+      return res;
+    } on HttpErrorException catch (e) {
+      String? newErrorMsg = e.message;
+      if (e.code == '-1') {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
+      } else {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
+      }
+      LWToast.show(newErrorMsg);
+      return null;
+    } on Exception catch (e) {
+      String? newErrorMsg = e.toString();
+      LWToast.show(newErrorMsg);
+      return null;
+    } finally {}
+  }
+
   /// 获取注册设备到指定产品下所需要的证书
   getDeviceCertificate({Function(DeviceRegistParam)? callback}) async {
     if (deviceName == null) {
