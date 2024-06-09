@@ -54,13 +54,14 @@ class BlueToothUtil {
   List<int> simIDList = [];
 
   // 握手秘钥
-  String? keyString;
+  int? keyString;
 
   // 蓝牙名称
-  String? currBlueName;
+  // String? currBlueName;
 
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
+    getDeviceCertificate();
   }
 
   void setDeviceRegistParam(DeviceRegistParam? blueConnectInfo) {
@@ -328,16 +329,16 @@ class BlueToothUtil {
   /// 连接蓝牙
   Future connectBluetooth(BluetoothDevice mdevice) async {
     LogUtil.d("$TAG blueName:${mdevice.platformName}");
-    DeviceRegistParam item = DeviceRegistParam();
-    item.deviceName = "sviwo-asdas546a4s6d5";
-    item.productKey = "k0ugjmf1ois";
-    item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
-    item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
+    // DeviceRegistParam item = DeviceRegistParam();
+    // item.deviceName = "sviwo-asdas546a4s6d5";
+    // item.productKey = "k0ugjmf1ois";
+    // item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
+    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
     // item.deviceName = "sviwo-23kj4h2k3b4kk2";
     // item.productKey = "k0ugjmf1ois";
     // item.deviceSecret = "63ab88874e683d02ceccff98015e0aff";
     // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
-    BlueToothUtil.getInstance().setDeviceRegistParam(item);
+    // BlueToothUtil.getInstance().setDeviceRegistParam(item);
 
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
@@ -346,8 +347,8 @@ class BlueToothUtil {
       mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
-          this.currentBlue = mdevice;
-          this.currentBlueName = mdevice.platformName;
+          currentBlue = mdevice;
+          currentBlueName = mdevice.platformName;
           _services = []; // must rediscover services
 
           try {
@@ -498,7 +499,7 @@ class BlueToothUtil {
   void decodeBlueToothData(List<int> dataListTemp) {
     // 处理粘包
     List<int> dataList = [];
-
+    // LogUtil.d("$TAG 接收蓝牙数据rrrrr:${DataExchangeUtils.bytesToHex(dataListTemp)}");
     if (dataListTemp.isNotEmpty) {
       if (dataListTemp[0] == 0xa5) {
         if (dataListTemp.length == 17) {
@@ -817,7 +818,7 @@ class BlueToothUtil {
     }
 
     List<int> key = dataList.sublist(12, 16);
-    keyString = DataExchangeUtils.byteToString(key);
+    keyString = DataExchangeUtils.fourByteListToInt(key);
     LogUtil.d("$TAG 激活成功！,key33=$keyString");
     // blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
   }
@@ -959,7 +960,7 @@ class BlueToothUtil {
   /// 解析蓝牙发送过来的数据  消息类型44  请求车架号
   void decodeBlueToothData44(List<int> dataList) {
     List<int> key = dataList.sublist(12, 16);
-    keyString = DataExchangeUtils.byteToString(key);
+    keyString = DataExchangeUtils.fourBytesToInt(key);
     LogUtil.d("$TAG 激活成功！,key44=$keyString");
   }
 
@@ -974,6 +975,7 @@ class BlueToothUtil {
       simID = DataExchangeUtils.byteToString(simIDList);
       LogUtil.d("$TAG simID=$simID");
       // LogUtil.d("$TAG simID=${DataExchangeUtils.bytesToHex(simIDList)}");
+      notifyDeviceRegistSuccess();
     }
   }
 
@@ -1519,6 +1521,7 @@ class BlueToothUtil {
     try {
       //
       var res = await ApiDevice.getDeviceCertificate(deviceName ?? '');
+      LogUtil.d("$TAG ${res.data!.toJson()}");
       setDeviceRegistParam(res.data);
       if (callback != null) {
         callback(res.data ?? DeviceRegistParam());
@@ -1543,7 +1546,7 @@ class BlueToothUtil {
   /// 通知服务器车辆注册成功
   Future<ResEmpty?> notifyDeviceRegistSuccess({VoidCallback? callback}) async {
     if (deviceName == null ||
-        currBlueName == null ||
+        currentBlueName == null ||
         keyString == null ||
         simID == null) {
       return null;
@@ -1552,7 +1555,7 @@ class BlueToothUtil {
     try {
       //
       var res = await ApiDevice.vehicleRegisterSuccess(
-          deviceName ?? '', currBlueName ?? '', keyString ?? '', simID ?? '');
+          deviceName ?? '', currentBlueName ?? '', keyString ?? 0, simID ?? '');
       EventManager.post(AppEvent.vehicleRegistSuccess);
       if (callback != null) {
         callback();
