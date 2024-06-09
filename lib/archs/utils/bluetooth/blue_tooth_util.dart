@@ -1478,6 +1478,36 @@ class BlueToothUtil {
     return sendPack;
   }
 
+  /// 获取注册设备到指定产品下所需要的证书
+  getDeviceCertificate({Function(DeviceRegistParam)? callback}) async {
+    if (deviceName == null) {
+      return null;
+    }
+
+    try {
+      //
+      var res = await ApiDevice.getDeviceCertificate(deviceName ?? '');
+      setDeviceRegistParam(res.data);
+      if (callback != null) {
+        callback(res.data ?? DeviceRegistParam());
+      }
+      return res;
+    } on HttpErrorException catch (e) {
+      String? newErrorMsg = e.message;
+      if (e.code == '-1') {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
+      } else {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
+      }
+      LWToast.show(newErrorMsg);
+      return null;
+    } on Exception catch (e) {
+      String? newErrorMsg = e.toString();
+      LWToast.show(newErrorMsg);
+      return null;
+    } finally {}
+  }
+
   /// 通知服务器车辆注册成功
   Future<ResEmpty?> notifyDeviceRegistSuccess({VoidCallback? callback}) async {
     if (deviceName == null ||
