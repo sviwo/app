@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:atv/archs/base/event_manager.dart';
+import 'package:atv/archs/data/entity/res_data.dart';
 import 'package:atv/archs/data/entity/res_empty.dart';
 import 'package:atv/archs/data/err/http_error_exception.dart';
 import 'package:atv/archs/utils/bluetooth/extra.dart';
@@ -12,6 +13,7 @@ import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
 import 'package:atv/config/net/api_device_.dart';
 import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/widgetLibrary/complex/loading/lw_loading.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -1570,6 +1572,70 @@ class BlueToothUtil {
       LWToast.show(newErrorMsg);
       return null;
     } finally {}
+  }
+
+
+  /// 请求接口，并对根据情况刷新页面状态
+  /// params:
+  ///   - errorMsg 发生异常时优先展示，如果没有则展示异常信息
+  Future<ResData<T>?> _loadApiData<T>(Future<ResData<T>> api,
+      {bool showLoading = false,
+      String? errorMsg,
+      Function(T data)? dataSuccess,
+      Function()? voidSuccess,
+      Function(String? errorMsg)? onFailed}) async {
+    String? newErrorMsg;
+    showLoading = false;
+    try {
+      //
+      if (showLoading) {
+        try {
+          await LWLoading.showLoading2();
+        } catch (e) {}
+      }
+
+      //
+      var res = await api;
+
+      if (showLoading) {
+        await LWLoading.dismiss(animation: false);
+      }
+
+      if (res.data != null) {
+        await dataSuccess?.call(res.data!);
+      } else {
+        await voidSuccess?.call();
+      }
+      return res;
+    } on HttpErrorException catch (e) {
+      if (showLoading) {
+        await LWLoading.dismiss(animation: false);
+      }
+
+      newErrorMsg = e.message;
+      if (e.code == '-1') {
+        newErrorMsg =
+            errorMsg ?? newErrorMsg ?? LocaleKeys.network_access_error.tr();
+      } else {
+        newErrorMsg = newErrorMsg ??
+            errorMsg ??
+            LocaleKeys.network_data_unknown_error.tr();
+      }
+      if (onFailed == null) {
+        LWToast.show(newErrorMsg);
+      } else {
+        onFailed.call(newErrorMsg);
+      }
+      return null;
+    } on Exception catch (e) {
+      if (showLoading) {
+        await LWLoading.dismiss(animation: false);
+      }
+      newErrorMsg = e.toString();
+      onFailed?.call(newErrorMsg);
+      return null;
+    } finally {
+    }
   }
 }
 
