@@ -23,7 +23,7 @@ class ApiDevice {
   /// bluetoothSecretKey 蓝牙连接成功返回的key
   /// simID 蓝牙连接成功后返回的simID
   static Future<ResEmpty> vehicleRegisterSuccess(String deviceName,
-      String bluetoothAddress, String bluetoothSecretKey, String simID) async {
+      String bluetoothAddress, int bluetoothSecretKey, String simID) async {
     try {
       var data =
           await Http.instance().post('api/device/activation/success', params: {
