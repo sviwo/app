@@ -1483,33 +1483,21 @@ class BlueToothUtil {
   }
 
   /// 提交蓝牙数据到服务器
-  Future<ResEmpty?> uploadBluetoothDataToServer(Map<String, dynamic> dataMap,
+  uploadBluetoothDataToServer(Map<String, dynamic> dataMap,
       {VoidCallback? callback}) async {
     if (dataMap.isEmpty) {
       return null;
     }
 
-    try {
-      //
-      var res = await ApiDevice.uploadBluetoothDataToServer(dataMap);
-      if (callback != null) {
-        callback();
-      }
-      return res;
-    } on HttpErrorException catch (e) {
-      String? newErrorMsg = e.message;
-      if (e.code == '-1') {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
-      } else {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
-      }
-      LWToast.show(newErrorMsg);
-      return null;
-    } on Exception catch (e) {
-      String? newErrorMsg = e.toString();
-      LWToast.show(newErrorMsg);
-      return null;
-    } finally {}
+    _loadApiData(
+      ApiDevice.uploadBluetoothDataToServer(dataMap),
+      showLoading: true,
+      dataSuccess: (data) {
+        if (callback != null) {
+          callback();
+        }
+      },
+    );
   }
 
   /// 获取注册设备到指定产品下所需要的证书
@@ -1518,65 +1506,41 @@ class BlueToothUtil {
       return null;
     }
 
-    try {
-      //
-      var res = await ApiDevice.getDeviceCertificate(deviceName ?? '');
-      LogUtil.d("$TAG ${res.data!.toJson()}");
-      setDeviceRegistParam(res.data);
-      if (callback != null) {
-        callback(res.data ?? DeviceRegistParam());
-      }
-      return res;
-    } on HttpErrorException catch (e) {
-      String? newErrorMsg = e.message;
-      if (e.code == '-1') {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
-      } else {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
-      }
-      LWToast.show(newErrorMsg);
-      return null;
-    } on Exception catch (e) {
-      String? newErrorMsg = e.toString();
-      LWToast.show(newErrorMsg);
-      return null;
-    } finally {}
+    _loadApiData<DeviceRegistParam>(
+      ApiDevice.getDeviceCertificate(deviceName ?? ''),
+      showLoading: true,
+      dataSuccess: (data) {
+        setDeviceRegistParam(data);
+        LogUtil.d('-------------${data.toString()}');
+
+        ///得到蓝牙从后台获取的证书
+        if (callback != null) {
+          callback(data);
+        }
+      },
+    );
   }
 
   /// 通知服务器车辆注册成功
   Future<ResEmpty?> notifyDeviceRegistSuccess({VoidCallback? callback}) async {
     if (deviceName == null ||
-        currentBlueName == null ||
+        currentBlueName.isEmpty ||
         keyString == null ||
         simID == null) {
       return null;
     }
 
-    try {
-      //
-      var res = await ApiDevice.vehicleRegisterSuccess(
-          deviceName ?? '', currentBlueName ?? '', keyString ?? 0, simID ?? '');
-      EventManager.post(AppEvent.vehicleRegistSuccess);
-      if (callback != null) {
-        callback();
-      }
-      return res;
-    } on HttpErrorException catch (e) {
-      String? newErrorMsg = e.message;
-      if (e.code == '-1') {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
-      } else {
-        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
-      }
-      LWToast.show(newErrorMsg);
-      return null;
-    } on Exception catch (e) {
-      String? newErrorMsg = e.toString();
-      LWToast.show(newErrorMsg);
-      return null;
-    } finally {}
+    _loadApiData(
+      ApiDevice.vehicleRegisterSuccess(
+          deviceName ?? '', currentBlueName, keyString ?? 0, simID ?? ''),
+      voidSuccess: () {
+        EventManager.post(AppEvent.vehicleRegistSuccess);
+        if (callback != null) {
+          callback();
+        }
+      },
+    );
   }
-
 
   /// 请求接口，并对根据情况刷新页面状态
   /// params:
@@ -1637,8 +1601,7 @@ class BlueToothUtil {
       newErrorMsg = e.toString();
       onFailed?.call(newErrorMsg);
       return null;
-    } finally {
-    }
+    } finally {}
   }
 }
 

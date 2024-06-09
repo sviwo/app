@@ -84,6 +84,9 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
       BlueToothUtil.getInstance().setDeviceName(deviceName);
     }
     BlueToothUtil.getInstance().startScanBlueTooth();
+
+    // deviceName = 'sviwo-asdas546a4s6d5';
+    // BlueToothUtil.getInstance().getDeviceCertificate();
   }
 
   @override
