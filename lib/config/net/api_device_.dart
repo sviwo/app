@@ -18,10 +18,14 @@ class ApiDevice {
     }
   }
   /// 设备激活成功通知服务器 deviceName 设备的唯一标识(车架号)
-  static Future<ResEmpty> vehicleRegisterSuccess(String deviceName) async {
+  /// bluetoothAddress 蓝牙名称
+  /// bluetoothSecretKey 蓝牙连接成功返回的key
+  /// simID 蓝牙连接成功后返回的simID
+  static Future<ResEmpty> vehicleRegisterSuccess(String deviceName,String
+  bluetoothAddress,String bluetoothSecretKey,String simID) async {
     try {
       var data = await Http.instance().post('api/device/activation/success',
-          params: {'deviceName': deviceName});
+          params: {'deviceName': deviceName,'bluetoothAddress': bluetoothAddress,'bluetoothSecretKey': bluetoothSecretKey,'simID': simID});
       return await HttpHelper.httpEmptyConvert(data);
     } catch (e) {
       throw HttpHelper.handleException(e);

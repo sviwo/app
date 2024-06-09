@@ -49,6 +49,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           onTap: () {
             LogUtil.d('点击了扫码');
             var codeString = "sviwo-asdas546a4s6d5";
+            // var codeString = "sviwo-23kj4h2k3b4kk2";
             viewModel.checkDeviceName(
               deviceName: codeString,
               callback: () {
@@ -539,21 +540,22 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
+                  BlueToothUtil.getInstance().controllerBlueVoice();
                   //YGTODO: 判断蓝牙是否已经连接了车辆
-                  var isConnectBluetooth =
-                      BlueToothUtil.getInstance().getBlueConnectStatus();
-                  if (isConnectBluetooth) {
-                    //YGTODO: 控制蓝牙去解锁
-                    BlueToothUtil.getInstance().controllerBlueUnLock();
-                  } else {
-                    //YGTODO: 去连接蓝牙，走快速连接流程
-                    var bluetoothAddress =
-                        viewModel.dataModel?.bluetoothAddress ?? '';
-                    var bluetoothSecrectKey =
-                        viewModel.dataModel?.bluetoothSecretKey ?? '';
-                    BlueToothUtil.getInstance().speedConnectBlue(
-                        bluetoothAddress, bluetoothSecrectKey);
-                  }
+                  // var isConnectBluetooth =
+                  //     BlueToothUtil.getInstance().getBlueConnectStatus();
+                  // if (isConnectBluetooth) {
+                  //   //YGTODO: 控制蓝牙去解锁
+                  //   BlueToothUtil.getInstance().controllerBlueUnLock();
+                  // } else {
+                  //   //YGTODO: 去连接蓝牙，走快速连接流程
+                  //   var bluetoothAddress =
+                  //       viewModel.dataModel?.bluetoothAddress ?? '';
+                  //   var bluetoothSecrectKey =
+                  //       viewModel.dataModel?.bluetoothSecretKey ?? '';
+                  //   BlueToothUtil.getInstance().speedConnectBlue(
+                  //       bluetoothAddress, bluetoothSecrectKey);
+                  // }
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(

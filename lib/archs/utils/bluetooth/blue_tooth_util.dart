@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:atv/archs/utils/bluetooth/extra.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'blue_accept_data_listener.dart';
@@ -41,8 +38,15 @@ class BlueToothUtil {
   // 握手第一步 产品名称
   String? deviceName;
 
+  // 握手成功后 蓝牙返回的simID
+  String? simID;
+  List<int> simIDList = [];
+
   // 握手秘钥
   String? keyString;
+
+  // 蓝牙名称
+  String? currBlueName;
 
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
@@ -55,12 +59,6 @@ class BlueToothUtil {
   // 选择蓝牙的连接状态，默认断开连接
   BluetoothConnectionState _currentBlueConnectionState =
       BluetoothConnectionState.disconnected;
-
-  // 读特征
-  // BluetoothCharacteristic? readCharacteristic;
-
-  // 写特征
-  // BluetoothCharacteristic? writeCharacteristic;
 
   BluetoothCharacteristic? readChart;
   BluetoothCharacteristic? sendChart;
@@ -79,12 +77,11 @@ class BlueToothUtil {
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
-  BlueAcceptDataListener? blueAcceptDataListener = null;
+  BlueAcceptDataListener? blueAcceptDataListener;
 
   // 初始化
   static BlueToothUtil? _instanceBlueToothUtil;
   BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-  StreamSubscription<BluetoothAdapterState>? _adapterStateStateSubscription;
 
   // 蓝牙开启状态
   List<BluetoothDevice> _systemDevices = []; // 当前已经连接的蓝牙设备
@@ -95,15 +92,9 @@ class BlueToothUtil {
 
   // 连接蓝牙
   int? _rssi;
-  int? _mtuSize;
 
   bool _isConnecting = false;
   bool _isDisconnecting = false;
-
-  StreamSubscription<BluetoothConnectionState>? _connectionStateSubscription;
-  StreamSubscription<bool>? _isConnectingSubscription;
-  StreamSubscription<bool>? _isDisconnectingSubscription;
-  StreamSubscription<int>? _mtuSubscription;
 
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
@@ -114,8 +105,7 @@ class BlueToothUtil {
     if (_instanceBlueToothUtil == null) {
       _instanceBlueToothUtil = BlueToothUtil._internal();
       FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-      _instanceBlueToothUtil?._adapterStateStateSubscription =
-          FlutterBluePlus.adapterState.listen((state) {
+      FlutterBluePlus.adapterState.listen((state) {
         _instanceBlueToothUtil?._adapterState = state;
         if (state == BluetoothAdapterState.off) {
           _instanceBlueToothUtil?._scanResultsSubscription = null;
@@ -128,10 +118,6 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._services = [];
           _instanceBlueToothUtil?._isConnecting = false;
           _instanceBlueToothUtil?._isDisconnecting = false;
-          _instanceBlueToothUtil?._connectionStateSubscription = null;
-          _instanceBlueToothUtil?._isConnectingSubscription = null;
-          _instanceBlueToothUtil?._isDisconnectingSubscription = null;
-          _instanceBlueToothUtil?._mtuSubscription = null;
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
@@ -330,22 +316,27 @@ class BlueToothUtil {
 
   /// 连接蓝牙
   Future connectBluetooth(BluetoothDevice mdevice) async {
+    LogUtil.d("$TAG blueName:${mdevice.platformName}");
     DeviceRegistParam item = DeviceRegistParam();
     item.deviceName = "sviwo-asdas546a4s6d5";
     item.productKey = "k0ugjmf1ois";
     item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
     item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
+    // item.deviceName = "sviwo-23kj4h2k3b4kk2";
+    // item.productKey = "k0ugjmf1ois";
+    // item.deviceSecret = "63ab88874e683d02ceccff98015e0aff";
+    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
     BlueToothUtil.getInstance().setDeviceRegistParam(item);
 
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
         LogUtil.d("$TAG Connect Error:${e.toString()}");
       });
-      _connectionStateSubscription =
-          mdevice.connectionState.listen((state) async {
+      mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
           this.currentBlue = mdevice;
+          this.currentBlueName = mdevice.platformName;
           _services = []; // must rediscover services
 
           try {
@@ -395,11 +386,9 @@ class BlueToothUtil {
         }
       });
 
-      _mtuSubscription = mdevice.mtu.listen((value) {
-        _mtuSize = value;
-      });
+      mdevice.mtu.listen((value) {});
 
-      _isConnectingSubscription = mdevice.isConnecting.listen((value) {
+      mdevice.isConnecting.listen((value) {
         _isConnecting = value;
         if (_isConnecting) {
           // currentBlue = mdevice;
@@ -408,7 +397,7 @@ class BlueToothUtil {
         }
       });
 
-      _isDisconnectingSubscription = mdevice.isDisconnecting.listen((value) {
+      mdevice.isDisconnecting.listen((value) {
         _isDisconnecting = value;
       });
     }
@@ -495,45 +484,82 @@ class BlueToothUtil {
   List<int> currentDat = [];
 
   /// 解析蓝牙发送的数据
-  void decodeBlueToothData(List<int> dataList) {
-    // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataListTemp)}");
-    // if (currentDat.length > 17) {
-    //   currentDat.clear();
-    // }
-    //
-    // currentDat.addAll(dataListTemp);
-    //
-    // List<int> dataList = [];
-    // if (currentDat.length > 17) {
-    //   dataList = currentDat.sublist(0, 17);
-    //   currentDat = currentDat.sublist(17);
-    // } else if (currentDat.length == 17) {
-    //   dataList = currentDat.sublist(0);
-    //   currentDat.clear();
-    // } else {
-    //   return;
-    // }
+  void decodeBlueToothData(List<int> dataListTemp) {
+    // 处理粘包
+    List<int> dataList = [];
 
-    LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+    if (dataListTemp.isNotEmpty) {
+      if (dataListTemp[0] == 0xa5) {
+        if (dataListTemp.length == 17) {
+          currentDat.clear();
+          dataList = dataListTemp;
+        } else if (dataListTemp.length > 17) {
+          currentDat = dataListTemp.sublist(17);
+          dataList = dataListTemp.sublist(0, 17);
+        } else if (dataListTemp.length < 17) {
+          currentDat.addAll(dataListTemp);
+          return;
+        }
+      } else if (dataListTemp[0] == 0xaa) {
+        if (dataListTemp.length == 16) {
+          currentDat.clear();
+          dataList = dataListTemp;
+        } else if (dataListTemp.length > 16) {
+          currentDat = dataListTemp.sublist(16);
+          dataList = dataListTemp.sublist(0, 16);
+        } else if (dataListTemp.length < 16) {
+          currentDat.addAll(dataListTemp);
+          return;
+        }
+      } else {
+        if (currentDat[0] == 0xa5) {
+          if (dataListTemp.length + currentDat.length >= 17) {
+            int lengh = 17 - currentDat.length;
+            currentDat.addAll(dataListTemp.sublist(0, lengh));
+            dataList = currentDat;
+            currentDat = dataListTemp.sublist(lengh);
+          } else {
+            currentDat.addAll(dataListTemp);
+            return;
+          }
+        } else if (currentDat[0] == 0xaa) {
+          if (dataListTemp.length + currentDat.length >= 16) {
+            int lengh = 16 - currentDat.length;
+            currentDat.addAll(dataListTemp.sublist(0, lengh));
+            dataList = currentDat;
+            currentDat = dataListTemp.sublist(lengh);
+          } else {
+            currentDat.addAll(dataListTemp);
+            return;
+          }
+        } else {
+          if (dataListTemp.length + currentDat.length >= 17) {
+            int lengh = 17 - currentDat.length;
+            currentDat.addAll(dataListTemp.sublist(0, lengh));
+            dataList = currentDat;
+            currentDat = dataListTemp.sublist(lengh);
+          } else {
+            currentDat.addAll(dataListTemp);
+            return;
+          }
+        }
+      }
+    } else {
+      return;
+    }
 
     if ((dataList[1] & 0xff) == 0x92) {
       // LogUtil.d("$TAG 接收蓝牙数据心跳:${DataExchangeUtils.bytesToHex(dataList)}");
-      // 读和写在同一个特征下面， 获取到特征后就发送数据
-      // List<int> list = getStepOneBluetoothCarNumber1();
-      // sendData.add(list, i: 0, j: 0);
     } else {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
     }
     if (dataList.length != 17) {
-      // LogUtil.d("$TAG dataList length must is 17");
       return;
     }
     if ((dataList[0] & 0xff) != 0xa5) {
-      // LogUtil.d("$TAG data index 0 must is 0xa5");
       return;
     }
     if ((dataList[1] & 0xff) != 0x10) {
-      // LogUtil.d("$TAG data index 1 must is 0x10");
       return;
     }
 
@@ -544,53 +570,41 @@ class BlueToothUtil {
       }
       count += dataList[i];
     }
+
     if ((count & 0xff) != (dataList[16] & 0xff)) {
-      // LogUtil.d("$TAG sum check failed");
       return;
     }
 
     if ((dataList[2] & 0xff) == 1) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData1(dataList);
     } else if ((dataList[2] & 0xff) == 4) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData4(dataList);
     } else if ((dataList[2] & 0xff) == 9) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData9(dataList);
     } else if ((dataList[2] & 0xff) == 14) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData14(dataList);
     } else if ((dataList[2] & 0xff) == 23) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData23(dataList);
     } else if ((dataList[2] & 0xff) == 32) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData32(dataList);
     } else if ((dataList[2] & 0xff) == 33) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData33(dataList);
     } else if ((dataList[2] & 0xff) == 34) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData34(dataList);
     } else if ((dataList[2] & 0xff) == 35) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData35(dataList);
     } else if ((dataList[2] & 0xff) == 36) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData36(dataList);
     } else if ((dataList[2] & 0xff) == 37) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData37(dataList);
     } else if ((dataList[2] & 0xff) == 38) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData38(dataList);
     } else if ((dataList[2] & 0xff) == 39) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData39(dataList);
     } else if ((dataList[2] & 0xff) == 44) {
-      // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       decodeBlueToothData44(dataList);
+    } else if ((dataList[2] & 0xff) >= 47 && (dataList[2] & 0xff) <= 49) {
+      decodeBlueToothData47_49(dataList);
     } else {
       // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       // LogUtil.d("$TAG blueTooth messageType error");
@@ -793,7 +807,7 @@ class BlueToothUtil {
 
     List<int> key = dataList.sublist(12, 16);
     keyString = DataExchangeUtils.byteToString(key);
-    LogUtil.d("$TAG 激活成功！,key=$keyString");
+    LogUtil.d("$TAG 激活成功！,key33=$keyString");
     // blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
   }
 
@@ -803,11 +817,7 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
-
-    Map<String, double> map = HashMap();
-    map["lat"] = lat;
-    map["lng"] = lng;
-    blueAcceptDataListener?.acceptBlueToothData(map, 34);
+    LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型35
@@ -818,12 +828,8 @@ class BlueToothUtil {
     int sportSwitch = dataList[12] & 0xff;
     // 动能回收
     int sportRecycle = dataList[13] & 0xff;
-    Map<String, Object> map = HashMap();
-    map["speed"] = speed;
-    map["sportSwitch"] = sportSwitch;
-    map["sportRecycle"] = sportRecycle;
-
-    blueAcceptDataListener?.acceptBlueToothData(map, 35);
+    LogUtil.d(
+        "$TAG 解析 speed:$speed sportSwitch:$sportSwitch sportRecycle:$sportRecycle");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型36
@@ -862,24 +868,15 @@ class BlueToothUtil {
     blueDataVO.chargeConnect = chargeConnect;
     controller.add(blueDataVO);
 
-    // Map<String, Object> map = HashMap();
-    // map["lockCarStatus"] = lockCarStatus;
-    // map["setLock"] = setLock;
-    // map["wheelDrive"] = wheelDrive;
-    // map["shake"] = shake;
-    // map["voice"] = voice;
-    // map["alarm"] = alarm;
-    // map["alarmContinue"] = alarmContinue;
-    // map["deviceDefaultAlarm"] = deviceDefaultAlarm;
-    // map["carTemperatureHigh"] = carTemperatureHigh;
-    // map["chargeConnect"] = chargeConnect;
-    // map["lowPower"] = lowPower;
-    // map["lightStatus"] = lightStatus;
-    // map["doubleLightFlash"] = doubleLightFlash;
-    // map["leftLightFlash"] = leftLightFlash;
-    // map["rightLightFlash"] = rightLightFlash;
-    //
-    // blueAcceptDataListener?.acceptBlueToothData(map, 36);
+    LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
+        "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
+        "alarmContinue:$alarmContinue "
+        "deviceDefaultAlarm:$deviceDefaultAlarm \n "
+        "carTemperatureHigh:$carTemperatureHigh "
+        "chargeConnect:$chargeConnect lowPower:$lowPower \n "
+        "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
+        "leftLightFlash:$leftLightFlash \n "
+        "rightLightFlash:$rightLightFlash");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -892,11 +889,8 @@ class BlueToothUtil {
 
     blueDataVO.carSpeed = carSpeed;
     controller.add(blueDataVO);
-    // Map<String, Object> map = HashMap();
-    // map["motorSpeed"] = motorSpeed;
-    // map["carSpeed"] = carSpeed;
-    //
-    // blueAcceptDataListener?.acceptBlueToothData(map, 37);
+
+    LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型38
@@ -930,18 +924,10 @@ class BlueToothUtil {
     blueDataVO.battery = battery;
     controller.add(blueDataVO);
 
-    // Map<String, Object> map = HashMap();
-    // map["range"] = endurance;
-    // map["battery"] = battery;
-    // map["batteryStatus"] = batteryStatus;
-    // map["chargingStatus"] = chargingStatus;
-    // map["lackOfPowerStatus"] = lackOfPowerStatus;
-    // map["readyStatus"] = readyStatus;
-    // map["dischargeContactorStatus"] = dischargeContactorStatus;
-    // map["chargingContactorStatus"] = chargingContactorStatus;
-    // map["batteryDefaultLeve"] = batteryDefaultLeve;
-    // map["bmsCode"] = bmsCode;
-    // blueAcceptDataListener?.acceptBlueToothData(map, 38);
+    LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
+        "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
+        "lackOfPowerStatus:$lackOfPowerStatus readyStatus:$readyStatus \n "
+        "dischargeContactorStatus:$dischargeContactorStatus chargingContactorStatus:$chargingContactorStatus batteryDefaultLeve:$batteryDefaultLeve bmsCode:$bmsCode");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型39
@@ -955,19 +941,29 @@ class BlueToothUtil {
     // 遥感距离4
     int rangeFour = DataExchangeUtils.twoByteToInt(dataList[14], dataList[15]);
 
-    Map<String, Object> map = HashMap();
-    map["rangeOne"] = rangeOne;
-    map["rangeTwo"] = rangeTwo;
-    map["rangeThree"] = rangeThree;
-    map["rangeFour"] = rangeFour;
-    blueAcceptDataListener?.acceptBlueToothData(map, 39);
+    LogUtil.d(
+        "$TAG 解析 rangeOne:$rangeOne rangeTwo:$rangeTwo rangeThree:$rangeThree rangeFour:$rangeFour");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型44  请求车架号
   void decodeBlueToothData44(List<int> dataList) {
     List<int> key = dataList.sublist(12, 16);
     keyString = DataExchangeUtils.byteToString(key);
-    LogUtil.d("$TAG 激活成功！,key=$keyString");
+    LogUtil.d("$TAG 激活成功！,key44=$keyString");
+  }
+
+  /// 解析simID
+  void decodeBlueToothData47_49(List<int> dataList) {
+    if (dataList[2] == 47) {
+      simIDList = dataList.sublist(8, 16);
+    } else if (dataList[2] == 48) {
+      simIDList.addAll(dataList.sublist(8, 16));
+    } else if (dataList[2] == 49) {
+      simIDList.addAll(dataList.sublist(8, 12));
+      simID = DataExchangeUtils.byteToString(simIDList);
+      LogUtil.d("$TAG simID=$simID");
+      // LogUtil.d("$TAG simID=${DataExchangeUtils.bytesToHex(simIDList)}");
+    }
   }
 
   /// 蓝牙连接后第一步，发送时间戳到蓝牙
@@ -1399,11 +1395,11 @@ class BlueToothUtil {
     }
 
     if (setLock != null) {
-      bit8 |= ((setLock >> 1) & 0xff);
+      bit8 |= ((setLock << 1) & 0xff);
     }
 
     if (voice != null) {
-      bit8 |= ((voice >> 3) & 0xff);
+      bit8 |= ((voice << 3) & 0xff);
     }
     sendPack[position++] = bit8 & 0xff;
 
@@ -1424,12 +1420,13 @@ class BlueToothUtil {
     } else {
       sendPack[position++] = 0;
     }
+
     if (lightStatus != null) {
       sendPack[position++] = lightStatus & 0xff;
     } else {
       sendPack[position++] = 0;
     }
-
+    sendPack[position++] = bit8 & 0xff;
     for (int i = 0; i < 16; i++) {
       count += sendPack[i];
     }

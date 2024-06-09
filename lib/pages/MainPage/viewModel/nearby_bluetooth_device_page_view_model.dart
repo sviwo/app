@@ -60,7 +60,11 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   /// 通知服务器车辆注册成功
   notifyDeviceRegistSuccess({VoidCallback? callback}) {
     loadApiData(
-      ApiDevice.vehicleRegisterSuccess(deviceName),
+      ApiDevice.vehicleRegisterSuccess(
+          deviceName,
+          BlueToothUtil.getInstance().currBlueName!,
+          BlueToothUtil.getInstance().keyString!,
+          BlueToothUtil.getInstance().simID!),
       handlePageState: false,
       showLoading: true,
       voidSuccess: () {
