@@ -1,4 +1,6 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
+import 'package:atv/archs/base/event_manager.dart';
+import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/nearby_bluetooth_device_page_view_model.dart';
@@ -33,6 +35,15 @@ class _NearByBluetoothDevicesPageState extends BaseMvvmPageState<
   void initState() {
     // TODO: implement initState
     super.initState();
+    EventManager.register(context, AppEvent.vehicleRegistSuccess, (args) {
+      pagePop();
+    });
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    EventManager.unregister(context, AppEvent.vehicleRegistSuccess);
+    super.dispose();
   }
 
   @override

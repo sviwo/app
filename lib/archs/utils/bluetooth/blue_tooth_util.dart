@@ -2,10 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:atv/archs/base/event_manager.dart';
+import 'package:atv/archs/data/entity/res_empty.dart';
+import 'package:atv/archs/data/err/http_error_exception.dart';
 import 'package:atv/archs/utils/bluetooth/extra.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
+import 'package:atv/config/net/api_device_.dart';
+import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import 'blue_accept_data_listener.dart';
@@ -1467,6 +1476,40 @@ class BlueToothUtil {
     sendPack[position++] = count & 0xff;
 
     return sendPack;
+  }
+
+  /// 通知服务器车辆注册成功
+  Future<ResEmpty?> notifyDeviceRegistSuccess({VoidCallback? callback}) async {
+    if (deviceName == null ||
+        currBlueName == null ||
+        keyString == null ||
+        simID == null) {
+      return null;
+    }
+
+    try {
+      //
+      var res = await ApiDevice.vehicleRegisterSuccess(
+          deviceName ?? '', currBlueName ?? '', keyString ?? '', simID ?? '');
+      EventManager.post(AppEvent.vehicleRegistSuccess);
+      if (callback != null) {
+        callback();
+      }
+      return res;
+    } on HttpErrorException catch (e) {
+      String? newErrorMsg = e.message;
+      if (e.code == '-1') {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_access_error.tr();
+      } else {
+        newErrorMsg = newErrorMsg ?? LocaleKeys.network_data_unknown_error.tr();
+      }
+      LWToast.show(newErrorMsg);
+      return null;
+    } on Exception catch (e) {
+      String? newErrorMsg = e.toString();
+      LWToast.show(newErrorMsg);
+      return null;
+    } finally {}
   }
 }
 
