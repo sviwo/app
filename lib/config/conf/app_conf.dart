@@ -26,7 +26,8 @@ class AppConf {
   // 服务器BaseUrl
   static Future<String> get baseUrl async {
     // return '${await domainUrl}/portal/pcrm/api/';
-    return Future(() => 'http://192.168.0.110:8000/');
+    // return Future(() => 'http://192.168.0.110:8000/');
+    return Future(() => 'http://server.sviwo.cn:8000/');
     // return Future(() => 'http://114.115.135.233:8000/');
   }
 
