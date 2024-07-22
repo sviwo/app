@@ -636,7 +636,28 @@ class BlueToothUtil {
       decodeBlueToothData44(dataList);
     } else if ((dataList[2] & 0xff) >= 47 && (dataList[2] & 0xff) <= 49) {
       decodeBlueToothData47_49(dataList);
-    } else {
+    } else if((dataList[2] & 0xff) == 43){
+      if(isFirst){
+        isFirst = false;
+        // List<int> list = getStepOneBluetoothCarNumber1();
+        // sendData.add(list);
+
+        if(isSpeedConnect){
+          List<int> list = sendPackToBluetooth44(keyString!);
+          sendData.add(list);
+        }else{
+          // 发送车架号
+          if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+            List<List<int>> mList =
+            getPackToBluetoothCarNumber2_4(deviceName!);
+            for (int i = 0; i < mList.length; i++) {
+              sendData.add(mList[i]);
+            }
+          }
+        }
+      }
+
+    }else {
       // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       // LogUtil.d("$TAG blueTooth messageType error");
     }
@@ -674,25 +695,25 @@ class BlueToothUtil {
         ((dataList[10] << 8) & 0xffff) |
         (dataList[11] & 0xff);
 
-      if(isFirst){
-        isFirst = false;
-        List<int> list = getStepOneBluetoothCarNumber1();
-        sendData.add(list);
-
-        if(isSpeedConnect){
-          List<int> list = sendPackToBluetooth44(keyString!);
-          sendData.add(list);
-        }else{
-          // 发送车架号
-          if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-            List<List<int>> mList =
-            getPackToBluetoothCarNumber2_4(deviceName!);
-            for (int i = 0; i < mList.length; i++) {
-              sendData.add(mList[i]);
-            }
-          }
-        }
-      }
+      // if(isFirst){
+      //   isFirst = false;
+      //   List<int> list = getStepOneBluetoothCarNumber1();
+      //   sendData.add(list);
+      //
+      //   if(isSpeedConnect){
+      //     List<int> list = sendPackToBluetooth44(keyString!);
+      //     sendData.add(list);
+      //   }else{
+      //     // 发送车架号
+      //     if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+      //       List<List<int>> mList =
+      //       getPackToBluetoothCarNumber2_4(deviceName!);
+      //       for (int i = 0; i < mList.length; i++) {
+      //         sendData.add(mList[i]);
+      //       }
+      //     }
+      //   }
+      // }
 
     // blueAcceptDataListener?.acceptBlueToothData(timeMillisecond, 1);
   }
