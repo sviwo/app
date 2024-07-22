@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/conf/arch_event.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
@@ -96,6 +97,12 @@ class MainPageViewModel extends BaseViewModel {
       dataSuccess: (data) async {
         _isShowLoading = false;
         dataModel = data;
+
+        if(dataModel != null && dataModel!.bluetoothAddress != null
+        && dataModel!.bluetoothSecretKey != null
+            && dataModel!.bluetoothAddress!.isNotEmpty && dataModel!.bluetoothSecretKey!.isNotEmpty){
+          BlueToothUtil.getInstance().speedConnectBlue(dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
+        }
 
         if (completion != null) {
           completion();

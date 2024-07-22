@@ -48,8 +48,13 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         leadingWidget: InkWell(
           onTap: () {
             LogUtil.d('点击了扫码');
-            var codeString = "sviwo-asdas546a4s6d5";
-            // var codeString = "sviwo-23kj4h2k3b4kk2";
+            //var codeString = "sviwo-23kj4h2k3b4kk2";
+            //var codeString = "sviwo-asdas546a4s6d5";
+             var codeString = "sviwo-asidh342sjahdk";
+            // pagePush(AppRoute.bluetoothDevicesPage,
+            //     params: {'deviceName': codeString});
+            // return;
+            //var codeString = "sviwo-23kj4h2k3b4kk2";
             viewModel.checkDeviceName(
               deviceName: codeString,
               callback: () {
@@ -68,6 +73,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             //               }
             //             });
             //           },
+
             // pagePush(AppRoute.scanQrCodePage, callback: (data) {
             //   if (data != null && data is Map<String, dynamic>) {
             //     var codeString = data['code'];
@@ -576,6 +582,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     }
 
                     LogUtil.d('点击了喇叭图标');
+                    //BlueToothUtil.getInstance().controllerBlueVoice();
+                    //return;
                     //YGTODO: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
