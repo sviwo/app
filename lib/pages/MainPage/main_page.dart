@@ -11,6 +11,7 @@ import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/main_page_view_model.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
+import 'package:atv/widgetLibrary/complex/loading/lw_loading.dart';
 import 'package:atv/widgetLibrary/complex/titleBar/lw_title_bar.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
@@ -138,6 +139,10 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
       viewModel.loadData();
     });
     WidgetsBinding.instance.addObserver(this);
+
+    BlueToothUtil.getInstance().connectDataStream.listen((event) {
+      LWLoading.dismiss(animation: true);
+    });
   }
 
   @override
@@ -259,6 +264,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
+                LWLoading.showLoading(text: "连接中...");
                 BlueToothUtil.getInstance()
                     .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
               }
@@ -589,6 +595,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
+                      LWLoading.showLoading(text: "连接中...");
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }
@@ -633,6 +640,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
+                      LWLoading.showLoading(text: "连接中...");
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }

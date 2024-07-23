@@ -8,6 +8,7 @@ import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
 import 'package:atv/config/net/api_device_.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/tools/language/lw_language_tool.dart';
+import 'package:atv/widgetLibrary/complex/loading/lw_loading.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -35,6 +36,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     pageRefresh();
     await Future.delayed(Duration.zero, () {
       // 连接蓝牙.
+      LWLoading.showLoading(text: "连接中");
       BlueToothUtil.getInstance().connectBluetooth(device.device);
     });
     // BlueToothUtil.getInstance().readChart;
@@ -84,7 +86,9 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
       BlueToothUtil.getInstance().setDeviceName(deviceName);
     }
     BlueToothUtil.getInstance().startScanBlueTooth();
-
+    BlueToothUtil.getInstance().connectDataStream.listen((event) {
+      LWLoading.dismiss(animation: true);
+    });
     // deviceName = 'sviwo-asdas546a4s6d5';
     // BlueToothUtil.getInstance().getDeviceCertificate();
   }

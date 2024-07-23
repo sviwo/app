@@ -92,6 +92,9 @@ class BlueToothUtil {
 
   Stream<BlueDataVO> get dataStream => controller.stream.asBroadcastStream();
 
+  StreamController<bool> connectStream = StreamController.broadcast();
+  Stream<bool> get connectDataStream => connectStream.stream.asBroadcastStream();
+
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -357,6 +360,7 @@ class BlueToothUtil {
       mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
+          connectStream.sink.add(true);
           _isConnecting = true;
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
@@ -411,6 +415,7 @@ class BlueToothUtil {
           }
         }else{
           _isConnecting = false;
+          connectStream.sink.add(false);
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
           _rssi = await mdevice.readRssi();
@@ -500,6 +505,7 @@ class BlueToothUtil {
   }
 
   void dispose() {
+    connectStream.close();
     // currentBlue?.disconnect();
     // _connectionStateSubscription?.cancel();
     // _mtuSubscription?.cancel();
