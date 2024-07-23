@@ -46,19 +46,18 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     return LWTitleBar(
         leadingWidth: 90.dp,
         leadingWidget: InkWell(
-          onTap: () {
+          onTap: () async {
             LogUtil.d('点击了扫码');
-            var codeString = "sviwo-asdas546a4s6d5";
-            // var codeString = "sviwo-23kj4h2k3b4kk2";
-            viewModel.checkDeviceName(
-              deviceName: codeString,
-              callback: () {
-                // 车架号后台初验通过，跳转蓝牙列表页面
-                pagePush(AppRoute.bluetoothDevicesPage,
-                    params: {'deviceName': codeString});
-              },
-            );
-            // pagePush(AppRoute.bluetoothDevicesPage);
+            // var codeString = "sviwo-asdas546a4s6d5";
+            // // var codeString = "sviwo-23kj4h2k3b4kk2";
+            // viewModel.checkDeviceName(
+            //   deviceName: codeString,
+            //   callback: () {
+            //     // 车架号后台初验通过，跳转蓝牙列表页面
+            //     pagePush(AppRoute.bluetoothDevicesPage,
+            //         params: {'deviceName': codeString});
+            //   },
+            // );hDevicesPage);
             // {
             //                     // 车架号后台初验通过，跳转蓝牙列表页面
             //                     pagePush(AppRoute.bluetoothDevicesPage,
@@ -67,20 +66,22 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
             //                 );
             //               }
             //             });
+            // pagePush(AppRoute.bluetoot
             //           },
-            // pagePush(AppRoute.scanQrCodePage, callback: (data) {
-            //   if (data != null && data is Map<String, dynamic>) {
-            //     var codeString = data['code'];
-            //     viewModel.checkDeviceName(
-            //       deviceName: codeString,
-            //       callback: () {
-            //         // 车架号后台初验通过，跳转蓝牙列表页面
-            //         pagePush(AppRoute.bluetoothDevicesPage,
-            //             params: {'deviceName': codeString});
-            //       },
-            //     );
-            //   }
-            // });
+
+            pagePush(AppRoute.scanQrCodePage, callback: (data) {
+              if (data != null && data is Map<String, dynamic>) {
+                var codeString = data['code'];
+                viewModel.checkDeviceName(
+                  deviceName: codeString,
+                  callback: () {
+                    // 车架号后台初验通过，跳转蓝牙列表页面
+                    pagePush(AppRoute.bluetoothDevicesPage,
+                        params: {'deviceName': codeString});
+                  },
+                );
+              }
+            });
           },
           child: Center(
             child: Image.asset(

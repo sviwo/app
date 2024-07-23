@@ -134,7 +134,7 @@ class _ScanCodePageState
             pagePop(resultParams: {'code': codeString});
           }
 
-          // LogUtil.d('开始了');
+          LogUtil.d('开始了');
           // LogUtil.d(codeInfo.calendarEvent);
           // LogUtil.d('calendarEvent------');
           // LogUtil.d(codeInfo.contactInfo);
