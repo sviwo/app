@@ -54,7 +54,8 @@ class LWDatePickerSheet extends StatefulWidget {
   DateTime? minDateTime;
   DateTime? maxDateTime;
 
-  Future get showSheet => LWBottomSheet.show(context, child: this, isDismissible: isDismissible);
+  Future get showSheet =>
+      LWBottomSheet.show(context, child: this, isDismissible: isDismissible);
 
   //// sheet显示的上下文
   final BuildContext context;
@@ -100,22 +101,32 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
   void initState() {
     currentTime = widget.currentTime ?? DateTime.now();
     minDateTime = widget.minDateTime ?? currentTime;
-    maxDateTime = widget.maxDateTime ?? currentTime.add(const Duration(days: 365 * 50));
-    if (maxDateTime.millisecondsSinceEpoch < minDateTime.millisecondsSinceEpoch) {
+    maxDateTime =
+        widget.maxDateTime ?? currentTime.add(const Duration(days: 365 * 50));
+    if (maxDateTime.millisecondsSinceEpoch <
+        minDateTime.millisecondsSinceEpoch) {
       maxDateTime = minDateTime.add(const Duration(days: 365 * 50));
     }
-    if (currentTime.millisecondsSinceEpoch < minDateTime.millisecondsSinceEpoch) {
+    if (currentTime.millisecondsSinceEpoch <
+        minDateTime.millisecondsSinceEpoch) {
       currentTime = minDateTime;
-    } else if (currentTime.millisecondsSinceEpoch > maxDateTime.millisecondsSinceEpoch) {
+    } else if (currentTime.millisecondsSinceEpoch >
+        maxDateTime.millisecondsSinceEpoch) {
       currentTime = maxDateTime;
     }
 
-    yearScrollController = FixedExtentScrollController(initialItem: currentTime.year - minDateTime.year);
-    monthScrollController = FixedExtentScrollController(initialItem: currentTime.month - 1);
-    dayScrollController = FixedExtentScrollController(initialItem: currentTime.day - 1);
-    hourScrollController = FixedExtentScrollController(initialItem: currentTime.hour);
-    minScrollController = FixedExtentScrollController(initialItem: currentTime.minute);
-    secScrollController = FixedExtentScrollController(initialItem: currentTime.second);
+    yearScrollController = FixedExtentScrollController(
+        initialItem: currentTime.year - minDateTime.year);
+    monthScrollController =
+        FixedExtentScrollController(initialItem: currentTime.month - 1);
+    dayScrollController =
+        FixedExtentScrollController(initialItem: currentTime.day - 1);
+    hourScrollController =
+        FixedExtentScrollController(initialItem: currentTime.hour);
+    minScrollController =
+        FixedExtentScrollController(initialItem: currentTime.minute);
+    secScrollController =
+        FixedExtentScrollController(initialItem: currentTime.second);
 
     _title = _getTitle();
 
@@ -150,7 +161,11 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
           widget.onConfirm!(currentTime);
         }
       },
-      items: const [LWBottomSheetTitleItem.cancel, LWBottomSheetTitleItem.title, LWBottomSheetTitleItem.confirm],
+      items: const [
+        LWBottomSheetTitleItem.cancel,
+        LWBottomSheetTitleItem.title,
+        LWBottomSheetTitleItem.confirm
+      ],
     );
   }
 
@@ -160,7 +175,8 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
     return height;
   }
 
-  _updateCurrentTime({int? year, int? month, int? day, int? hour, int? minute, int? second}) {
+  _updateCurrentTime(
+      {int? year, int? month, int? day, int? hour, int? minute, int? second}) {
     currentTime = DateTime(
       year ?? currentTime.year,
       month ?? currentTime.month,
@@ -175,25 +191,43 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
     } else if (maxDateTime.compareTo(currentTime) == -1) {
       currentTime = maxDateTime;
     }
-    if (widget.type.contains(TimePickerType.month) && monthScrollController.selectedItem != currentTime.month - 1) {
+    if (widget.type.contains(TimePickerType.month) &&
+        monthScrollController.selectedItem != currentTime.month - 1) {
       monthScrollController.jumpToItem(currentTime.month - 1);
     }
-    if (widget.type.contains(TimePickerType.day) && dayScrollController.selectedItem != currentTime.day - 1) {
+    if (widget.type.contains(TimePickerType.day) &&
+        dayScrollController.selectedItem != currentTime.day - 1) {
       dayScrollController.jumpToItem(currentTime.day - 1);
     }
-    if (widget.type.contains(TimePickerType.hour) && hourScrollController.selectedItem != currentTime.hour) {
+    if (widget.type.contains(TimePickerType.hour) &&
+        hourScrollController.selectedItem != currentTime.hour) {
       hourScrollController.jumpToItem(currentTime.hour);
     }
-    if (widget.type.contains(TimePickerType.minute) && minScrollController.selectedItem != currentTime.minute) {
+    if (widget.type.contains(TimePickerType.minute) &&
+        minScrollController.selectedItem != currentTime.minute) {
       minScrollController.jumpToItem(currentTime.minute);
     }
-    if (widget.type.contains(TimePickerType.second) && secScrollController.selectedItem != currentTime.second) {
+    if (widget.type.contains(TimePickerType.second) &&
+        secScrollController.selectedItem != currentTime.second) {
       secScrollController.jumpToItem(currentTime.second);
     }
   }
 
   int getMonthDay(year, month) {
-    var a = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31};
+    var a = {
+      1: 31,
+      2: 28,
+      3: 31,
+      4: 30,
+      5: 31,
+      6: 30,
+      7: 31,
+      8: 31,
+      9: 30,
+      10: 31,
+      11: 30,
+      12: 31
+    };
     if (month != 2) {
       return a[month]!;
     } else {
@@ -238,11 +272,15 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
                           if (e == TimePickerType.year) {
                             return _getColumnWidget(
                               controller: yearScrollController,
-                              selectedIndex: currentTime.year - minDateTime.year,
-                              itemCount: maxDateTime.year - minDateTime.year + 1,
-                              itemText: (index) => "${minDateTime.year + index}年",
+                              selectedIndex:
+                                  currentTime.year - minDateTime.year,
+                              itemCount:
+                                  maxDateTime.year - minDateTime.year + 1,
+                              itemText: (index) =>
+                                  "${minDateTime.year + index}年",
                               onSelectedItemChanged: (value) {
-                                _updateCurrentTime(year: minDateTime.year + value);
+                                _updateCurrentTime(
+                                    year: minDateTime.year + value);
                                 setState(() {});
                               },
                             );
@@ -253,8 +291,11 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
                               itemCount: 12,
                               itemText: (index) => "${index + 1}月",
                               onSelectedItemChanged: (value) {
-                                var day = getMonthDay(currentTime.year, value + 1);
-                                _updateCurrentTime(month: value + 1, day: min(currentTime.day, day));
+                                var day =
+                                    getMonthDay(currentTime.year, value + 1);
+                                _updateCurrentTime(
+                                    month: value + 1,
+                                    day: min(currentTime.day, day));
 
                                 setState(() {});
                               },
@@ -263,8 +304,10 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
                             return _getColumnWidget(
                               controller: dayScrollController,
                               selectedIndex: currentTime.day - 1,
-                              itemCount: getMonthDay(currentTime.year, currentTime.month),
-                              itemText: (index) => "${_getIndexStr(index + 1)}日",
+                              itemCount: getMonthDay(
+                                  currentTime.year, currentTime.month),
+                              itemText: (index) =>
+                                  "${_getIndexStr(index + 1)}日",
                               onSelectedItemChanged: (value) {
                                 _updateCurrentTime(day: 1 + value);
                                 setState(() {});
@@ -341,8 +384,14 @@ class _LWDatePickerSheetState extends State<LWDatePickerSheet> {
               child: Text(
                 itemText(index),
                 style: selectedIndex == index
-                    ? TextStyle(color: LWColors.gray1, fontSize: 14, fontWeight: FontWeight.w400)
-                    : const TextStyle(fontSize: 13, color: LWColors.gray3, fontWeight: FontWeight.w400),
+                    ? TextStyle(
+                        color: LWColors.gray1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400)
+                    : const TextStyle(
+                        fontSize: 13,
+                        color: LWColors.gray3,
+                        fontWeight: FontWeight.w400),
               ),
             );
           },
