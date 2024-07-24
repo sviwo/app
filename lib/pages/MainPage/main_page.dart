@@ -49,8 +49,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           onTap: () {
             LogUtil.d('点击了扫码');
             //var codeString = "sviwo-23kj4h2k3b4kk2";
-            //var codeString = "sviwo-asdas546a4s6d5";
-             var codeString = "sviwo-asidh342sjahdk";
+            // var codeString = "sviwo-asdas546a4s6d5";
+            var codeString = "sviwo-asidh342sjahdk";
             // pagePush(AppRoute.bluetoothDevicesPage,
             //     params: {'deviceName': codeString});
             // return;
