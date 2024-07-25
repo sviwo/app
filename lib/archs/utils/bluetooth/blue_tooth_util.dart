@@ -146,7 +146,7 @@ class BlueToothUtil {
       });
 
       // 每隔20毫秒钟执行一次myTask
-      Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      Timer.periodic(const Duration(milliseconds: 180), (timer) {
         _instanceBlueToothUtil?.myTask();
       });
     }
@@ -892,8 +892,8 @@ class BlueToothUtil {
     // blueAcceptDataListener?.acceptBlueToothData(checkResult, 33);
 
     // 没有simid 如果蓝牙传了，则下面代码 注释调
-    simID = "0000000000000000000";
-    notifyDeviceRegistSuccess();
+    //simID = "0000000000000000000";
+    //notifyDeviceRegistSuccess();
   }
 
   /// 解析蓝牙发送过来的数据  消息类型34
@@ -1046,6 +1046,11 @@ class BlueToothUtil {
     } else if (dataList[2] == 49) {
       simIDList.addAll(dataList.sublist(8, 12));
       simID = DataExchangeUtils.byteToString(simIDList);
+
+      List<int> list = sendPackToBluetooth49();
+      sendData.add(list);
+
+
       LogUtil.d("$TAG simID=$simID");
       // LogUtil.d("$TAG simID=${DataExchangeUtils.bytesToHex(simIDList)}");
       notifyDeviceRegistSuccess();
@@ -1556,7 +1561,7 @@ class BlueToothUtil {
     } else {
       sendPack[position++] = 0;
     }
-    sendPack[position++] = bit8 & 0xff;
+    sendPack[position++] = sendPack[15];
     for (int i = 0; i < 16; i++) {
       count += sendPack[i];
     }
@@ -1564,6 +1569,35 @@ class BlueToothUtil {
 
     return sendPack;
   }
+
+
+
+  /// app 发送simid应答
+  static List<int> sendPackToBluetooth49() {
+
+    List<int> sendPack = List.filled(17, 0);
+    int count = 0;
+
+    int position = 0;
+    sendPack[position++] = 0xa5;
+    sendPack[position++] = 0x03;
+    sendPack[position++] = (49 & 0xff);
+    sendPack[position++] = 8;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
+    sendPack[position++] = (second >> 24) & 0xff;
+    sendPack[position++] = (second >> 16) & 0xff;
+    sendPack[position++] = (second >> 8) & 0xff;
+    sendPack[position++] = second & 0xff;
+    sendPack[14] = 0xA3;
+
+    for (int i = 0; i < 16; i++) {
+      count += sendPack[i];
+    }
+    sendPack[16] = count & 0xff;
+
+    return sendPack;
+  }
+
 
   List<int> sendPackToBluetooth47_49(int num) {
     List<int> sendPack = List.filled(17, 0);
