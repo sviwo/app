@@ -63,6 +63,61 @@ class _LoginMainPageState
   }
 
   _buildContents() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints.expand(),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: 182.67.dp,
+            child: Image.asset(
+              AppIcons.imgLoginMainSviwoIcon,
+              width: 203.33.dp,
+              height: 51.33.dp,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            bottom: 150.dp,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LWButton.text(
+                  text: LocaleKeys.sign_in_now.tr(),
+                  textColor: Colors.white,
+                  textSize: 16.sp,
+                  backgroundColor: LWWidget.themeColor,
+                  minWidth: 315.dp,
+                  minHeight: 50.dp,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.dp))),
+                  onPressed: () {
+                    pagePush(AppRoute.login, fullscreenDialog: true);
+                  },
+                ),
+                SizedBox(
+                  height: 21.dp,
+                ),
+                LWButton.text(
+                  text: LocaleKeys.user_register.tr(),
+                  textColor: const Color(0xff010101),
+                  textSize: 16.sp,
+                  backgroundColor: Colors.white,
+                  minWidth: 315.dp,
+                  minHeight: 50.dp,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.dp))),
+                  onPressed: () {
+                    LogUtil.d('点击了用户注册');
+                    pagePush(AppRoute.register, fullscreenDialog: true);
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
     return SizedBox(
         width: double.infinity,
         child: Column(

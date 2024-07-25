@@ -264,7 +264,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
-                LWLoading.showLoading(text: "连接中...");
+                LWLoading.showLoading2(text: "连接中...");
                 BlueToothUtil.getInstance()
                     .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
               }
@@ -595,7 +595,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      LWLoading.showLoading(text: "连接中...");
+                      LWLoading.showLoading2(text: "连接中...");
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }
@@ -640,7 +640,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      LWLoading.showLoading(text: "连接中...");
+                      LWLoading.showLoading2(text: "连接中...");
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }
