@@ -25,6 +25,15 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  // 心跳包的序号，1开始递增
+  int heartPosition = 1;
+
+  // 记录没有消息的时间间隔 毫秒
+  int countHeartTime = 0;
+
+  // 两次发送数据的间隔 毫秒
+  static int sendDataHz = 190;
+
   // 是否第一次发送消息
   bool isFirst = true;
 
@@ -64,6 +73,10 @@ class BlueToothUtil {
 
   // 蓝牙名称
   // String? currBlueName;
+
+  // bool blueIsOpen = false;
+
+
 
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
@@ -127,6 +140,12 @@ class BlueToothUtil {
       _instanceBlueToothUtil = BlueToothUtil._internal();
       FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
       FlutterBluePlus.adapterState.listen((state) {
+        LogUtil.d("${_instanceBlueToothUtil?.TAG} $state");
+        // if(state == BluetoothAdapterState.off){
+        //   _instanceBlueToothUtil?.blueIsOpen = false;
+        // }else if(state == BluetoothAdapterState.on){
+        //   _instanceBlueToothUtil?.blueIsOpen = true;
+        // }
         _instanceBlueToothUtil?._adapterState = state;
         if (state == BluetoothAdapterState.off) {
           _instanceBlueToothUtil?._scanResultsSubscription = null;
@@ -146,22 +165,45 @@ class BlueToothUtil {
       });
 
       // 每隔20毫秒钟执行一次myTask
-      Timer.periodic(const Duration(milliseconds: 180), (timer) {
+      Timer.periodic(Duration(milliseconds: BlueToothUtil.sendDataHz), (timer) {
         _instanceBlueToothUtil?.myTask();
       });
     }
     return _instanceBlueToothUtil!;
   }
 
+
+
   void myTask() {
-    if (sendData.isNotEmpty) {
-      if (sendChart != null) {
+    // 这里放置你需要定时执行的代码
+    if (sendChart != null){
+      if (sendData.isNotEmpty){
         sendDataToBlueTooth(sendData[0]);
         sendData.removeAt(0);
+        countHeartTime = 0;
+      }else{
+        if(keyString == null){
+          return;
+        }
+        // 如果不要app发送心跳包，则吧下面的代码全部注释掉
+        countHeartTime += BlueToothUtil.sendDataHz;
+
+        if(countHeartTime >= 5000){
+          // 上一次和这一次5秒没有发送数据则产生一条心跳数据，加入到发送队列里面
+          List<int> heartList =  sendPackToBluetoothHeart(heartPosition++);
+          sendData.add(heartList);
+          countHeartTime = 0;
+
+        }
       }
     }
-    // 这里放置你需要定时执行的代码
+
   }
+
+  /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
+  // bool getBlueIsOpen(){
+  //   return blueIsOpen;
+  // }
 
   /// 获取蓝牙是否开启 true 开启， false 关闭
   bool blueToothIsOpen() {
@@ -206,7 +248,7 @@ class BlueToothUtil {
 
   /// 控制蓝牙响车灯   YGTODO
   void controllerBlueLight() {
-    sendData.add(sendPackToBluetooth46(lightStatus: 2));
+    sendData.add(sendPackToBluetooth46(lightStatus: 1));
   }
 
   /// 剩余电量 YGTODO
@@ -588,7 +630,10 @@ class BlueToothUtil {
     if ((dataList[1] & 0xff) == 0x92) {
       // LogUtil.d("$TAG 接收蓝牙数据心跳:${DataExchangeUtils.bytesToHex(dataList)}");
     } else {
-      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+     // if((dataList[1] & 0xff) < 0x22 &&  (dataList[1] & 0xff) > 0x26){
+       LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+     // }
+
     }
     if (dataList.length != 17) {
       return;
@@ -668,6 +713,36 @@ class BlueToothUtil {
       // LogUtil.d("$TAG blueTooth messageType error");
     }
   }
+
+
+  /// app 发送个i蓝牙的心跳包
+  List<int> sendPackToBluetoothHeart(int index) {
+    List<int> sendPack = List.filled(17, 0);
+    int count = 0;
+    int position = 0;
+    sendPack[position++] = 0xa5;
+    sendPack[position++] = 0x03;
+    sendPack[position++] = 0x50;
+    sendPack[position++] = 8;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
+    sendPack[position++] = (second >> 24) & 0xff;
+    sendPack[position++] = (second >> 16) & 0xff;
+    sendPack[position++] = (second >> 8) & 0xff;
+    sendPack[position++] = second & 0xff;
+
+    sendPack[position++] = (index >> 24) & 0xff;
+    sendPack[position++] = (index >> 16) & 0xff;
+    sendPack[position++] = (index >> 8) & 0xff;
+    sendPack[position++] = index & 0xff;
+
+    for (int i = 0; i < 16; i++) {
+      count += sendPack[i];
+    }
+    sendPack[16] = count & 0xff;
+
+    return sendPack;
+  }
+
 
   /// app 蓝牙连接成功后，app发送握手
   List<int> sendPackToBluetooth1() {
@@ -902,7 +977,7 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
-    LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
+    // LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型35
@@ -913,8 +988,8 @@ class BlueToothUtil {
     int sportSwitch = dataList[12] & 0xff;
     // 动能回收
     int sportRecycle = dataList[13] & 0xff;
-    LogUtil.d(
-        "$TAG 解析 speed:$speed sportSwitch:$sportSwitch sportRecycle:$sportRecycle");
+    // LogUtil.d(
+    //     "$TAG 解析 speed:$speed sportSwitch:$sportSwitch sportRecycle:$sportRecycle");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型36
@@ -953,15 +1028,15 @@ class BlueToothUtil {
     blueDataVO.chargeConnect = chargeConnect;
     controller.add(blueDataVO);
 
-    LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
-        "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
-        "alarmContinue:$alarmContinue "
-        "deviceDefaultAlarm:$deviceDefaultAlarm \n "
-        "carTemperatureHigh:$carTemperatureHigh "
-        "chargeConnect:$chargeConnect lowPower:$lowPower \n "
-        "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
-        "leftLightFlash:$leftLightFlash \n "
-        "rightLightFlash:$rightLightFlash");
+  //   LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
+  //       "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
+  //       "alarmContinue:$alarmContinue "
+  //       "deviceDefaultAlarm:$deviceDefaultAlarm \n "
+  //       "carTemperatureHigh:$carTemperatureHigh "
+  //       "chargeConnect:$chargeConnect lowPower:$lowPower \n "
+  //       "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
+  //       "leftLightFlash:$leftLightFlash \n "
+  //       "rightLightFlash:$rightLightFlash");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -975,7 +1050,7 @@ class BlueToothUtil {
     blueDataVO.carSpeed = carSpeed;
     controller.add(blueDataVO);
 
-    LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
+    // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型38
@@ -1009,10 +1084,11 @@ class BlueToothUtil {
     blueDataVO.battery = battery;
     controller.add(blueDataVO);
 
-    LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
-        "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
-        "lackOfPowerStatus:$lackOfPowerStatus readyStatus:$readyStatus \n "
-        "dischargeContactorStatus:$dischargeContactorStatus chargingContactorStatus:$chargingContactorStatus batteryDefaultLeve:$batteryDefaultLeve bmsCode:$bmsCode");
+    // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
+    //     "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
+    //     "lackOfPowerStatus:$lackOfPowerStatus readyStatus:$readyStatus \n "
+    //     "dischargeContactorStatus:$dischargeContactorStatus chargingContactorStatus:$chargingContactorStatus batteryDefaultLeve:$batteryDefaultLeve bmsCode:$bmsCode");
+    //
   }
 
   /// 解析蓝牙发送过来的数据  消息类型39
@@ -1573,7 +1649,7 @@ class BlueToothUtil {
 
 
   /// app 发送simid应答
-  static List<int> sendPackToBluetooth49() {
+  List<int> sendPackToBluetooth49() {
 
     List<int> sendPack = List.filled(17, 0);
     int count = 0;
