@@ -229,7 +229,7 @@ class BlueToothUtil {
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
-      var blueToothState = await openBlueTooth();
+      openBlueTooth();
     }
     currentblueMac = mac;
     // 扫描蓝牙
@@ -286,15 +286,15 @@ class BlueToothUtil {
   }
 
   /// 开启蓝牙
-  Future<bool> openBlueTooth() async {
-    return await checkBlueToothPermission();
-    // try {
-    //   if (Platform.isAndroid) {
-    //     await FlutterBluePlus.turnOn();
-    //   }
-    // } catch (e) {
-    //   LogUtil.d("$TAG open blueTooth error:$e");
-    // }
+  void openBlueTooth() async {
+    // return await checkBlueToothPermission();
+    try {
+      if (Platform.isAndroid) {
+        await FlutterBluePlus.turnOn();
+      }
+    } catch (e) {
+      LogUtil.d("$TAG open blueTooth error:$e");
+    }
   }
 
   static Future<bool> checkBlueToothPermission() async {
