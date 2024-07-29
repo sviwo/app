@@ -76,8 +76,6 @@ class BlueToothUtil {
 
   // bool blueIsOpen = false;
 
-
-
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
     getDeviceCertificate();
@@ -103,10 +101,18 @@ class BlueToothUtil {
   // 蓝牙数据传输流
   StreamController<BlueDataVO> controller = StreamController<BlueDataVO>();
 
-  Stream<BlueDataVO> get dataStream => controller.stream.asBroadcastStream();
+  Stream<BlueDataVO>? _dataStream;
+  Stream<BlueDataVO> get dataStream {
+    if (_dataStream != null) {
+      return _dataStream!;
+    }
+    _dataStream = controller.stream.asBroadcastStream();
+    return _dataStream!;
+  }
 
   StreamController<bool> connectStream = StreamController.broadcast();
-  Stream<bool> get connectDataStream => connectStream.stream.asBroadcastStream();
+  Stream<bool> get connectDataStream =>
+      connectStream.stream.asBroadcastStream();
 
   // 私有的命名构造函数
   BlueToothUtil._internal();
@@ -172,32 +178,28 @@ class BlueToothUtil {
     return _instanceBlueToothUtil!;
   }
 
-
-
   void myTask() {
     // 这里放置你需要定时执行的代码
-    if (sendChart != null){
-      if (sendData.isNotEmpty){
+    if (sendChart != null) {
+      if (sendData.isNotEmpty) {
         sendDataToBlueTooth(sendData[0]);
         sendData.removeAt(0);
         countHeartTime = 0;
-      }else{
-        if(keyString == null){
+      } else {
+        if (keyString == null) {
           return;
         }
         // 如果不要app发送心跳包，则吧下面的代码全部注释掉
         countHeartTime += BlueToothUtil.sendDataHz;
 
-        if(countHeartTime >= 5000){
+        if (countHeartTime >= 5000) {
           // 上一次和这一次5秒没有发送数据则产生一条心跳数据，加入到发送队列里面
-          List<int> heartList =  sendPackToBluetoothHeart(heartPosition++);
+          List<int> heartList = sendPackToBluetoothHeart(heartPosition++);
           sendData.add(heartList);
           countHeartTime = 0;
-
         }
       }
     }
-
   }
 
   /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
@@ -307,7 +309,9 @@ class BlueToothUtil {
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.isNotEmpty) {
         for (int i = 0; i < _scanResults.length; i++) {
-          if (currentBlueName != null && currentBlueName.isNotEmpty && currentBlueName == _scanResults[i].device.platformName) {
+          if (currentBlueName != null &&
+              currentBlueName.isNotEmpty &&
+              currentBlueName == _scanResults[i].device.platformName) {
             LogUtil.d("$TAG搜索到了指定蓝牙");
             // 停止扫描
             FlutterBluePlus.stopScan();
@@ -455,7 +459,7 @@ class BlueToothUtil {
           } catch (e) {
             LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
-        }else{
+        } else {
           _isConnecting = false;
           connectStream.sink.add(false);
         }
@@ -630,10 +634,9 @@ class BlueToothUtil {
     if ((dataList[1] & 0xff) == 0x92) {
       // LogUtil.d("$TAG 接收蓝牙数据心跳:${DataExchangeUtils.bytesToHex(dataList)}");
     } else {
-     // if((dataList[1] & 0xff) < 0x22 &&  (dataList[1] & 0xff) > 0x26){
-       LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
-     // }
-
+      // if((dataList[1] & 0xff) < 0x22 &&  (dataList[1] & 0xff) > 0x26){
+      LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
+      // }
     }
     if (dataList.length != 17) {
       return;
@@ -687,33 +690,30 @@ class BlueToothUtil {
       decodeBlueToothData44(dataList);
     } else if ((dataList[2] & 0xff) >= 47 && (dataList[2] & 0xff) <= 49) {
       decodeBlueToothData47_49(dataList);
-    } else if((dataList[2] & 0xff) == 43){
-      if(isFirst){
+    } else if ((dataList[2] & 0xff) == 43) {
+      if (isFirst) {
         isFirst = false;
         // List<int> list = getStepOneBluetoothCarNumber1();
         // sendData.add(list);
 
-        if(isSpeedConnect){
+        if (isSpeedConnect) {
           List<int> list = sendPackToBluetooth44(keyString!);
           sendData.add(list);
-        }else{
+        } else {
           // 发送车架号
           if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-            List<List<int>> mList =
-            getPackToBluetoothCarNumber2_4(deviceName!);
+            List<List<int>> mList = getPackToBluetoothCarNumber2_4(deviceName!);
             for (int i = 0; i < mList.length; i++) {
               sendData.add(mList[i]);
             }
           }
         }
       }
-
-    }else {
+    } else {
       // LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       // LogUtil.d("$TAG blueTooth messageType error");
     }
   }
-
 
   /// app 发送个i蓝牙的心跳包
   List<int> sendPackToBluetoothHeart(int index) {
@@ -743,7 +743,6 @@ class BlueToothUtil {
     return sendPack;
   }
 
-
   /// app 蓝牙连接成功后，app发送握手
   List<int> sendPackToBluetooth1() {
     List<int> sendPack = List.filled(17, 0);
@@ -767,8 +766,6 @@ class BlueToothUtil {
     return sendPack;
   }
 
-
-
   /// 解析蓝牙发送过来的数据  消息类型1
   void decodeBlueToothData1(List<int> dataList) {
     int timeMillisecond = ((dataList[8] << 24) & 0xffffffff) |
@@ -776,25 +773,25 @@ class BlueToothUtil {
         ((dataList[10] << 8) & 0xffff) |
         (dataList[11] & 0xff);
 
-      // if(isFirst){
-      //   isFirst = false;
-      //   List<int> list = getStepOneBluetoothCarNumber1();
-      //   sendData.add(list);
-      //
-      //   if(isSpeedConnect){
-      //     List<int> list = sendPackToBluetooth44(keyString!);
-      //     sendData.add(list);
-      //   }else{
-      //     // 发送车架号
-      //     if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-      //       List<List<int>> mList =
-      //       getPackToBluetoothCarNumber2_4(deviceName!);
-      //       for (int i = 0; i < mList.length; i++) {
-      //         sendData.add(mList[i]);
-      //       }
-      //     }
-      //   }
-      // }
+    // if(isFirst){
+    //   isFirst = false;
+    //   List<int> list = getStepOneBluetoothCarNumber1();
+    //   sendData.add(list);
+    //
+    //   if(isSpeedConnect){
+    //     List<int> list = sendPackToBluetooth44(keyString!);
+    //     sendData.add(list);
+    //   }else{
+    //     // 发送车架号
+    //     if (deviceName != null && !deviceName!.isNullOrEmpty()) {
+    //       List<List<int>> mList =
+    //       getPackToBluetoothCarNumber2_4(deviceName!);
+    //       for (int i = 0; i < mList.length; i++) {
+    //         sendData.add(mList[i]);
+    //       }
+    //     }
+    //   }
+    // }
 
     // blueAcceptDataListener?.acceptBlueToothData(timeMillisecond, 1);
   }
@@ -1028,15 +1025,15 @@ class BlueToothUtil {
     blueDataVO.chargeConnect = chargeConnect;
     controller.add(blueDataVO);
 
-  //   LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
-  //       "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
-  //       "alarmContinue:$alarmContinue "
-  //       "deviceDefaultAlarm:$deviceDefaultAlarm \n "
-  //       "carTemperatureHigh:$carTemperatureHigh "
-  //       "chargeConnect:$chargeConnect lowPower:$lowPower \n "
-  //       "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
-  //       "leftLightFlash:$leftLightFlash \n "
-  //       "rightLightFlash:$rightLightFlash");
+    //   LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
+    //       "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
+    //       "alarmContinue:$alarmContinue "
+    //       "deviceDefaultAlarm:$deviceDefaultAlarm \n "
+    //       "carTemperatureHigh:$carTemperatureHigh "
+    //       "chargeConnect:$chargeConnect lowPower:$lowPower \n "
+    //       "lightStatus:$lightStatus doubleLightFlash:$doubleLightFlash "
+    //       "leftLightFlash:$leftLightFlash \n "
+    //       "rightLightFlash:$rightLightFlash");
   }
 
   /// 解析蓝牙发送过来的数据  消息类型37
@@ -1125,7 +1122,6 @@ class BlueToothUtil {
 
       List<int> list = sendPackToBluetooth49();
       sendData.add(list);
-
 
       LogUtil.d("$TAG simID=$simID");
       // LogUtil.d("$TAG simID=${DataExchangeUtils.bytesToHex(simIDList)}");
@@ -1460,7 +1456,6 @@ class BlueToothUtil {
     return sendPack;
   }
 
-
   /// app 发送心跳包
   static List<int> sendPackToBluetooth45(int num, String privateKey) {
     List<int> dataArray = utf8.encode(privateKey);
@@ -1646,11 +1641,8 @@ class BlueToothUtil {
     return sendPack;
   }
 
-
-
   /// app 发送simid应答
   List<int> sendPackToBluetooth49() {
-
     List<int> sendPack = List.filled(17, 0);
     int count = 0;
 
@@ -1673,7 +1665,6 @@ class BlueToothUtil {
 
     return sendPack;
   }
-
 
   List<int> sendPackToBluetooth47_49(int num) {
     List<int> sendPack = List.filled(17, 0);
