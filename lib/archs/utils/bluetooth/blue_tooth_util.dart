@@ -384,6 +384,7 @@ class BlueToothUtil {
   Future connectBluetooth(BluetoothDevice mdevice) async {
     isFirst = true;
     LogUtil.d("$TAG blueName:${mdevice.platformName}");
+    LogUtil.d("$TAG deviceName:${deviceName}");
     // DeviceRegistParam item = DeviceRegistParam();
     // item.deviceName = "sviwo-asdas546a4s6d5";
     // item.productKey = "k0ugjmf1ois";
@@ -630,9 +631,9 @@ class BlueToothUtil {
     if ((dataList[1] & 0xff) == 0x92) {
       // LogUtil.d("$TAG 接收蓝牙数据心跳:${DataExchangeUtils.bytesToHex(dataList)}");
     } else {
-     // if((dataList[1] & 0xff) < 0x22 &&  (dataList[1] & 0xff) > 0x26){
+     if((dataList[1] & 0xff) < 0x22 &&  (dataList[1] & 0xff) > 0x26){
        LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
-     // }
+     }
 
     }
     if (dataList.length != 17) {
@@ -697,6 +698,7 @@ class BlueToothUtil {
           List<int> list = sendPackToBluetooth44(keyString!);
           sendData.add(list);
         }else{
+
           // 发送车架号
           if (deviceName != null && !deviceName!.isNullOrEmpty()) {
             List<List<int>> mList =
