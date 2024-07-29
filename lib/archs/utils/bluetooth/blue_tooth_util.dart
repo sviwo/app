@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:atv/archs/base/event_manager.dart';
@@ -18,6 +19,7 @@ import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'blue_accept_data_listener.dart';
 import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
@@ -218,7 +220,7 @@ class BlueToothUtil {
   }
 
   /// 根据蓝牙mac和key去连接蓝牙  YGTODO
-  void speedConnectBlue(String mac, String key) {
+  void speedConnectBlue(String mac, String key) async {
     keyString = int.parse(key);
     isFirst = true;
     isSpeedConnect = true;
@@ -227,7 +229,7 @@ class BlueToothUtil {
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
-      openBlueTooth();
+      var blueToothState = await openBlueTooth();
     }
     currentblueMac = mac;
     // 扫描蓝牙
@@ -284,14 +286,54 @@ class BlueToothUtil {
   }
 
   /// 开启蓝牙
-  void openBlueTooth() async {
-    try {
-      if (Platform.isAndroid) {
-        await FlutterBluePlus.turnOn();
+  Future<bool> openBlueTooth() async {
+    return await checkBlueToothPermission();
+    // try {
+    //   if (Platform.isAndroid) {
+    //     await FlutterBluePlus.turnOn();
+    //   }
+    // } catch (e) {
+    //   LogUtil.d("$TAG open blueTooth error:$e");
+    // }
+  }
+
+  static Future<bool> checkBlueToothPermission() async {
+    /// 判断蓝牙权限
+    PermissionStatus permissionStatus = await blueToothPermission();
+
+    if (permissionStatus == PermissionStatus.granted) {
+      // 权限已经被授予
+      LogUtil.d('蓝牙权限已经被授予');
+      return true;
+    } else if (permissionStatus == PermissionStatus.denied) {
+      // 权限被用户拒绝
+      LogUtil.d('蓝牙权限被拒绝');
+      // 可以尝试请求权限
+      permissionStatus = await requestBlueToothPermission();
+      LogUtil.d('+++++++');
+      if (permissionStatus == PermissionStatus.granted) {
+        LogUtil.d('用户同意了权限请求');
+        return true;
+      } else if (permissionStatus == PermissionStatus.denied) {
+        LogUtil.d('用户仍然拒绝了权限请求');
+        return false;
       }
-    } catch (e) {
-      LogUtil.d("$TAG open blueTooth error:$e");
     }
+    return false;
+  }
+
+  /// 检查蓝牙权限状态
+  static Future<PermissionStatus> blueToothPermission() async {
+    final PermissionStatus permissionStatus = await Permission.bluetooth.status;
+    return permissionStatus;
+  }
+
+  /// 请求蓝牙权限
+  static Future<PermissionStatus> requestBlueToothPermission() async {
+    final PermissionStatus permissionStatus =
+        await Permission.bluetooth.request();
+    LogUtil.d('requestBlueToothPermission permissionStatus:$permissionStatus');
+    return permissionStatus;
   }
 
   /// 扫描蓝牙
