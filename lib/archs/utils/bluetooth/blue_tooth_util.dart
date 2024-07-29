@@ -180,28 +180,32 @@ class BlueToothUtil {
     return _instanceBlueToothUtil!;
   }
 
+
+
   void myTask() {
     // 这里放置你需要定时执行的代码
-    if (sendChart != null) {
-      if (sendData.isNotEmpty) {
+    if (sendChart != null){
+      if (sendData.isNotEmpty){
         sendDataToBlueTooth(sendData[0]);
         sendData.removeAt(0);
         countHeartTime = 0;
-      } else {
-        if (keyString == null) {
+      }else{
+        if(keyString == null){
           return;
         }
         // 如果不要app发送心跳包，则吧下面的代码全部注释掉
         countHeartTime += BlueToothUtil.sendDataHz;
 
-        if (countHeartTime >= 5000) {
+        if(countHeartTime >= 5000){
           // 上一次和这一次5秒没有发送数据则产生一条心跳数据，加入到发送队列里面
-          List<int> heartList = sendPackToBluetoothHeart(heartPosition++);
+          List<int> heartList =  sendPackToBluetoothHeart(heartPosition++);
           sendData.add(heartList);
           countHeartTime = 0;
+
         }
       }
     }
+
   }
 
   /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
