@@ -113,7 +113,7 @@ class BlueToothUtil {
   //   _dataStream = controller.stream.asBroadcastStream();
   //   return _dataStream!;
   // }
-
+  // 手机蓝牙开启关闭流
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
 
@@ -352,6 +352,10 @@ class BlueToothUtil {
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.isNotEmpty) {
         for (int i = 0; i < _scanResults.length; i++) {
+          if(_scanResults[i].device.platformName.isNotEmpty){
+            //LogUtil.d("$TAG ${_scanResults[i].device.platformName}");
+          }
+
           if (currentBlueName != null &&
               currentBlueName.isNotEmpty &&
               currentBlueName == _scanResults[i].device.platformName) {
