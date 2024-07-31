@@ -117,6 +117,11 @@ class BlueToothUtil {
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
 
+  // 蓝牙连接状态
+  StreamController<bool> deviceconnectController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get deviceConnectDataStream => deviceconnectController.stream;
+
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -166,6 +171,7 @@ class BlueToothUtil {
 
           _instanceBlueToothUtil?._services = [];
           _instanceBlueToothUtil?._isConnecting = false;
+          _instanceBlueToothUtil?.deviceconnectController.sink.add(false);
           _instanceBlueToothUtil?._isDisconnecting = false;
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
@@ -352,7 +358,7 @@ class BlueToothUtil {
       // device.remoteId.str 蓝牙mac
       if (_scanResults != null && _scanResults.isNotEmpty) {
         for (int i = 0; i < _scanResults.length; i++) {
-          if(_scanResults[i].device.platformName.isNotEmpty){
+          if (_scanResults[i].device.platformName.isNotEmpty) {
             //LogUtil.d("$TAG ${_scanResults[i].device.platformName}");
           }
 
@@ -455,6 +461,7 @@ class BlueToothUtil {
         if (state == BluetoothConnectionState.connected) {
           connectController.sink.add(true);
           _isConnecting = true;
+          deviceconnectController.sink.add(true);
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
           _services = []; // must rediscover services
@@ -508,6 +515,7 @@ class BlueToothUtil {
           }
         } else {
           _isConnecting = false;
+          deviceconnectController.sink.add(false);
           connectController.sink.add(false);
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
