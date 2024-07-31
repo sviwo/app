@@ -84,7 +84,7 @@ class _RemoteControlPageState
           height: 25.dp,
         ),
         StreamBuilder<BlueDataVO>(
-          stream: BlueToothUtil.getInstance().dataStream,
+          stream: BlueToothUtil.getInstance().receiveDataStream,
           initialData: BlueToothUtil.getInstance().blueDataVO,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             BlueDataVO model = snapshot.data;
@@ -123,7 +123,7 @@ class _RemoteControlPageState
           height: 19.dp,
         ),
         StreamBuilder<BlueDataVO>(
-            stream: BlueToothUtil.getInstance().dataStream,
+            stream: BlueToothUtil.getInstance().receiveDataStream,
             initialData: BlueToothUtil.getInstance().blueDataVO,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               BlueDataVO model = snapshot.data;

@@ -101,20 +101,21 @@ class BlueToothUtil {
   BlueDataVO blueDataVO = BlueDataVO();
 
   // 蓝牙数据传输流
-  StreamController<BlueDataVO> controller = StreamController<BlueDataVO>();
+  StreamController<BlueDataVO> receiveController =
+      StreamController<BlueDataVO>.broadcast();
 
-  Stream<BlueDataVO>? _dataStream;
-  Stream<BlueDataVO> get dataStream {
-    if (_dataStream != null) {
-      return _dataStream!;
-    }
-    _dataStream = controller.stream.asBroadcastStream();
-    return _dataStream!;
-  }
+  Stream<BlueDataVO> get receiveDataStream => receiveController.stream;
+  // Stream<BlueDataVO>? _dataStream;
+  // Stream<BlueDataVO> get dataStream {
+  //   if (_dataStream != null) {
+  //     return _dataStream!;
+  //   }
+  //   _dataStream = controller.stream.asBroadcastStream();
+  //   return _dataStream!;
+  // }
 
-  StreamController<bool> connectStream = StreamController.broadcast();
-  Stream<bool> get connectDataStream =>
-      connectStream.stream.asBroadcastStream();
+  StreamController<bool> connectController = StreamController<bool>.broadcast();
+  Stream<bool> get connectDataStream => connectController.stream;
 
   // 私有的命名构造函数
   BlueToothUtil._internal();
@@ -180,32 +181,28 @@ class BlueToothUtil {
     return _instanceBlueToothUtil!;
   }
 
-
-
   void myTask() {
     // 这里放置你需要定时执行的代码
-    if (sendChart != null){
-      if (sendData.isNotEmpty){
+    if (sendChart != null) {
+      if (sendData.isNotEmpty) {
         sendDataToBlueTooth(sendData[0]);
         sendData.removeAt(0);
         countHeartTime = 0;
-      }else{
-        if(keyString == null){
+      } else {
+        if (keyString == null) {
           return;
         }
         // 如果不要app发送心跳包，则吧下面的代码全部注释掉
         countHeartTime += BlueToothUtil.sendDataHz;
 
-        if(countHeartTime >= 5000){
+        if (countHeartTime >= 5000) {
           // 上一次和这一次5秒没有发送数据则产生一条心跳数据，加入到发送队列里面
-          List<int> heartList =  sendPackToBluetoothHeart(heartPosition++);
+          List<int> heartList = sendPackToBluetoothHeart(heartPosition++);
           sendData.add(heartList);
           countHeartTime = 0;
-
         }
       }
     }
-
   }
 
   /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
@@ -452,7 +449,7 @@ class BlueToothUtil {
       mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
-          connectStream.sink.add(true);
+          connectController.sink.add(true);
           _isConnecting = true;
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
@@ -507,7 +504,7 @@ class BlueToothUtil {
           }
         } else {
           _isConnecting = false;
-          connectStream.sink.add(false);
+          connectController.sink.add(false);
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
           _rssi = await mdevice.readRssi();
@@ -597,7 +594,7 @@ class BlueToothUtil {
   }
 
   void dispose() {
-    connectStream.close();
+    connectController.close();
     // currentBlue?.disconnect();
     // _connectionStateSubscription?.cancel();
     // _mtuSubscription?.cancel();
@@ -1069,7 +1066,7 @@ class BlueToothUtil {
     int rightLightFlash = (dataList[15] >> 3) & 0x01;
 
     blueDataVO.chargeConnect = chargeConnect;
-    controller.add(blueDataVO);
+    receiveController.add(blueDataVO);
 
     //   LogUtil.d("$TAG 解析 lockCarStatus:$lockCarStatus setLock:$setLock "
     //       "wheelDrive:$wheelDrive shake:$shake \n voice:$voice alarm:$alarm "
@@ -1091,7 +1088,7 @@ class BlueToothUtil {
     carSpeed = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
 
     blueDataVO.carSpeed = carSpeed;
-    controller.add(blueDataVO);
+    receiveController.add(blueDataVO);
 
     // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
   }
@@ -1125,7 +1122,7 @@ class BlueToothUtil {
 
     blueDataVO.endurance = endurance;
     blueDataVO.battery = battery;
-    controller.add(blueDataVO);
+    receiveController.add(blueDataVO);
 
     // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
     //     "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
