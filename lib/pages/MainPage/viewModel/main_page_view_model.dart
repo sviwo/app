@@ -97,18 +97,29 @@ class MainPageViewModel extends BaseViewModel {
       dataSuccess: (data) async {
         _isShowLoading = false;
         dataModel = data;
+        if (completion != null) {
+          completion();
+        }
+        /*
+        LWTODO: 解析数据，初始化蓝牙中数据模型
+        */
+        
+        /*
+        YGTO: 添加判断
+        1. 判断手机蓝牙是否打开
+        2. 判断手机蓝牙是否连接了设备
 
+        都正确才去连接蓝牙
+        */
         if(dataModel != null && dataModel!.bluetoothAddress != null
         && dataModel!.bluetoothSecretKey != null
             && dataModel!.bluetoothAddress!.isNotEmpty && dataModel!.bluetoothSecretKey!.isNotEmpty){
           BlueToothUtil.getInstance().speedConnectBlue(dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
         }
 
-        if (completion != null) {
-          completion();
-        }
         dataRefreshFinished();
         pageRefresh();
+        
       },
       onFailed: (errorMsg) {
         _isShowLoading = false;

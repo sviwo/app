@@ -54,9 +54,6 @@ class _MinePageState
       viewModel.currentLauguage = await AppConf.getLauguage();
       updateState(() {});
     });
-    // EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
-    //   viewModel.getVehicleList();
-    // });
   }
 
   @override
@@ -64,7 +61,6 @@ class _MinePageState
     // TODO: implement dispose
     EventManager.unregister(context, AppEvent.userBaseInfoChange);
     EventManager.unregister(context, AppEvent.languageChange);
-    // EventManager.unregister(context, AppEvent.vehicleInfoChange);
     super.dispose();
   }
 

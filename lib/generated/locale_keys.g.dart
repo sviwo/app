@@ -181,7 +181,7 @@ abstract class LocaleKeys {
   static const nearby_devices = "nearby_devices";
   static const scan_code = "scan_code";
   static const qrcode_format_error_tips = "qrcode_format_error_tips";
-// static const  = "";
+  static const connecting = "connecting";
 // static const  = "";
 // static const  = "";
 // static const  = "";
