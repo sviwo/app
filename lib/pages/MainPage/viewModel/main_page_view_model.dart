@@ -47,7 +47,7 @@ class MainPageViewModel extends BaseViewModel {
   @override
   Future<void> loadData({isRefresh = true, bool showLoading = false}) async {
     _isShowLoading = true;
-    
+
     timer?.cancel();
     await signalRequestData(
       completion: () {
@@ -101,31 +101,25 @@ class MainPageViewModel extends BaseViewModel {
         if (completion != null) {
           completion();
         }
-        /*
-        LWTODO: 解析数据，初始化蓝牙中数据模型
-        */
-        
-        /*
-        YGTO: 添加判断
-        1. 判断手机蓝牙是否打开
-        2. 判断手机蓝牙是否连接了设备
 
-        都正确才去连接蓝牙
-        */
+        if (BlueToothUtil.getInstance().blueToothIsOpen() &&
+            !BlueToothUtil.getInstance().getBlueConnectStatus()) {
+          //解析数据，初始化蓝牙中数据模型
+          BlueToothUtil.getInstance().blueDataVO = BlueDataVO.fromInitial(data);
 
-        if(BlueToothUtil.getInstance().blueToothIsOpen() && !BlueToothUtil.getInstance().getBlueConnectStatus()){
-          
-            if(dataModel != null && dataModel!.bluetoothAddress != null
-                && dataModel!.bluetoothSecretKey != null
-                && dataModel!.bluetoothAddress!.isNotEmpty && dataModel!.bluetoothSecretKey!.isNotEmpty){
-              BlueToothUtil.getInstance().speedConnectBlue(dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
-            }
-
+          // 连接蓝牙
+          if (dataModel != null &&
+              dataModel!.bluetoothAddress != null &&
+              dataModel!.bluetoothSecretKey != null &&
+              dataModel!.bluetoothAddress!.isNotEmpty &&
+              dataModel!.bluetoothSecretKey!.isNotEmpty) {
+            BlueToothUtil.getInstance().speedConnectBlue(
+                dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
+          }
         }
 
         dataRefreshFinished();
         pageRefresh();
-        
       },
       onFailed: (errorMsg) {
         _isShowLoading = false;

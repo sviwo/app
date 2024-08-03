@@ -12,6 +12,7 @@ import 'package:atv/archs/utils/bluetooth/push_data_service_bean.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_event.dart';
+import 'package:atv/config/data/entity/mainPage/main_page_model.dart';
 import 'package:atv/config/data/entity/vehicle/device_regist_param.dart';
 import 'package:atv/config/net/api_device_.dart';
 import 'package:atv/generated/locale_keys.g.dart';
@@ -191,7 +192,8 @@ class BlueToothUtil {
       });
 
       // 每隔3000毫秒钟执行一次myTask
-      Timer.periodic(Duration(milliseconds: BlueToothUtil.sendDataToServiceTime), (timer) {
+      Timer.periodic(
+          Duration(milliseconds: BlueToothUtil.sendDataToServiceTime), (timer) {
         _instanceBlueToothUtil?.sendDataToService();
       });
     }
@@ -199,11 +201,12 @@ class BlueToothUtil {
   }
 
   // 定时发送数据到服务器
-  void sendDataToService(){
-    if(pushModelBean != null){
-        pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+  void sendDataToService() {
+    if (pushModelBean != null) {
+      pushModelBean?.gmtCreate =
+          DateTime.now().toUtc().millisecondsSinceEpoch.toString();
 
-        LogUtil.d("$TAG === $pushModelBean");
+      LogUtil.d("$TAG === $pushModelBean");
     }
   }
 
@@ -1053,9 +1056,11 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
-    pushModelBean?.items.GeoLocation.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.GeoLocation.time =
+        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     // {'latitude':31.583733,'longitude':120.433029}
-    pushModelBean?.items.GeoLocation.value = "{'latitude':$lat,'longitude':$lng}";
+    pushModelBean?.items.GeoLocation.value =
+        "{'latitude':$lat,'longitude':$lng}";
     // LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
   }
 
@@ -1129,10 +1134,12 @@ class BlueToothUtil {
     blueDataVO.carSpeed = carSpeed;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RotateSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RotateSpeed.time =
+        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.RotateSpeed.value = motorSpeed.toString();
 
-    pushModelBean?.items.VehSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.VehSpeed.time =
+        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.VehSpeed.value = carSpeed.toString();
 
     // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
@@ -1169,11 +1176,12 @@ class BlueToothUtil {
     blueDataVO.battery = battery;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RemainMile.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RemainMile.time =
+        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.RemainMile.value = endurance.toString();
 
-
-    pushModelBean?.items.Electricity.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.Electricity.time =
+        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.Electricity.value = battery.toString();
 
     // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
@@ -1936,4 +1944,19 @@ class BlueDataVO {
 
   // 充电枪连接
   int chargeConnect = 0;
+
+  BlueDataVO(
+      {this.carSpeed = 0,
+      this.endurance = 0,
+      this.battery = 100,
+      this.distance = "0",
+      this.chargeConnect = 0});
+
+  BlueDataVO.fromInitial(HomePageModel model) {
+    carSpeed = 0;
+    endurance = model.remainMile.toDouble();
+    battery = model.electricity;
+    distance = "0";
+    chargeConnect = 0;
+  }
 }
