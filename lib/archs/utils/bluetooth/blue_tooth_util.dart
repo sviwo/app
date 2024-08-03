@@ -8,6 +8,7 @@ import 'package:atv/archs/data/entity/res_data.dart';
 import 'package:atv/archs/data/entity/res_empty.dart';
 import 'package:atv/archs/data/err/http_error_exception.dart';
 import 'package:atv/archs/utils/bluetooth/extra.dart';
+import 'package:atv/archs/utils/bluetooth/push_data_service_bean.dart';
 import 'package:atv/archs/utils/extension/ext_string.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_event.dart';
@@ -27,6 +28,8 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  PushDataServiceBean? pushModelBean;
+
   // 心跳包的序号，1开始递增
   int heartPosition = 1;
 
@@ -35,6 +38,9 @@ class BlueToothUtil {
 
   // 两次发送数据的间隔 毫秒
   static int sendDataHz = 190;
+
+  // 发送数据到服务器到时间间隔 毫秒
+  static int sendDataToServiceTime = 3000;
 
   // 是否第一次发送消息
   bool isFirst = true;
@@ -183,10 +189,25 @@ class BlueToothUtil {
       Timer.periodic(Duration(milliseconds: BlueToothUtil.sendDataHz), (timer) {
         _instanceBlueToothUtil?.myTask();
       });
+
+      // 每隔3000毫秒钟执行一次myTask
+      Timer.periodic(Duration(milliseconds: BlueToothUtil.sendDataToServiceTime), (timer) {
+        _instanceBlueToothUtil?.sendDataToService();
+      });
     }
     return _instanceBlueToothUtil!;
   }
 
+  // 定时发送数据到服务器
+  void sendDataToService(){
+    if(pushModelBean != null){
+        pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+
+        LogUtil.d("$TAG === $pushModelBean");
+    }
+  }
+
+  //定时发送数据到蓝牙
   void myTask() {
     // 这里放置你需要定时执行的代码
     if (sendChart != null) {
@@ -754,6 +775,9 @@ class BlueToothUtil {
         if (isSpeedConnect) {
           List<int> list = sendPackToBluetooth44(keyString!);
           sendData.add(list);
+          pushModelBean ??= PushDataServiceBean();
+          pushModelBean?.deviceName = deviceName;
+          pushModelBean?.productKey = blueConnectInfo?.productKey;
         } else {
           // 发送车架号
           if (deviceName != null && !deviceName!.isNullOrEmpty()) {
@@ -1029,6 +1053,9 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
+    pushModelBean?.items.GeoLocation.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    // {'latitude':31.583733,'longitude':120.433029}
+    pushModelBean?.items.GeoLocation.value = "{'latitude':$lat,'longitude':$lng}";
     // LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
   }
 
@@ -1102,6 +1129,12 @@ class BlueToothUtil {
     blueDataVO.carSpeed = carSpeed;
     receiveController.add(blueDataVO);
 
+    pushModelBean?.items.RotateSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RotateSpeed.value = motorSpeed.toString();
+
+    pushModelBean?.items.VehSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.VehSpeed.value = carSpeed.toString();
+
     // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
   }
 
@@ -1135,6 +1168,13 @@ class BlueToothUtil {
     blueDataVO.endurance = endurance;
     blueDataVO.battery = battery;
     receiveController.add(blueDataVO);
+
+    pushModelBean?.items.RemainMile.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RemainMile.value = endurance.toString();
+
+
+    pushModelBean?.items.Electricity.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.Electricity.value = battery.toString();
 
     // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
     //     "batteryStatus:$batteryStatus \n chargingStatus:$chargingStatus "
@@ -1172,6 +1212,9 @@ class BlueToothUtil {
     } else if (dataList[2] == 48) {
       simIDList.addAll(dataList.sublist(8, 16));
     } else if (dataList[2] == 49) {
+      pushModelBean ??= PushDataServiceBean();
+      pushModelBean?.deviceName = deviceName;
+      pushModelBean?.productKey = blueConnectInfo?.productKey;
       simIDList.addAll(dataList.sublist(8, 12));
       simID = DataExchangeUtils.byteToString(simIDList);
 
