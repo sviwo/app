@@ -32,6 +32,10 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     with WidgetsBindingObserver {
   @override
   Widget? headerBackgroundWidget() {
+    return Image.asset(
+      AppIcons.imgCommonBgDownStar,
+      fit: BoxFit.cover,
+    );
     return viewModel.haveCar
         ? Image.asset(
             AppIcons.imgCommonBgNoStar,
@@ -106,7 +110,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
   void initState() {
     // BlueTest.getInstance();
     BlueToothUtil.getInstance();
-    viewModel = MainPageViewModel();
+    // viewModel = MainPageViewModel();
     super.initState();
     // AppConf.isMainPage = true;
     EventManager.register(context, ArchEvent.tokenInvalid, (params) {
@@ -114,20 +118,26 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
       pagePushAndRemoveUntil(AppRoute.loginMain);
     });
     EventManager.register(context, AppEvent.userBaseInfoChange, (params) {
+      LogUtil.d("------------userBaseInfoChange");
       viewModel.loadData();
     });
     EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
+      LogUtil.d("------------vehicleInfoChange");
+
+
       viewModel.loadData();
     });
     EventManager.register(context, AppEvent.vehicleRegistSuccess, (args) {
+      LogUtil.d("------------vehicleRegistSuccess");
+
       viewModel.loadData();
     });
     WidgetsBinding.instance.addObserver(this);
 
-    connectSubscription =
-        BlueToothUtil.getInstance().connectDataStream.listen((event) {
-      LWLoading.dismiss(animation: true);
-    });
+    // connectSubscription =
+    //     BlueToothUtil.getInstance().connectDataStream.listen((event) {
+    //   LWLoading.dismiss(animation: true);
+    // });
   }
 
   @override
@@ -188,6 +198,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
               if (viewModel.haveCar == false) {
                 // 没有车就要去拉数据 延迟两秒 让toast展示一会儿
                 Future.delayed(const Duration(seconds: 2), () {
+                  LogUtil.d("------------clipboardText");
+
                   viewModel.loadData();
                 });
               }

@@ -40,6 +40,7 @@ class MainPageViewModel extends BaseViewModel {
   @override
   void initialize(args) {
     // TODO: implement initialize
+    LogUtil.d('---------------!!!!!!!!!!!!!!!!!!----------------------');
 
     loadData();
   }
@@ -47,12 +48,13 @@ class MainPageViewModel extends BaseViewModel {
   @override
   Future<void> loadData({isRefresh = true, bool showLoading = false}) async {
     _isShowLoading = true;
+    LogUtil.d('---------------4444444444444----------------------');
 
     timer?.cancel();
     await signalRequestData(
       completion: () {
         try {
-          if (timer == null) {
+          if (timer == null || timer?.isActive == false) {
             requestData();
           }
         } catch (e) {
@@ -85,7 +87,11 @@ class MainPageViewModel extends BaseViewModel {
   }
 
   requestData() {
+    LogUtil.d('---------------55555555555----------------------');
+
+    // timer?.cancel();
     timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      LogUtil.d('---------------66666666666----------------------');
       return signalRequestData();
     });
   }
@@ -102,8 +108,13 @@ class MainPageViewModel extends BaseViewModel {
           completion();
         }
 
+        LogUtil.d('---------------111111111111----------------------');
+        LogUtil.d('blueToothIsOpen: ${BlueToothUtil.getInstance().blueToothIsOpen()},getBlueConnectStatus:${BlueToothUtil.getInstance().getBlueConnectStatus()}');
+
         if (BlueToothUtil.getInstance().blueToothIsOpen() &&
             !BlueToothUtil.getInstance().getBlueConnectStatus()) {
+          LogUtil.d('--------------222222222222-----------------------');
+
           //解析数据，初始化蓝牙中数据模型
           BlueToothUtil.getInstance().blueDataVO = BlueDataVO.fromInitial(data);
 
@@ -113,6 +124,8 @@ class MainPageViewModel extends BaseViewModel {
               dataModel!.bluetoothSecretKey != null &&
               dataModel!.bluetoothAddress!.isNotEmpty &&
               dataModel!.bluetoothSecretKey!.isNotEmpty) {
+            LogUtil.d('--------------333333333333-----------------------');
+
             BlueToothUtil.getInstance().speedConnectBlue(
                 dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!,dataModel!.productKey);
           }
