@@ -170,6 +170,7 @@ class MinePageViewModel extends BaseViewModel {
       },
     );
   }
+  
 
   changeCar(VehicleListModel carModel) {
     if (StringUtils.isNullOrEmpty(carModel.deviceId) == false) {

@@ -208,7 +208,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         SizedBox(
           height: 30.dp,
         ),
-        _buildCar(),
+        _buildCar(),       
         Visibility(
             visible: (viewModel.dataModel?.batteryStatus ?? false) &&
                 ((viewModel.dataModel?.electricity ?? 0) > 0),

@@ -47,12 +47,13 @@ class MainPageViewModel extends BaseViewModel {
   @override
   Future<void> loadData({isRefresh = true, bool showLoading = false}) async {
     _isShowLoading = true;
-
+    
+    timer?.cancel();
     await signalRequestData(
       completion: () {
         try {
           if (timer == null) {
-            // requestData();
+            requestData();
           }
         } catch (e) {
           LogUtil.d(e.toString());
