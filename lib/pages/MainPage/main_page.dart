@@ -239,6 +239,12 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
               // 判断手机蓝牙是否打开
               var isBluetoothOpen =
                   BlueToothUtil.getInstance().blueToothIsOpen();
+
+              if(!isBluetoothOpen){
+                LWLoading.showLoading2(text: "请先开启手机蓝牙！");
+                return;
+              }
+
               //: 判断蓝牙是否已经连接了车辆
               var isConnectBluetooth =
                   // BlueTest.getInstance().getBlueConnectStatus();
@@ -252,9 +258,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
-                BlueToothUtil.getInstance().speedConnectBlue(bluetoothAddress,
-                    bluetoothSecrectKey, viewModel.dataModel?.productKey,
-                    successBlcok: () => pagePush(AppRoute.remoteControl));
+                LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
+                BlueToothUtil.getInstance()
+                    .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
               }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
@@ -552,9 +558,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
                     BlueToothUtil.getInstance().speedConnectBlue(
-                        bluetoothAddress,
-                        bluetoothSecrectKey,
-                        viewModel.dataModel?.productKey);
+                        bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -579,9 +583,11 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     // 判断手机蓝牙是否打开
                     var isBluetoothOpen =
                         BlueToothUtil.getInstance().blueToothIsOpen();
-                    if (isBluetoothOpen == false){
-
+                    if(!isBluetoothOpen){
+                      viewModel.controlVehicle(1);
+                      return;
                     }
+
                     //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
@@ -627,6 +633,16 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       return;
                     }
                     LogUtil.d('点击了灯光图标');
+
+                    // 判断手机蓝牙是否打开
+                    var isBluetoothOpen =
+                    BlueToothUtil.getInstance().blueToothIsOpen();
+
+                    if(!isBluetoothOpen){
+                      viewModel.controlVehicle(0);
+                      return;
+                    }
+
                     //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
@@ -641,9 +657,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
                       LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
-                          bluetoothAddress,
-                          bluetoothSecrectKey,
-                          viewModel.dataModel?.productKey);
+                          bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
                     }
                     setStateLight(() => viewModel.lightIsOn = true);
 

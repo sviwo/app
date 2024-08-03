@@ -103,7 +103,6 @@ class _EnergyModelPageState
                   BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isBluetoothOpen && isConnectBluetooth) {
                 //YGTODO: 控制ECO模式的开启与关闭 value true：开启  false：关闭
-
                 Future.delayed(const Duration(milliseconds: 100), () {
                   updateState(() {});
                 });
@@ -314,8 +313,8 @@ class _EnergyModelPageState
                         var isConnectBluetooth =
                             BlueToothUtil.getInstance().getBlueConnectStatus();
                         if (isBluetoothOpen && isConnectBluetooth) {
-                          //YGTODO: 控制动能回收 value值为0、 1、 2
-
+                          //: 控制动能回收 value值为0、 1、 2
+                          BlueToothUtil.getInstance().sportRecycle(value.toInt());
                           Future.delayed(const Duration(milliseconds: 100), () {
                             updateState(() {});
                           });
