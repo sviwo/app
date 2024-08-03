@@ -182,9 +182,9 @@ class MinePageViewModel extends BaseViewModel {
           ApiVehicle.changeSelectVehicle(carModel.deviceId ?? ''),
           handlePageState: false,
           showLoading: true,
-          voidSuccess: () {
+          voidSuccess: () async{
             //: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
-            BlueToothUtil.getInstance().onDisconnectPressed();
+            await BlueToothUtil.getInstance().onDisconnectPressed();
             EventManager.post(AppEvent.vehicleInfoChange);
           },
         );
