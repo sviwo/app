@@ -57,7 +57,7 @@ class ApiDevice {
   static Future<ResEmpty> uploadBluetoothDataToServer(
       Map<String, dynamic> dataMap) async {
     try {
-      var data = await Http.instance().post('api/device/xxx', params: dataMap);
+      var data = await Http.instance().post('api/device/bluetooth/data', params: dataMap);
       return await HttpHelper.httpEmptyConvert(data);
     } catch (e) {
       throw HttpHelper.handleException(e);
