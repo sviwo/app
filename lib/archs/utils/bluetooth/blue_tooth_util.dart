@@ -59,9 +59,6 @@ class BlueToothUtil {
   // 电池电量
   int battery = 100;
 
-  // 当前蓝牙mac
-  String currentblueMac = "";
-
   // 当前蓝牙name
   String currentBlueName = "";
 
@@ -178,7 +175,7 @@ class BlueToothUtil {
   void sendDataToService(){
     if(pushModelBean != null){
         pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
-        LogUtil.d("$TAG === $pushModelBean");
+        LogUtil.d("$TAG === ${json.encode(pushModelBean)}");
     }
   }
 
@@ -223,13 +220,12 @@ class BlueToothUtil {
     isFirst = true;
     isSpeedConnect = true;
     // mac = "E0:02:7F:AB:00:29";
-    currentBlueName = mac;
+    currentBlueName = mac.trim();
     // 判断蓝牙是否开启
     if (!blueToothIsOpen()) {
       // 开启蓝牙
       openBlueTooth();
     }
-    currentblueMac = mac;
     // 扫描蓝牙
     startScanBlueTooth();
   }
@@ -699,7 +695,7 @@ class BlueToothUtil {
           List<int> list = sendPackToBluetooth44(keyString!);
           sendData.add(list);
           pushModelBean ??= PushDataServiceBean();
-          pushModelBean?.deviceName = deviceName;
+          pushModelBean?.deviceName = currentBlueName;
           pushModelBean?.productKey = blueConnectInfo?.productKey;
         } else {
           // 发送车架号
@@ -976,7 +972,7 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
-    pushModelBean?.items.GeoLocation.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.GeoLocation.time = DataExchangeUtils.fourBytesToInt(dataList.sublist(4,7)).toString();
     // {'latitude':31.583733,'longitude':120.433029}
     pushModelBean?.items.GeoLocation.value = "{'latitude':$lat,'longitude':$lng}";
     // LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
@@ -1052,10 +1048,10 @@ class BlueToothUtil {
     blueDataVO.carSpeed = carSpeed;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RotateSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RotateSpeed.time = DataExchangeUtils.fourBytesToInt(dataList.sublist(4,7)).toString();
     pushModelBean?.items.RotateSpeed.value = motorSpeed.toString();
 
-    pushModelBean?.items.VehSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.VehSpeed.time = DataExchangeUtils.fourBytesToInt(dataList.sublist(4,7)).toString();
     pushModelBean?.items.VehSpeed.value = carSpeed.toString();
 
     // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
@@ -1092,11 +1088,11 @@ class BlueToothUtil {
     blueDataVO.battery = battery;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RemainMile.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RemainMile.time = DataExchangeUtils.fourBytesToInt(dataList.sublist(4,7)).toString();
     pushModelBean?.items.RemainMile.value = endurance.toString();
 
 
-    pushModelBean?.items.Electricity.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.Electricity.time = DataExchangeUtils.fourBytesToInt(dataList.sublist(4,7)).toString();
     pushModelBean?.items.Electricity.value = battery.toString();
 
     // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
@@ -1137,7 +1133,7 @@ class BlueToothUtil {
     } else if (dataList[2] == 49) {
       communicationSuccess = true;
       pushModelBean ??= PushDataServiceBean();
-      pushModelBean?.deviceName = deviceName;
+      pushModelBean?.deviceName = currentBlueName;
       pushModelBean?.productKey = blueConnectInfo?.productKey;
       simIDList.addAll(dataList.sublist(8, 12));
       simID = DataExchangeUtils.byteToString(simIDList);
