@@ -41,7 +41,6 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     pageRefresh();
     await Future.delayed(Duration.zero, () {
       // 连接蓝牙.
-      LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
       BlueToothUtil.getInstance().connectBluetooth(device.device);
     });
     // BlueToothUtil.getInstance().readChart;
