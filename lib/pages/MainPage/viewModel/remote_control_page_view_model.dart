@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/utils/bluetooth/blue_test.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/config/net/api_vehicle.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
@@ -11,6 +13,8 @@ class RemoteControlPageViewModel extends BaseViewModel {
   //: 这个标识 如果蓝牙断开  需要把它设置为false
   /// 蓝牙是否连接
   bool blueToothIsConnected = true;
+
+  StreamSubscription<bool>? _connectBlueToothStreamSubscription;
 
   /// 喇叭是否打开
   bool bornIsOn = false;
@@ -35,10 +39,18 @@ class RemoteControlPageViewModel extends BaseViewModel {
   @override
   void initialize(args) {
     // TODO: implement initialize
+
+    _connectBlueToothStreamSubscription =
+        BlueToothUtil.getInstance().connectDataStream.listen((event) {
+      if (event == false) {
+        pagePop();
+      }
+    });
   }
 
   @override
   void release() {
     // TODO: implement release
+    _connectBlueToothStreamSubscription?.cancel();
   }
 }

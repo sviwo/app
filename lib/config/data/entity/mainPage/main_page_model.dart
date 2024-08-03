@@ -64,6 +64,9 @@ class HomePageModel {
   /// 蓝牙握手秘钥
   String? bluetoothSecretKey;
 
+  /// 对应物联网平台产品的ProductKey
+  String? productKey;
+
   HomePageModel(
       {this.nickname,
       this.remainMile = 0,
@@ -81,7 +84,8 @@ class HomePageModel {
       this.version = const [],
       this.servicePhone,
       this.bluetoothAddress,
-      this.bluetoothSecretKey});
+      this.bluetoothSecretKey,
+      this.productKey});
 
   factory HomePageModel.fromJson(Map<String, dynamic> srcJson) =>
       _$HomePageModelFromJson(srcJson);

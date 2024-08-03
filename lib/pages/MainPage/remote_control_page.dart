@@ -32,10 +32,10 @@ class _RemoteControlPageState
         builder: (BuildContext context, setStateT) {
           return IconButton(
             onPressed: () {
-              setStateT(() {
-                viewModel.blueToothIsConnected =
-                    !(viewModel.blueToothIsConnected);
-              });
+              // setStateT(() {
+              //   viewModel.blueToothIsConnected =
+              //       !(viewModel.blueToothIsConnected);
+              // });
               LogUtil.d('点击了蓝牙图标');
             },
             icon: Image.asset(

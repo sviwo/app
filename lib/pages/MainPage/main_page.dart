@@ -208,7 +208,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
         SizedBox(
           height: 30.dp,
         ),
-        _buildCar(),       
+        _buildCar(),
         Visibility(
             visible: (viewModel.dataModel?.batteryStatus ?? false) &&
                 ((viewModel.dataModel?.electricity ?? 0) > 0),
@@ -236,11 +236,14 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           ),
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
+              // 判断手机蓝牙是否打开
+              var isBluetoothOpen =
+                  BlueToothUtil.getInstance().blueToothIsOpen();
               //: 判断蓝牙是否已经连接了车辆
               var isConnectBluetooth =
                   // BlueTest.getInstance().getBlueConnectStatus();
                   BlueToothUtil.getInstance().getBlueConnectStatus();
-              if (isConnectBluetooth) {
+              if (isBluetoothOpen && isConnectBluetooth) {
                 //跳转到控制器页面
                 pagePush(AppRoute.remoteControl);
               } else {
