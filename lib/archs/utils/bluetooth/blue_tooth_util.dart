@@ -29,6 +29,7 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  // 要推送到服务器到数据模型
   PushDataServiceBean? pushModelBean;
 
   // 心跳包的序号，1开始递增
@@ -61,7 +62,7 @@ class BlueToothUtil {
   // 当前蓝牙mac
   String currentblueMac = "";
 
-  // 当前蓝牙mac
+  // 当前蓝牙name
   String currentBlueName = "";
 
   // 当前蓝牙
@@ -80,23 +81,8 @@ class BlueToothUtil {
   // 握手秘钥
   int? keyString;
 
-  // 蓝牙名称
-  // String? currBlueName;
-
-  // bool blueIsOpen = false;
-
-  void setDeviceName(String? deviceName) {
-    this.deviceName = deviceName;
-    getDeviceCertificate();
-  }
-
-  void setDeviceRegistParam(DeviceRegistParam? blueConnectInfo) {
-    this.blueConnectInfo = blueConnectInfo;
-  }
-
   // 选择蓝牙的连接状态，默认断开连接
-  BluetoothConnectionState _currentBlueConnectionState =
-      BluetoothConnectionState.disconnected;
+  BluetoothConnectionState _currentBlueConnectionState = BluetoothConnectionState.disconnected;
 
   BluetoothCharacteristic? readChart;
   BluetoothCharacteristic? sendChart;
@@ -108,26 +94,12 @@ class BlueToothUtil {
   BlueDataVO blueDataVO = BlueDataVO();
 
   // 蓝牙数据传输流
-  StreamController<BlueDataVO> receiveController =
-      StreamController<BlueDataVO>.broadcast();
-
+  StreamController<BlueDataVO> receiveController = StreamController<BlueDataVO>.broadcast();
   Stream<BlueDataVO> get receiveDataStream => receiveController.stream;
-  // Stream<BlueDataVO>? _dataStream;
-  // Stream<BlueDataVO> get dataStream {
-  //   if (_dataStream != null) {
-  //     return _dataStream!;
-  //   }
-  //   _dataStream = controller.stream.asBroadcastStream();
-  //   return _dataStream!;
-  // }
+
   // 手机蓝牙开启关闭流
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
-
-  // 蓝牙连接状态
-  StreamController<bool> deviceconnectController =
-      StreamController<bool>.broadcast();
-  Stream<bool> get deviceConnectDataStream => deviceconnectController.stream;
 
   // 私有的命名构造函数
   BlueToothUtil._internal();
@@ -148,8 +120,11 @@ class BlueToothUtil {
   // 连接蓝牙
   int? _rssi;
 
-  bool _isConnecting = false;
-  bool _isDisconnecting = false;
+  // 蓝牙连接成功且可以正常发送数据
+  bool communicationSuccess = false;
+
+  // 蓝牙连接成功
+  bool blueConnectSuccess = false;
 
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
@@ -162,11 +137,6 @@ class BlueToothUtil {
       FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
       FlutterBluePlus.adapterState.listen((state) {
         LogUtil.d("${_instanceBlueToothUtil?.TAG} $state");
-        // if(state == BluetoothAdapterState.off){
-        //   _instanceBlueToothUtil?.blueIsOpen = false;
-        // }else if(state == BluetoothAdapterState.on){
-        //   _instanceBlueToothUtil?.blueIsOpen = true;
-        // }
         _instanceBlueToothUtil?._adapterState = state;
         if (state == BluetoothAdapterState.off) {
           _instanceBlueToothUtil?._scanResultsSubscription = null;
@@ -177,9 +147,8 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._isScanning = false;
 
           _instanceBlueToothUtil?._services = [];
-          _instanceBlueToothUtil?._isConnecting = false;
-          _instanceBlueToothUtil?.deviceconnectController.sink.add(false);
-          _instanceBlueToothUtil?._isDisconnecting = false;
+          _instanceBlueToothUtil?.communicationSuccess = false;
+          _instanceBlueToothUtil?.blueConnectSuccess = false;
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
@@ -192,21 +161,27 @@ class BlueToothUtil {
       });
 
       // 每隔3000毫秒钟执行一次myTask
-      Timer.periodic(
-          Duration(milliseconds: BlueToothUtil.sendDataToServiceTime), (timer) {
+      Timer.periodic(Duration(milliseconds: BlueToothUtil.sendDataToServiceTime), (timer) {
         _instanceBlueToothUtil?.sendDataToService();
       });
     }
     return _instanceBlueToothUtil!;
   }
 
-  // 定时发送数据到服务器
-  void sendDataToService() {
-    if (pushModelBean != null) {
-      pushModelBean?.gmtCreate =
-          DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+  void setDeviceName(String? deviceName) {
+    this.deviceName = deviceName;
+    getDeviceCertificate();
+  }
 
-      LogUtil.d("$TAG === $pushModelBean");
+  void setDeviceRegistParam(DeviceRegistParam? blueConnectInfo) {
+    this.blueConnectInfo = blueConnectInfo;
+  }
+
+  // 定时发送数据到服务器
+  void sendDataToService(){
+    if(pushModelBean != null){
+        pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+        LogUtil.d("$TAG === $pushModelBean");
     }
   }
 
@@ -235,19 +210,14 @@ class BlueToothUtil {
     }
   }
 
-  /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
-  // bool getBlueIsOpen(){
-  //   return blueIsOpen;
-  // }
-
   /// 获取蓝牙是否开启 true 开启， false 关闭
   bool blueToothIsOpen() {
     return _adapterState == BluetoothAdapterState.on;
   }
 
-  /// 获取蓝牙连接状态
+  /// 获取蓝牙连接状态 能正常通讯
   bool getBlueConnectStatus() {
-    return _isConnecting;
+    return communicationSuccess;
   }
 
   /// 根据蓝牙mac和key去连接蓝牙
@@ -268,8 +238,7 @@ class BlueToothUtil {
   }
 
   /// 获取搜索蓝牙列表
-  Stream<List<ScanResult>> get bluetoothDeviceList =>
-      FlutterBluePlus.scanResults.asBroadcastStream();
+  Stream<List<ScanResult>> get bluetoothDeviceList => FlutterBluePlus.scanResults.asBroadcastStream();
 
   /// 控制蓝牙解锁
   void controllerBlueUnLock() {
@@ -318,7 +287,6 @@ class BlueToothUtil {
 
   /// 开启蓝牙
   void openBlueTooth() async {
-    // return await checkBlueToothPermission();
     try {
       if (Platform.isAndroid) {
         await FlutterBluePlus.turnOn();
@@ -361,8 +329,7 @@ class BlueToothUtil {
 
   /// 请求蓝牙权限
   static Future<PermissionStatus> requestBlueToothPermission() async {
-    final PermissionStatus permissionStatus =
-        await Permission.bluetooth.request();
+    final PermissionStatus permissionStatus = await Permission.bluetooth.request();
     LogUtil.d('requestBlueToothPermission permissionStatus:$permissionStatus');
     return permissionStatus;
   }
@@ -465,16 +432,6 @@ class BlueToothUtil {
   Future connectBluetooth(BluetoothDevice mdevice) async {
     isFirst = true;
     LogUtil.d("$TAG blueName:${mdevice.platformName}");
-    // DeviceRegistParam item = DeviceRegistParam();
-    // item.deviceName = "sviwo-asdas546a4s6d5";
-    // item.productKey = "k0ugjmf1ois";
-    // item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
-    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
-    // item.deviceName = "sviwo-23kj4h2k3b4kk2";
-    // item.productKey = "k0ugjmf1ois";
-    // item.deviceSecret = "63ab88874e683d02ceccff98015e0aff";
-    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
-    // BlueToothUtil.getInstance().setDeviceRegistParam(item);
 
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
@@ -483,9 +440,8 @@ class BlueToothUtil {
       mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
+          blueConnectSuccess = true;
           connectController.sink.add(true);
-          _isConnecting = true;
-          deviceconnectController.sink.add(true);
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
           _services = []; // must rediscover services
@@ -516,20 +472,6 @@ class BlueToothUtil {
 
                   List<int> list = getStepOneBluetoothCarNumber1();
                   sendData.add(list);
-                  //
-                  // if(isSpeedConnect){
-                  //   List<int> list = sendPackToBluetooth44(50477619);
-                  //   sendData.add(list);
-                  // }else{
-                  //   // 发送车架号
-                  //   if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-                  //     List<List<int>> mList =
-                  //     getPackToBluetoothCarNumber2_4(deviceName!);
-                  //     for (int i = 0; i < mList.length; i++) {
-                  //       sendData.add(mList[i]);
-                  //     }
-                  //   }
-                  // }
                   break;
                 }
               }
@@ -538,35 +480,20 @@ class BlueToothUtil {
             LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
         } else {
-          _isConnecting = false;
-          deviceconnectController.sink.add(false);
+          communicationSuccess = false;
+          blueConnectSuccess = false;
           connectController.sink.add(false);
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
           _rssi = await mdevice.readRssi();
         }
       });
-
-      mdevice.mtu.listen((value) {});
-
-      mdevice.isConnecting.listen((value) {
-        //_isConnecting = value;
-        if (_isConnecting) {
-          // currentBlue = mdevice;
-        } else {
-          // currentBlue = null;
-        }
-      });
-
-      mdevice.isDisconnecting.listen((value) {
-        _isDisconnecting = value;
-      });
     }
   }
 
   /// 取消连接
   Future onCancelPressed() async {
-    if (currentBlue != null && _isConnecting) {
+    if (currentBlue != null && blueConnectSuccess) {
       try {
         await currentBlue?.disconnectAndUpdateStream(queue: false);
         LogUtil.d("$TAG Cancel: Success");
@@ -619,10 +546,9 @@ class BlueToothUtil {
 
   /// 蓝牙连接状态  0连接中，1已连接，-1未连接
   int getBlueToothConnectState() {
-    if (_isConnecting) {
+    if (blueConnectSuccess) {
       return 0;
-    } else if (_currentBlueConnectionState ==
-        BluetoothConnectionState.connected) {
+    } else if (_currentBlueConnectionState == BluetoothConnectionState.connected) {
       return 1;
     } else {
       return -1;
@@ -1056,11 +982,9 @@ class BlueToothUtil {
     double lat = DataExchangeUtils.bytesToFloat(dataList.sublist(8, 12));
     // 经度
     double lng = DataExchangeUtils.bytesToFloat(dataList.sublist(12, 16));
-    pushModelBean?.items.GeoLocation.time =
-        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.GeoLocation.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     // {'latitude':31.583733,'longitude':120.433029}
-    pushModelBean?.items.GeoLocation.value =
-        "{'latitude':$lat,'longitude':$lng}";
+    pushModelBean?.items.GeoLocation.value = "{'latitude':$lat,'longitude':$lng}";
     // LogUtil.d("$TAG 解析 lng:$lng lat:$lat");
   }
 
@@ -1134,12 +1058,10 @@ class BlueToothUtil {
     blueDataVO.carSpeed = carSpeed;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RotateSpeed.time =
-        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RotateSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.RotateSpeed.value = motorSpeed.toString();
 
-    pushModelBean?.items.VehSpeed.time =
-        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.VehSpeed.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.VehSpeed.value = carSpeed.toString();
 
     // LogUtil.d("$TAG 解析 motorSpeed:$motorSpeed carSpeed:$carSpeed");
@@ -1176,12 +1098,11 @@ class BlueToothUtil {
     blueDataVO.battery = battery;
     receiveController.add(blueDataVO);
 
-    pushModelBean?.items.RemainMile.time =
-        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+    pushModelBean?.items.RemainMile.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.RemainMile.value = endurance.toString();
 
-    pushModelBean?.items.Electricity.time =
-        DateTime.now().toUtc().millisecondsSinceEpoch.toString();
+
+    pushModelBean?.items.Electricity.time = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
     pushModelBean?.items.Electricity.value = battery.toString();
 
     // LogUtil.d("$TAG 解析 endurance:$endurance battery:$battery "
@@ -1220,6 +1141,7 @@ class BlueToothUtil {
     } else if (dataList[2] == 48) {
       simIDList.addAll(dataList.sublist(8, 16));
     } else if (dataList[2] == 49) {
+      communicationSuccess = true;
       pushModelBean ??= PushDataServiceBean();
       pushModelBean?.deviceName = deviceName;
       pushModelBean?.productKey = blueConnectInfo?.productKey;
