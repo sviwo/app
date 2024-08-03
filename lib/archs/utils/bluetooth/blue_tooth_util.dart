@@ -61,7 +61,7 @@ class BlueToothUtil {
   // 当前蓝牙mac
   String currentblueMac = "";
 
-  // 当前蓝牙mac
+  // 当前蓝牙name
   String currentBlueName = "";
 
   // 当前蓝牙
@@ -80,18 +80,8 @@ class BlueToothUtil {
   // 握手秘钥
   int? keyString;
 
-  void setDeviceName(String? deviceName) {
-    this.deviceName = deviceName;
-    getDeviceCertificate();
-  }
-
-  void setDeviceRegistParam(DeviceRegistParam? blueConnectInfo) {
-    this.blueConnectInfo = blueConnectInfo;
-  }
-
   // 选择蓝牙的连接状态，默认断开连接
-  BluetoothConnectionState _currentBlueConnectionState =
-      BluetoothConnectionState.disconnected;
+  BluetoothConnectionState _currentBlueConnectionState = BluetoothConnectionState.disconnected;
 
   BluetoothCharacteristic? readChart;
   BluetoothCharacteristic? sendChart;
@@ -103,17 +93,15 @@ class BlueToothUtil {
   BlueDataVO blueDataVO = BlueDataVO();
 
   // 蓝牙数据传输流
-  StreamController<BlueDataVO> receiveController =
-      StreamController<BlueDataVO>.broadcast();
-
+  StreamController<BlueDataVO> receiveController = StreamController<BlueDataVO>.broadcast();
   Stream<BlueDataVO> get receiveDataStream => receiveController.stream;
+
   // 手机蓝牙开启关闭流
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
 
   // 蓝牙连接状态
-  StreamController<bool> deviceconnectController =
-      StreamController<bool>.broadcast();
+  StreamController<bool> deviceconnectController = StreamController<bool>.broadcast();
   Stream<bool> get deviceConnectDataStream => deviceconnectController.stream;
 
   // 私有的命名构造函数
@@ -135,7 +123,11 @@ class BlueToothUtil {
   // 连接蓝牙
   int? _rssi;
 
-  bool _isConnecting = false;
+  // 蓝牙连接成功且可以正常发送数据
+  bool communicationSuccess = false;
+
+  // 蓝牙连接成功
+  bool blueConnectSuccess = false;
 
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
@@ -158,7 +150,8 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._isScanning = false;
 
           _instanceBlueToothUtil?._services = [];
-          _instanceBlueToothUtil?._isConnecting = false;
+          _instanceBlueToothUtil?.communicationSuccess = false;
+          _instanceBlueToothUtil?.blueConnectSuccess = false;
           _instanceBlueToothUtil?.deviceconnectController.sink.add(false);
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
@@ -179,11 +172,19 @@ class BlueToothUtil {
     return _instanceBlueToothUtil!;
   }
 
+  void setDeviceName(String? deviceName) {
+    this.deviceName = deviceName;
+    getDeviceCertificate();
+  }
+
+  void setDeviceRegistParam(DeviceRegistParam? blueConnectInfo) {
+    this.blueConnectInfo = blueConnectInfo;
+  }
+
   // 定时发送数据到服务器
   void sendDataToService(){
     if(pushModelBean != null){
         pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
-
         LogUtil.d("$TAG === $pushModelBean");
     }
   }
@@ -218,9 +219,9 @@ class BlueToothUtil {
     return _adapterState == BluetoothAdapterState.on;
   }
 
-  /// 获取蓝牙连接状态
+  /// 获取蓝牙连接状态 能正常通讯
   bool getBlueConnectStatus() {
-    return _isConnecting;
+    return communicationSuccess;
   }
 
   /// 根据蓝牙mac和key去连接蓝牙
@@ -241,8 +242,7 @@ class BlueToothUtil {
   }
 
   /// 获取搜索蓝牙列表
-  Stream<List<ScanResult>> get bluetoothDeviceList =>
-      FlutterBluePlus.scanResults.asBroadcastStream();
+  Stream<List<ScanResult>> get bluetoothDeviceList => FlutterBluePlus.scanResults.asBroadcastStream();
 
   /// 控制蓝牙解锁
   void controllerBlueUnLock() {
@@ -333,8 +333,7 @@ class BlueToothUtil {
 
   /// 请求蓝牙权限
   static Future<PermissionStatus> requestBlueToothPermission() async {
-    final PermissionStatus permissionStatus =
-        await Permission.bluetooth.request();
+    final PermissionStatus permissionStatus = await Permission.bluetooth.request();
     LogUtil.d('requestBlueToothPermission permissionStatus:$permissionStatus');
     return permissionStatus;
   }
@@ -437,16 +436,6 @@ class BlueToothUtil {
   Future connectBluetooth(BluetoothDevice mdevice) async {
     isFirst = true;
     LogUtil.d("$TAG blueName:${mdevice.platformName}");
-    // DeviceRegistParam item = DeviceRegistParam();
-    // item.deviceName = "sviwo-asdas546a4s6d5";
-    // item.productKey = "k0ugjmf1ois";
-    // item.deviceSecret = "92cbf83b2c083554f202b6d419f1f509";
-    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
-    // item.deviceName = "sviwo-23kj4h2k3b4kk2";
-    // item.productKey = "k0ugjmf1ois";
-    // item.deviceSecret = "63ab88874e683d02ceccff98015e0aff";
-    // item.mqttHostUrl = "iot-060aapw2.mqtt.iothub.aliyuncs.com";
-    // BlueToothUtil.getInstance().setDeviceRegistParam(item);
 
     if (getBlueToothConnectState() == -1) {
       mdevice.connectAndUpdateStream().catchError((e) {
@@ -455,8 +444,8 @@ class BlueToothUtil {
       mdevice.connectionState.listen((state) async {
         _currentBlueConnectionState = state;
         if (state == BluetoothConnectionState.connected) {
+          blueConnectSuccess = true;
           connectController.sink.add(true);
-          _isConnecting = true;
           deviceconnectController.sink.add(true);
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
@@ -496,7 +485,8 @@ class BlueToothUtil {
             LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
         } else {
-          _isConnecting = false;
+          communicationSuccess = false;
+          blueConnectSuccess = false;
           deviceconnectController.sink.add(false);
           connectController.sink.add(false);
         }
@@ -504,23 +494,12 @@ class BlueToothUtil {
           _rssi = await mdevice.readRssi();
         }
       });
-
-      mdevice.mtu.listen((value) {});
-
-      mdevice.isConnecting.listen((value) {
-        //_isConnecting = value;
-        if (_isConnecting) {
-          // currentBlue = mdevice;
-        } else {
-          // currentBlue = null;
-        }
-      });
     }
   }
 
   /// 取消连接
   Future onCancelPressed() async {
-    if (currentBlue != null && _isConnecting) {
+    if (currentBlue != null && blueConnectSuccess) {
       try {
         await currentBlue?.disconnectAndUpdateStream(queue: false);
         LogUtil.d("$TAG Cancel: Success");
@@ -573,10 +552,9 @@ class BlueToothUtil {
 
   /// 蓝牙连接状态  0连接中，1已连接，-1未连接
   int getBlueToothConnectState() {
-    if (_isConnecting) {
+    if (blueConnectSuccess) {
       return 0;
-    } else if (_currentBlueConnectionState ==
-        BluetoothConnectionState.connected) {
+    } else if (_currentBlueConnectionState == BluetoothConnectionState.connected) {
       return 1;
     } else {
       return -1;
@@ -1169,6 +1147,7 @@ class BlueToothUtil {
     } else if (dataList[2] == 48) {
       simIDList.addAll(dataList.sublist(8, 16));
     } else if (dataList[2] == 49) {
+      communicationSuccess = true;
       pushModelBean ??= PushDataServiceBean();
       pushModelBean?.deviceName = deviceName;
       pushModelBean?.productKey = blueConnectInfo?.productKey;
