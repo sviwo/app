@@ -114,7 +114,7 @@ class MainPageViewModel extends BaseViewModel {
               dataModel!.bluetoothAddress!.isNotEmpty &&
               dataModel!.bluetoothSecretKey!.isNotEmpty) {
             BlueToothUtil.getInstance().speedConnectBlue(
-                dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
+                dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!,dataModel!.productKey);
           }
         }
 

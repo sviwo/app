@@ -29,6 +29,9 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  // 无模型数据上传的productkey
+  String? productKey;
+
   // 要推送到服务器到数据模型
   PushDataServiceBean? pushModelBean;
 
@@ -174,6 +177,7 @@ class BlueToothUtil {
   // 定时发送数据到服务器
   void sendDataToService(){
     if(pushModelBean != null){
+        pushModelBean?.productKey = productKey;
         pushModelBean?.gmtCreate = DateTime.now().toUtc().millisecondsSinceEpoch.toString();
         LogUtil.d("$TAG === ${json.encode(pushModelBean)}");
     }
@@ -215,7 +219,8 @@ class BlueToothUtil {
   }
 
   /// 根据蓝牙mac和key去连接蓝牙
-  void speedConnectBlue(String mac, String key) async {
+  void speedConnectBlue(String mac, String key,String? productKeyCur) async {
+    productKey = productKeyCur;
     keyString = int.parse(key);
     isFirst = true;
     isSpeedConnect = true;
@@ -801,6 +806,7 @@ class BlueToothUtil {
       if (blueConnectInfo != null &&
           blueConnectInfo!.productKey != null &&
           !blueConnectInfo!.productKey.isNullOrEmpty()) {
+        productKey = blueConnectInfo!.productKey;
         List<List<int>> mList =
             getPackToBluetoothProductKey5_9(blueConnectInfo!.productKey!);
         for (int i = 0; i < mList.length; i++) {

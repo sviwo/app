@@ -254,7 +254,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
                 LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                 BlueToothUtil.getInstance()
-                    .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
+                    .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
               }
             } else if (viewModel.dataModel?.authStatus == 0 ||
                 viewModel.dataModel?.authStatus == 3) {
@@ -552,7 +552,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     var bluetoothSecrectKey =
                         viewModel.dataModel?.bluetoothSecretKey ?? '';
                     BlueToothUtil.getInstance().speedConnectBlue(
-                        bluetoothAddress, bluetoothSecrectKey);
+                        bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
                   }
                 },
                 iconSize: 41.dp,
@@ -591,7 +591,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
                       LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
-                          bluetoothAddress, bluetoothSecrectKey);
+                          bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
                     }
                     setStateBorn(() => viewModel.bornIsOn = true);
 
@@ -636,7 +636,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
                       LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
-                          bluetoothAddress, bluetoothSecrectKey);
+                          bluetoothAddress, bluetoothSecrectKey,viewModel.dataModel?.productKey);
                     }
                     setStateLight(() => viewModel.lightIsOn = true);
 
