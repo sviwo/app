@@ -104,15 +104,14 @@ class _EnergyModelPageState
               var isConnectBluetooth =
                   BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isBluetoothOpen && isConnectBluetooth) {
-                //YGTODO: 控制ECO模式的开启与关闭 value true：开启  false：关闭
-                /*
-                BlueToothUtil.getInstance().sportRecycle(0, successBlock: () {
+                //: 控制ECO模式的开启与关闭 value true：开启  false：关闭
+                BlueToothUtil.getInstance().modelSwitch(0, successBlock: () {
                   viewModel.homeModel?.drivingMode = 0;
                   dataRefresh();
                   EventManager.post(AppEvent.vehicleInfoChange);
                 });
-                */
-                viewModel.changeDriveMode(0);
+
+                // viewModel.changeDriveMode(0);
               } else {
                 viewModel.changeDriveMode(0);
               }
@@ -173,15 +172,13 @@ class _EnergyModelPageState
               var isConnectBluetooth =
                   BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isBluetoothOpen && isConnectBluetooth) {
-                //YGTODO: 控制运动模式的开启与关闭 value true：开启  false：关闭
-                /*
-                BlueToothUtil.getInstance().sportRecycle(1, successBlock: () {
+                //: 控制运动模式的开启与关闭 value true：开启  false：关闭
+                BlueToothUtil.getInstance().modelSwitch(1, successBlock: () {
                   viewModel.homeModel?.drivingMode = 1;
                   dataRefresh();
                   EventManager.post(AppEvent.vehicleInfoChange);
                 });
-                */
-                viewModel.changeDriveMode(1);
+                //viewModel.changeDriveMode(1);
               } else {
                 viewModel.changeDriveMode(1);
               }
@@ -242,16 +239,13 @@ class _EnergyModelPageState
               var isConnectBluetooth =
                   BlueToothUtil.getInstance().getBlueConnectStatus();
               if (isBluetoothOpen && isConnectBluetooth) {
-                //YGTODO: 控制狂暴模式的开启与关闭 value true：开启  false：关闭
-                /*
-                BlueToothUtil.getInstance().sportRecycle(2, successBlock: () {
+                //: 控制狂暴模式的开启与关闭 value true：开启  false：关闭
+                BlueToothUtil.getInstance().modelSwitch(2, successBlock: () {
                   viewModel.homeModel?.drivingMode = 2;
                   dataRefresh();
                   EventManager.post(AppEvent.vehicleInfoChange);
                 });
-                */
-
-                viewModel.changeDriveMode(2);
+                //viewModel.changeDriveMode(2);
               } else {
                 viewModel.changeDriveMode(2);
               }

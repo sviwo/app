@@ -29,6 +29,11 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  // 快速连接成功回调
+  Function? successBlockT;
+  // 快速连接失败回调
+  Function? failureBlockT;
+
   // 无模型数据上传的productkey
   String? productKey;
 
@@ -229,6 +234,8 @@ class BlueToothUtil {
   /// 根据蓝牙mac和key去连接蓝牙
   void speedConnectBlue(String mac, String key, String? productKeyCur,
       {Function? successBlock, Function? failureBlock}) async {
+    successBlockT = successBlock;
+    failureBlockT = failureBlock;
     productKey = productKeyCur;
     keyString = int.parse(key);
     isFirst = true;
@@ -245,9 +252,13 @@ class BlueToothUtil {
     // 扫描蓝牙
     startScanBlueTooth();
 
-    if (successBlock != null) {
-      successBlock();
-    }
+    Future.delayed(Duration(seconds: 5),(){
+        if (!communicationSuccess && failureBlockT != null) {
+          failureBlockT!();
+        }
+        LWLoading.dismiss();
+      }
+    );
   }
 
   /// 获取搜索蓝牙列表
@@ -255,13 +266,27 @@ class BlueToothUtil {
       FlutterBluePlus.scanResults.asBroadcastStream();
 
   /// 控制蓝牙解锁
-  void controllerBlueUnLock() {
-    sendData.add(sendPackToBluetooth46(lockCarStatus: 1));
+  void controllerBlueUnLock(int value, {Function? successBlock}) {
+    sendData.add(sendPackToBluetooth46(lockCarStatus: value));
+    if(successBlock != null){
+      successBlock();
+    }
+  }
+
+  // 动能切换模式 1-3 ECO、运动、狂暴
+  void modelSwitch(int value, {Function? successBlock}) {
+    sendData.add(sendPackToBluetooth46(sportRecycle: value));
+    if(successBlock != null){
+      successBlock();
+    }
   }
 
   // 动能回收
   void sportRecycle(int value, {Function? successBlock}) {
     sendData.add(sendPackToBluetooth46(sportRecycle: value));
+    if(successBlock != null){
+      successBlock();
+    }
   }
 
   /// 控制蓝牙响喇叭
@@ -529,6 +554,8 @@ class BlueToothUtil {
         _currentBlueConnectionState == BluetoothConnectionState.connected) {
       try {
         await currentBlue?.disconnectAndUpdateStream();
+        communicationSuccess = false;
+        return;
         LogUtil.d("$TAG Disconnect: Success");
       } catch (e) {
         LogUtil.d("$TAG Disconnect Error:${e.toString()}");
@@ -665,6 +692,10 @@ class BlueToothUtil {
         LogUtil.d("$TAG 接收蓝牙数据:${DataExchangeUtils.bytesToHex(dataList)}");
       } else {
         communicationSuccess = true;
+        if (successBlockT != null) {
+          successBlockT!();
+        }
+        LWLoading.dismiss();
       }
     }
     if (dataList.length != 17) {
@@ -1606,7 +1637,7 @@ class BlueToothUtil {
     }
 
     if (sportStatus != null) {
-      if (sportStatus != 1 && sportStatus != 2 && sportStatus != 3) {
+      if (sportStatus != 0 && sportStatus != 1 && sportStatus != 2) {
         throw ArgumentError("sportStatus is in(1-3)");
       } else {
         sendPack[15] = (sendPack[15] | 0x10) & 0xff;

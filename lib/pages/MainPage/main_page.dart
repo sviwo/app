@@ -549,7 +549,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       BlueToothUtil.getInstance().getBlueConnectStatus();
                   if (isBluetoothOpen && isConnectBluetooth) {
                     //: 控制蓝牙去解锁
-                    BlueToothUtil.getInstance().controllerBlueUnLock();
+                    BlueToothUtil.getInstance().controllerBlueUnLock(1);
                   } else {
                     //: 去连接蓝牙，走快速连接流程
                     var bluetoothAddress =
