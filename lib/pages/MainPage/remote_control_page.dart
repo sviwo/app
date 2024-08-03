@@ -1,6 +1,8 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
+import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/utils/bluetooth/blue_test.dart';
 import 'package:atv/archs/utils/log_util.dart';
+import 'package:atv/config/conf/app_event.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/MainPage/viewModel/remote_control_page_view_model.dart';
@@ -23,6 +25,23 @@ class _RemoteControlPageState
       RemoteControlPageViewModel();
   @override
   String? titleName() => LocaleKeys.remote_control.tr();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    EventManager.register(context, AppEvent.blueToothCommunicationDisabled,
+        (params) {
+      pagePop();
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    EventManager.unregister(context, AppEvent.blueToothCommunicationDisabled);
+    super.dispose();
+  }
 
   @override
   List<Widget>? buildTitleActions2() {

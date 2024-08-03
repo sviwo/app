@@ -1,4 +1,5 @@
 import 'package:atv/archs/base/base_mvvm_page.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_icons.dart';
 import 'package:atv/generated/locale_keys.g.dart';
@@ -94,7 +95,21 @@ class _EnergyModelPageState
             isOn: viewModel.ecoIsOn,
             enable: true,
             callback: (value) {
-              viewModel.changeDriveMode(0);
+              // 判断手机蓝牙是否打开
+              var isBluetoothOpen =
+                  BlueToothUtil.getInstance().blueToothIsOpen();
+              //: 判断蓝牙是否已经连接了车辆
+              var isConnectBluetooth =
+                  BlueToothUtil.getInstance().getBlueConnectStatus();
+              if (isBluetoothOpen && isConnectBluetooth) {
+                //YGTODO: 控制ECO模式的开启与关闭 value true：开启  false：关闭
+
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  updateState(() {});
+                });
+              } else {
+                viewModel.changeDriveMode(0);
+              }
             },
           ),
           SizedBox(
@@ -145,7 +160,21 @@ class _EnergyModelPageState
             isOn: viewModel.sportIsOn,
             enable: true,
             callback: (value) {
-              viewModel.changeDriveMode(1);
+              // 判断手机蓝牙是否打开
+              var isBluetoothOpen =
+                  BlueToothUtil.getInstance().blueToothIsOpen();
+              //: 判断蓝牙是否已经连接了车辆
+              var isConnectBluetooth =
+                  BlueToothUtil.getInstance().getBlueConnectStatus();
+              if (isBluetoothOpen && isConnectBluetooth) {
+                //YGTODO: 控制运动模式的开启与关闭 value true：开启  false：关闭
+
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  updateState(() {});
+                });
+              } else {
+                viewModel.changeDriveMode(1);
+              }
             },
           ),
           SizedBox(
@@ -196,7 +225,21 @@ class _EnergyModelPageState
             isOn: viewModel.rageIson,
             enable: true,
             callback: (value) {
-              viewModel.changeDriveMode(2);
+              // 判断手机蓝牙是否打开
+              var isBluetoothOpen =
+                  BlueToothUtil.getInstance().blueToothIsOpen();
+              //: 判断蓝牙是否已经连接了车辆
+              var isConnectBluetooth =
+                  BlueToothUtil.getInstance().getBlueConnectStatus();
+              if (isBluetoothOpen && isConnectBluetooth) {
+                //YGTODO: 控制狂暴模式的开启与关闭 value true：开启  false：关闭
+
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  updateState(() {});
+                });
+              } else {
+                viewModel.changeDriveMode(2);
+              }
             },
           ),
           SizedBox(
@@ -264,7 +307,21 @@ class _EnergyModelPageState
                       activeColor: const Color(0xff36BCB3),
                       inactiveColor: Colors.white,
                       onChanged: (value) {
-                        viewModel.changeEnergyRecovery(value.toInt());
+                        // 判断手机蓝牙是否打开
+                        var isBluetoothOpen =
+                            BlueToothUtil.getInstance().blueToothIsOpen();
+                        //: 判断蓝牙是否已经连接了车辆
+                        var isConnectBluetooth =
+                            BlueToothUtil.getInstance().getBlueConnectStatus();
+                        if (isBluetoothOpen && isConnectBluetooth) {
+                          //YGTODO: 控制动能回收 value值为0、 1、 2
+
+                          Future.delayed(const Duration(milliseconds: 100), () {
+                            updateState(() {});
+                          });
+                        } else {
+                          viewModel.changeEnergyRecovery(value.toInt());
+                        }
                       },
                       label: viewModel.sliderText,
                       // label: '${(_sliderValue * 100).toStringAsFixed(0)}%', //进度条上面的小弹窗
