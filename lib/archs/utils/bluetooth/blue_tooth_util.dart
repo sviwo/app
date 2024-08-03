@@ -149,6 +149,9 @@ class BlueToothUtil {
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
+        }else{
+          EventManager.post(
+              AppEvent.blueToothCommunicationDisabled);
         }
       });
 
@@ -241,6 +244,11 @@ class BlueToothUtil {
   /// 控制蓝牙解锁
   void controllerBlueUnLock() {
     sendData.add(sendPackToBluetooth46(lockCarStatus: 1));
+  }
+
+  // 动能回收
+  void sportRecycle(int value){
+    sendData.add(sendPackToBluetooth46(sportRecycle: value));
   }
 
   /// 控制蓝牙响喇叭
@@ -478,6 +486,8 @@ class BlueToothUtil {
             LogUtil.d("$TAG Discover Services: Success:${e.toString()}");
           }
         } else {
+          EventManager.post(
+              AppEvent.blueToothCommunicationDisabled);
           communicationSuccess = false;
           blueConnectSuccess = false;
           connectController.sink.add(false);
