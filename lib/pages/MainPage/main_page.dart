@@ -535,22 +535,25 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 padding: EdgeInsets.symmetric(horizontal: 20.dp),
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
-                  BlueToothUtil.getInstance().controllerBlueVoice();
+                  // BlueToothUtil.getInstance().controllerBlueVoice();
+                  // 判断手机蓝牙是否打开
+                  var isBluetoothOpen =
+                      BlueToothUtil.getInstance().blueToothIsOpen();
                   //: 判断蓝牙是否已经连接了车辆
-                  // var isConnectBluetooth =
-                  //     BlueToothUtil.getInstance().getBlueConnectStatus();
-                  // if (isConnectBluetooth) {
-                  //   //: 控制蓝牙去解锁
-                  //   BlueToothUtil.getInstance().controllerBlueUnLock();
-                  // } else {
-                  //   //: 去连接蓝牙，走快速连接流程
-                  //   var bluetoothAddress =
-                  //       viewModel.dataModel?.bluetoothAddress ?? '';
-                  //   var bluetoothSecrectKey =
-                  //       viewModel.dataModel?.bluetoothSecretKey ?? '';
-                  //   BlueToothUtil.getInstance().speedConnectBlue(
-                  //       bluetoothAddress, bluetoothSecrectKey);
-                  // }
+                  var isConnectBluetooth =
+                      BlueToothUtil.getInstance().getBlueConnectStatus();
+                  if (isBluetoothOpen && isConnectBluetooth) {
+                    //: 控制蓝牙去解锁
+                    BlueToothUtil.getInstance().controllerBlueUnLock();
+                  } else {
+                    //: 去连接蓝牙，走快速连接流程
+                    var bluetoothAddress =
+                        viewModel.dataModel?.bluetoothAddress ?? '';
+                    var bluetoothSecrectKey =
+                        viewModel.dataModel?.bluetoothSecretKey ?? '';
+                    BlueToothUtil.getInstance().speedConnectBlue(
+                        bluetoothAddress, bluetoothSecrectKey);
+                  }
                 },
                 iconSize: 41.dp,
                 icon: Image.asset(
@@ -571,10 +574,13 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     }
 
                     LogUtil.d('点击了喇叭图标');
+                    // 判断手机蓝牙是否打开
+                    var isBluetoothOpen =
+                        BlueToothUtil.getInstance().blueToothIsOpen();
                     //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
-                    if (isConnectBluetooth) {
+                    if (isBluetoothOpen && isConnectBluetooth) {
                       //: 控制蓝牙响喇叭
                       BlueToothUtil.getInstance().controllerBlueVoice();
                     } else {
