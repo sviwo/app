@@ -22,4 +22,8 @@ class AppEvent {
 
   /// 车辆注册成功
   static String vehicleRegistSuccess = 'event/vehicleRegistSuccess';
+
+  /// 蓝牙交互失败通知
+  static String blueToothCommunicationDisabled =
+      'event/blueToothCommunicationDisabled';
 }

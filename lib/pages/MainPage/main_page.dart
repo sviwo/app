@@ -592,6 +592,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
+
+                      EventManager.post(
+                          AppEvent.blueToothCommunicationDisabled);
                     }
                     setStateBorn(() => viewModel.bornIsOn = true);
 
