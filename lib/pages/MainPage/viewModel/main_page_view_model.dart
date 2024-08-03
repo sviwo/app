@@ -111,10 +111,15 @@ class MainPageViewModel extends BaseViewModel {
 
         都正确才去连接蓝牙
         */
-        if(dataModel != null && dataModel!.bluetoothAddress != null
-        && dataModel!.bluetoothSecretKey != null
-            && dataModel!.bluetoothAddress!.isNotEmpty && dataModel!.bluetoothSecretKey!.isNotEmpty){
-          BlueToothUtil.getInstance().speedConnectBlue(dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
+
+        if(BlueToothUtil.getInstance().blueToothIsOpen() && !BlueToothUtil.getInstance().getBlueConnectStatus()){
+          
+            if(dataModel != null && dataModel!.bluetoothAddress != null
+                && dataModel!.bluetoothSecretKey != null
+                && dataModel!.bluetoothAddress!.isNotEmpty && dataModel!.bluetoothSecretKey!.isNotEmpty){
+              BlueToothUtil.getInstance().speedConnectBlue(dataModel!.bluetoothAddress!, dataModel!.bluetoothSecretKey!);
+            }
+
         }
 
         dataRefreshFinished();

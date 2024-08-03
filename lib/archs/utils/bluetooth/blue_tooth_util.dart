@@ -242,12 +242,12 @@ class BlueToothUtil {
     return _adapterState == BluetoothAdapterState.on;
   }
 
-  /// 获取蓝牙连接状态    YGTODO
+  /// 获取蓝牙连接状态
   bool getBlueConnectStatus() {
     return _isConnecting;
   }
 
-  /// 根据蓝牙mac和key去连接蓝牙  YGTODO
+  /// 根据蓝牙mac和key去连接蓝牙
   void speedConnectBlue(String mac, String key) async {
     keyString = int.parse(key);
     isFirst = true;
@@ -268,47 +268,47 @@ class BlueToothUtil {
   Stream<List<ScanResult>> get bluetoothDeviceList =>
       FlutterBluePlus.scanResults.asBroadcastStream();
 
-  /// 控制蓝牙解锁   YGTODO
+  /// 控制蓝牙解锁
   void controllerBlueUnLock() {
     sendData.add(sendPackToBluetooth46(lockCarStatus: 1));
   }
 
-  /// 控制蓝牙响喇叭   YGTODO
+  /// 控制蓝牙响喇叭
   void controllerBlueVoice() {
     sendData.add(sendPackToBluetooth46(voice: 1));
   }
 
-  /// 控制蓝牙响车灯   YGTODO
+  /// 控制蓝牙响车灯
   void controllerBlueLight() {
     sendData.add(sendPackToBluetooth46(lightStatus: 1));
   }
 
-  /// 剩余电量 YGTODO
+  /// 剩余电量
   String getBattery() {
     return battery.toString();
   }
 
-  /// 行车速度 YGTODO
+  /// 行车速度
   String getSpeed() {
     return carSpeed.toString();
   }
 
-  /// 剩余里程 YGTODO
+  /// 剩余里程
   String getEndurance() {
     return endurance.toString();
   }
 
-  /// 遥控距离 YGTODO
+  /// 遥控距离
   String getControllerDistance() {
     return "";
   }
 
-  /// 向前  YGTODO
+  /// 向前
   void controllerForward() {
     sendData.add(sendPackToBluetooth46(carStatus: 1));
   }
 
-  /// 向后  YGTODO
+  /// 向后
   void controllerBackwards() {
     sendData.add(sendPackToBluetooth46(carStatus: 2));
   }

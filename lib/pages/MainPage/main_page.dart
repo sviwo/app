@@ -236,7 +236,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
           ),
           callback: () {
             if (viewModel.dataModel?.authStatus == 2) {
-              //YGTODO: 判断蓝牙是否已经连接了车辆
+              //: 判断蓝牙是否已经连接了车辆
               var isConnectBluetooth =
                   // BlueTest.getInstance().getBlueConnectStatus();
                   BlueToothUtil.getInstance().getBlueConnectStatus();
@@ -244,7 +244,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 //跳转到控制器页面
                 pagePush(AppRoute.remoteControl);
               } else {
-                //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
+                //: 去连接蓝牙，走快速连接流程 连接不成功 弹出提示
                 var bluetoothAddress =
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
@@ -533,14 +533,14 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                 onPressed: () {
                   LogUtil.d('点击了锁图标');
                   BlueToothUtil.getInstance().controllerBlueVoice();
-                  //YGTODO: 判断蓝牙是否已经连接了车辆
+                  //: 判断蓝牙是否已经连接了车辆
                   // var isConnectBluetooth =
                   //     BlueToothUtil.getInstance().getBlueConnectStatus();
                   // if (isConnectBluetooth) {
-                  //   //YGTODO: 控制蓝牙去解锁
+                  //   //: 控制蓝牙去解锁
                   //   BlueToothUtil.getInstance().controllerBlueUnLock();
                   // } else {
-                  //   //YGTODO: 去连接蓝牙，走快速连接流程
+                  //   //: 去连接蓝牙，走快速连接流程
                   //   var bluetoothAddress =
                   //       viewModel.dataModel?.bluetoothAddress ?? '';
                   //   var bluetoothSecrectKey =
@@ -568,14 +568,14 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     }
 
                     LogUtil.d('点击了喇叭图标');
-                    //YGTODO: 判断蓝牙是否已经连接了车辆
+                    //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
                     if (isConnectBluetooth) {
-                      //YGTODO: 控制蓝牙响喇叭
+                      //: 控制蓝牙响喇叭
                       BlueToothUtil.getInstance().controllerBlueVoice();
                     } else {
-                      //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
+                      //: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(1);' 走mqtt通道
                       var bluetoothAddress =
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
@@ -613,14 +613,14 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       return;
                     }
                     LogUtil.d('点击了灯光图标');
-                    //YGTODO: 判断蓝牙是否已经连接了车辆
+                    //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
                     if (isConnectBluetooth) {
-                      //YGTODO: 控制蓝牙响车灯
+                      //: 控制蓝牙响车灯
                       BlueToothUtil.getInstance().controllerBlueLight();
                     } else {
-                      //YGTODO: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
+                      //: 去连接蓝牙，走快速连接流程 连接不成功 调用'viewModel.controlVehicle(0);' 走mqtt通道
                       var bluetoothAddress =
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =

@@ -99,7 +99,7 @@ class _RemoteControlPageState
                           width: 18.7.dp,
                           height: 8.dp,
                         ),
-                        //YGTODO: 剩余电量，从设备获取
+                        //: 剩余电量，从设备获取
                         // BlueToothUtil.getInstance().getBattery(),
                         '${model.battery}',
                         '%',
@@ -110,7 +110,7 @@ class _RemoteControlPageState
                           width: 17.7.dp,
                           height: 15.3.dp,
                         ),
-                        //YGTODO: 运行速度，从设备获取
+                        //: 运行速度，从设备获取
                         // BlueToothUtil.getInstance().getSpeed(),
                         '${model.carSpeed}',
                         'km/h',
@@ -138,7 +138,7 @@ class _RemoteControlPageState
                             width: 9.dp,
                             height: 22.dp,
                           ),
-                          //YGTODO: 剩余里程，从设备获取
+                          //: 剩余里程，从设备获取
                           // BlueToothUtil.getInstance().getEndurance(),
                           '${model.endurance}',
                           'km',
@@ -149,7 +149,7 @@ class _RemoteControlPageState
                             width: 12.3.dp,
                             height: 21.dp,
                           ),
-                          //YGTODO: 遥控距离，从设备获取
+                          //: 遥控距离，从设备获取
                           // BlueToothUtil.getInstance().getControllerDistance(),
                           model.distance,
                           'm',
@@ -169,7 +169,7 @@ class _RemoteControlPageState
           ),
           onTap: () {
             LogUtil.d('点击了向前');
-            //YGTODO: 蓝牙控制向前
+            //: 蓝牙控制向前
             BlueToothUtil.getInstance().controllerForward();
           },
           onLongPress: () {
@@ -191,7 +191,7 @@ class _RemoteControlPageState
           )),
           onTap: () {
             LogUtil.d('点击了向后');
-            //YGTODO: 蓝牙控制向后
+            //: 蓝牙控制向后
             BlueToothUtil.getInstance().controllerBackwards();
           },
           onLongPress: () {
@@ -214,7 +214,7 @@ class _RemoteControlPageState
                         viewModel.bornIsOn = !(viewModel.bornIsOn);
                       });
                       LogUtil.d('点击了喇叭图标');
-                      //YGTODO: 蓝牙控制喇叭
+                      //: 蓝牙控制喇叭
                       // viewModel.controlVehicle(1);
                       BlueToothUtil.getInstance().controllerBlueVoice();
                     },
@@ -236,7 +236,7 @@ class _RemoteControlPageState
                         viewModel.lightIsOn = !(viewModel.lightIsOn);
                       });
                       LogUtil.d('点击了灯光图标');
-                      //YGTODO: 蓝牙控制灯光
+                      //: 蓝牙控制灯光
                       // viewModel.controlVehicle(0);
                       BlueToothUtil.getInstance().controllerBlueLight();
                     },

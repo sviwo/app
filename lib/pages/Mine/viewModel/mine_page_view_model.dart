@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/data/err/http_error_exception.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:atv/archs/utils/log_util.dart';
 import 'package:atv/config/conf/app_conf.dart';
 import 'package:atv/config/conf/app_event.dart';
@@ -152,6 +153,7 @@ class MinePageViewModel extends BaseViewModel {
         showLoading: true,
         voidSuccess: () {
           //YGTODO: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
+          BlueToothUtil.getInstance().onDisconnectPressed();
           EventManager.post(AppEvent.vehicleInfoChange);
         },
       );
@@ -181,6 +183,7 @@ class MinePageViewModel extends BaseViewModel {
           showLoading: true,
           voidSuccess: () {
             //YGTODO: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
+            BlueToothUtil.getInstance().onDisconnectPressed();
             EventManager.post(AppEvent.vehicleInfoChange);
           },
         );
