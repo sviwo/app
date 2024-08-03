@@ -239,6 +239,12 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
               // 判断手机蓝牙是否打开
               var isBluetoothOpen =
                   BlueToothUtil.getInstance().blueToothIsOpen();
+
+              if(!isBluetoothOpen){
+                LWLoading.showLoading2(text: "请先开启手机蓝牙！");
+                return;
+              }
+
               //: 判断蓝牙是否已经连接了车辆
               var isConnectBluetooth =
                   // BlueTest.getInstance().getBlueConnectStatus();
@@ -577,6 +583,11 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     // 判断手机蓝牙是否打开
                     var isBluetoothOpen =
                         BlueToothUtil.getInstance().blueToothIsOpen();
+                    if(!isBluetoothOpen){
+                      viewModel.controlVehicle(1);
+                      return;
+                    }
+
                     //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
@@ -622,6 +633,16 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                       return;
                     }
                     LogUtil.d('点击了灯光图标');
+
+                    // 判断手机蓝牙是否打开
+                    var isBluetoothOpen =
+                    BlueToothUtil.getInstance().blueToothIsOpen();
+
+                    if(!isBluetoothOpen){
+                      viewModel.controlVehicle(0);
+                      return;
+                    }
+
                     //: 判断蓝牙是否已经连接了车辆
                     var isConnectBluetooth =
                         BlueToothUtil.getInstance().getBlueConnectStatus();
