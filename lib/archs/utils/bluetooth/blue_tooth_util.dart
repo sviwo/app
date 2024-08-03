@@ -28,6 +28,7 @@ import 'package:atv/archs/utils/bluetooth/data_exchange_utils.dart';
 class BlueToothUtil {
   String TAG = "BlueToothUtil:";
 
+  // 要推送到服务器到数据模型
   PushDataServiceBean? pushModelBean;
 
   // 心跳包的序号，1开始递增
@@ -79,11 +80,6 @@ class BlueToothUtil {
   // 握手秘钥
   int? keyString;
 
-  // 蓝牙名称
-  // String? currBlueName;
-
-  // bool blueIsOpen = false;
-
   void setDeviceName(String? deviceName) {
     this.deviceName = deviceName;
     getDeviceCertificate();
@@ -111,14 +107,6 @@ class BlueToothUtil {
       StreamController<BlueDataVO>.broadcast();
 
   Stream<BlueDataVO> get receiveDataStream => receiveController.stream;
-  // Stream<BlueDataVO>? _dataStream;
-  // Stream<BlueDataVO> get dataStream {
-  //   if (_dataStream != null) {
-  //     return _dataStream!;
-  //   }
-  //   _dataStream = controller.stream.asBroadcastStream();
-  //   return _dataStream!;
-  // }
   // 手机蓝牙开启关闭流
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
@@ -148,7 +136,6 @@ class BlueToothUtil {
   int? _rssi;
 
   bool _isConnecting = false;
-  bool _isDisconnecting = false;
 
   List<List<int>> receiveData = []; // 接收蓝牙发送过来的数据
 
@@ -161,11 +148,6 @@ class BlueToothUtil {
       FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
       FlutterBluePlus.adapterState.listen((state) {
         LogUtil.d("${_instanceBlueToothUtil?.TAG} $state");
-        // if(state == BluetoothAdapterState.off){
-        //   _instanceBlueToothUtil?.blueIsOpen = false;
-        // }else if(state == BluetoothAdapterState.on){
-        //   _instanceBlueToothUtil?.blueIsOpen = true;
-        // }
         _instanceBlueToothUtil?._adapterState = state;
         if (state == BluetoothAdapterState.off) {
           _instanceBlueToothUtil?._scanResultsSubscription = null;
@@ -178,7 +160,6 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._services = [];
           _instanceBlueToothUtil?._isConnecting = false;
           _instanceBlueToothUtil?.deviceconnectController.sink.add(false);
-          _instanceBlueToothUtil?._isDisconnecting = false;
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
@@ -231,11 +212,6 @@ class BlueToothUtil {
       }
     }
   }
-
-  /// 获取手机蓝牙是否开启， true表示蓝牙开启，false表示蓝牙关闭
-  // bool getBlueIsOpen(){
-  //   return blueIsOpen;
-  // }
 
   /// 获取蓝牙是否开启 true 开启， false 关闭
   bool blueToothIsOpen() {
@@ -315,7 +291,6 @@ class BlueToothUtil {
 
   /// 开启蓝牙
   void openBlueTooth() async {
-    // return await checkBlueToothPermission();
     try {
       if (Platform.isAndroid) {
         await FlutterBluePlus.turnOn();
@@ -513,20 +488,6 @@ class BlueToothUtil {
 
                   List<int> list = getStepOneBluetoothCarNumber1();
                   sendData.add(list);
-                  //
-                  // if(isSpeedConnect){
-                  //   List<int> list = sendPackToBluetooth44(50477619);
-                  //   sendData.add(list);
-                  // }else{
-                  //   // 发送车架号
-                  //   if (deviceName != null && !deviceName!.isNullOrEmpty()) {
-                  //     List<List<int>> mList =
-                  //     getPackToBluetoothCarNumber2_4(deviceName!);
-                  //     for (int i = 0; i < mList.length; i++) {
-                  //       sendData.add(mList[i]);
-                  //     }
-                  //   }
-                  // }
                   break;
                 }
               }
@@ -553,10 +514,6 @@ class BlueToothUtil {
         } else {
           // currentBlue = null;
         }
-      });
-
-      mdevice.isDisconnecting.listen((value) {
-        _isDisconnecting = value;
       });
     }
   }
