@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:atv/archs/base/base_mvvm_page.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/conf/arch_event.dart';
@@ -97,6 +99,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     return MainPageViewModel();
   }
 
+  /// 手机蓝牙是否打开的订阅
+  StreamSubscription<bool>? connectSubscription;
+
   @override
   void initState() {
     // BlueTest.getInstance();
@@ -119,7 +124,8 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     });
     WidgetsBinding.instance.addObserver(this);
 
-    BlueToothUtil.getInstance().connectDataStream.listen((event) {
+    connectSubscription =
+        BlueToothUtil.getInstance().connectDataStream.listen((event) {
       LWLoading.dismiss(animation: true);
     });
   }
@@ -132,9 +138,9 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     EventManager.unregister(context, AppEvent.userBaseInfoChange);
     EventManager.unregister(context, AppEvent.vehicleInfoChange);
     EventManager.unregister(context, AppEvent.vehicleRegistSuccess);
+    connectSubscription?.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    // BlueTest.getInstance().dispostBlue();
-    // BlueToothUtil.getInstance().dispostBlue();
+
     super.dispose();
   }
 
@@ -243,7 +249,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                     viewModel.dataModel?.bluetoothAddress ?? '';
                 var bluetoothSecrectKey =
                     viewModel.dataModel?.bluetoothSecretKey ?? '';
-                LWLoading.showLoading2(text: "连接中...");
+                LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                 BlueToothUtil.getInstance()
                     .speedConnectBlue(bluetoothAddress, bluetoothSecrectKey);
               }
@@ -574,7 +580,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      LWLoading.showLoading2(text: "连接中...");
+                      LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }
@@ -619,7 +625,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
                           viewModel.dataModel?.bluetoothAddress ?? '';
                       var bluetoothSecrectKey =
                           viewModel.dataModel?.bluetoothSecretKey ?? '';
-                      LWLoading.showLoading2(text: "连接中...");
+                      LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
                       BlueToothUtil.getInstance().speedConnectBlue(
                           bluetoothAddress, bluetoothSecrectKey);
                     }

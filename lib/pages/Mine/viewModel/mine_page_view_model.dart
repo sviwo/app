@@ -77,6 +77,7 @@ class MinePageViewModel extends BaseViewModel {
     };
     return map[currentLauguage];
   }
+
   final List<String> productImageNames = [
     AppIcons.imgMinePageCarIcon,
     AppIcons.imgMinePageChargingIcon,
@@ -150,6 +151,7 @@ class MinePageViewModel extends BaseViewModel {
         handlePageState: false,
         showLoading: true,
         voidSuccess: () {
+          //YGTODO: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
           EventManager.post(AppEvent.vehicleInfoChange);
         },
       );
@@ -178,6 +180,7 @@ class MinePageViewModel extends BaseViewModel {
           handlePageState: false,
           showLoading: true,
           voidSuccess: () {
+            //YGTODO: 这里要主动断开手机蓝牙与设备的连接，会在首页拉取到数据后连接新设备
             EventManager.post(AppEvent.vehicleInfoChange);
           },
         );

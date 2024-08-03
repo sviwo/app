@@ -1,4 +1,5 @@
 import 'package:atv/archs/data/net/http.dart';
+import 'package:atv/archs/utils/bluetooth/blue_tooth_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../tools/deviceInfo/lw_deviceInfo_tool.dart';
@@ -40,6 +41,8 @@ class AppConf {
     p.remove(AppKeys.httpAuthorization);
     p.remove(AppKeys.httpPublickey);
     Http.instance().clearToken();
+    // 蓝牙清除数据并断开所有连接
+    BlueToothUtil.getInstance().dispose();
   }
 
   static void afterLoginSuccess(

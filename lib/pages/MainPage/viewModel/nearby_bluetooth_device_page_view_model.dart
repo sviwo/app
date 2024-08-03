@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:atv/archs/base/base_view_model.dart';
 import 'package:atv/archs/base/event_manager.dart';
 import 'package:atv/archs/utils/bluetooth/blue_test.dart';
@@ -25,6 +27,9 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   bool isCurrent(ScanResult device) =>
       currentDevice == device.device.id.toString();
 
+  /// 手机蓝牙是否打开的订阅
+  StreamSubscription<bool>? connectSubscription;
+
   String bluetoothName(ScanResult device) {
     // device.platformName 蓝牙名称
     // device.remoteId.str 蓝牙mac
@@ -36,7 +41,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
     pageRefresh();
     await Future.delayed(Duration.zero, () {
       // 连接蓝牙.
-      LWLoading.showLoading(text: "连接中");
+      LWLoading.showLoading2(text: LocaleKeys.connecting.tr());
       BlueToothUtil.getInstance().connectBluetooth(device.device);
     });
     // BlueToothUtil.getInstance().readChart;
@@ -86,7 +91,8 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
       BlueToothUtil.getInstance().setDeviceName(deviceName);
     }
     BlueToothUtil.getInstance().startScanBlueTooth();
-    BlueToothUtil.getInstance().connectDataStream.listen((event) {
+    connectSubscription =
+        BlueToothUtil.getInstance().connectDataStream.listen((event) {
       LWLoading.dismiss(animation: true);
     });
     // deviceName = 'sviwo-asdas546a4s6d5';
@@ -96,7 +102,7 @@ class NearByBluetoothDevicesPageViewModel extends BaseViewModel {
   @override
   void release() {
     // TODO: implement release
+    connectSubscription?.cancel();
     BlueToothUtil.getInstance().stopScanBlueTooth();
-    BlueToothUtil.getInstance().dispose();
   }
 }
