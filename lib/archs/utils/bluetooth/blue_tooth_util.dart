@@ -117,9 +117,6 @@ class BlueToothUtil {
   StreamSubscription<List<ScanResult>>? _scanResultsSubscription;
   StreamSubscription<bool>? _isScanningSubscription;
 
-  // 连接蓝牙
-  int? _rssi;
-
   // 蓝牙连接成功且可以正常发送数据
   bool communicationSuccess = false;
 
@@ -483,9 +480,6 @@ class BlueToothUtil {
           communicationSuccess = false;
           blueConnectSuccess = false;
           connectController.sink.add(false);
-        }
-        if (state == BluetoothConnectionState.connected && _rssi == null) {
-          _rssi = await mdevice.readRssi();
         }
       });
     }
