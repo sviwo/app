@@ -143,6 +143,7 @@ class BlueToothUtil {
         LogUtil.d("${_instanceBlueToothUtil?.TAG} $state");
         _instanceBlueToothUtil?._adapterState = state;
         if (state == BluetoothAdapterState.off) {
+          EventManager.post(AppEvent.blueToothCommunicationDisabled);
           _instanceBlueToothUtil?._scanResultsSubscription = null;
           _instanceBlueToothUtil?._isScanningSubscription = null;
 
@@ -156,8 +157,6 @@ class BlueToothUtil {
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
-        } else {
-          EventManager.post(AppEvent.blueToothCommunicationDisabled);
         }
       });
 
