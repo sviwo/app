@@ -260,7 +260,7 @@ class BlueToothUtil {
   }
 
   // 动能回收
-  void sportRecycle(int value) {
+  void sportRecycle(int value, {Function? successBlock}) {
     sendData.add(sendPackToBluetooth46(sportRecycle: value));
   }
 
