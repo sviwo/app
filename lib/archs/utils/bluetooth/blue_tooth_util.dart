@@ -100,10 +100,6 @@ class BlueToothUtil {
   StreamController<bool> connectController = StreamController<bool>.broadcast();
   Stream<bool> get connectDataStream => connectController.stream;
 
-  // 蓝牙连接状态
-  StreamController<bool> deviceconnectController = StreamController<bool>.broadcast();
-  Stream<bool> get deviceConnectDataStream => deviceconnectController.stream;
-
   // 私有的命名构造函数
   BlueToothUtil._internal();
 
@@ -152,7 +148,6 @@ class BlueToothUtil {
           _instanceBlueToothUtil?._services = [];
           _instanceBlueToothUtil?.communicationSuccess = false;
           _instanceBlueToothUtil?.blueConnectSuccess = false;
-          _instanceBlueToothUtil?.deviceconnectController.sink.add(false);
           _instanceBlueToothUtil?.currentBlue = null;
           _instanceBlueToothUtil?.readChart = null;
           _instanceBlueToothUtil?.sendChart = null;
@@ -446,7 +441,6 @@ class BlueToothUtil {
         if (state == BluetoothConnectionState.connected) {
           blueConnectSuccess = true;
           connectController.sink.add(true);
-          deviceconnectController.sink.add(true);
           currentBlue = mdevice;
           currentBlueName = mdevice.platformName;
           _services = []; // must rediscover services
@@ -487,7 +481,6 @@ class BlueToothUtil {
         } else {
           communicationSuccess = false;
           blueConnectSuccess = false;
-          deviceconnectController.sink.add(false);
           connectController.sink.add(false);
         }
         if (state == BluetoothConnectionState.connected && _rssi == null) {
