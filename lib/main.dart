@@ -21,7 +21,6 @@ import 'archs/lw_arch.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-bool mixDevelop = false;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -32,11 +31,12 @@ void main() async {
     options.environment = await AppConf.environment();
     options.anrEnabled = true;
   }, appRunner: () async {
-    var env = await AppConf.environment();
-    mixDevelop = await AppConf.mixDevelop();
-
     // 网络日志配置
     DioLogInterceptor.enablePrintLog = false;
+
+    var env = await AppConf.environment();
+    bool mixDevelop = await AppConf.mixDevelop();
+    var localLanguage = await AppConf.getLauguage();
 
     // 初始化架构库
     LWArch.init(
@@ -68,7 +68,11 @@ void main() async {
       // assetLoader: const CodegenLoader(), //TODO: 等所有的key定义完成后再来生成这个
       assetLoader: const RootBundleAssetLoader(),
       useFallbackTranslations: true,
-      child: MyApp(),
+      child: MyApp(
+        mixDevelop: mixDevelop,
+        env: env,
+        localLanguage: localLanguage,
+      ),
     ));
   });
 }
@@ -76,84 +80,86 @@ void main() async {
 _initMap() {}
 
 class MyApp extends BaseApp {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({
+    super.key,
+    required this.mixDevelop,
+    required this.env,
+    required this.localLanguage,
+  });
+
+  final bool mixDevelop;
+
+  final String env;
+
+  final String localLanguage;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, Widget page) {
-    return FutureBuilder(
-      future: Future.wait([AppConf.environment(), AppConf.getLauguage()]),
-      builder: (fcontext, snapshot) {
-        var dataList = snapshot.data ?? [];
-        var environment0 = 'prod';
-        if (dataList.isNotEmpty) {
-          environment0 = dataList.first;
-        }
-        var locale0 = '';
-        if (dataList.isNotEmpty && dataList.length >= 2) {
-          locale0 = dataList[1];
-        }
-        // 根据环境设置app名
-        var appName = 'atv';
-        if (StringUtils.isNotNullOrEmpty(environment0) &&
-            environment0 != 'prod') {
-          appName += '.$environment0';
-        }
-        // 设置多语言
-        var localeString =
-            locale0.isNotEmpty ? locale0 : fcontext.locale.languageCode;
-        if (StringUtils.isNullOrEmpty(locale0) == true) {
-          AppConf.setLauguage(localeString);
-        }
-        LogUtil.d(
-            '--------_environment:$environment0,appName:$appName,Lauguage:$localeString,_locale:$locale0');
-        LWArch.setLanguage(localeString);
-        var locale = Locale(localeString);
-        return MaterialApp(
-          title: appName,
-          navigatorKey: navigatorKey,
-          debugShowCheckedModeBanner: false,
-          navigatorObservers: [
-            _MyNavigator(),
-            SentryNavigatorObserver(),
-          ],
-          onGenerateRoute: RouteManager.instance.getRouteFactory(),
-          color: Colors.white,
-          theme: ThemeData(
-            // platform: TargetPlatform.iOS,
-            // primarySwatch: Color(0xFFE60044),
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            brightness: Brightness.light,
-            colorScheme: ColorScheme.fromSwatch()
-                .copyWith(secondary: const Color(0x01FFFFFF)),
-          ),
-          //国际化配置
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: locale,
-          home: mixDevelop ? page : SplashPage(route: AppRoute.splash),
-          // home: MapNaviPage(),
-          builder: EasyLoading.init(
-            builder: (context, widget) {
-              LWWidget.init(context, designWidth: 375, designHeight: 812);
-              return GestureDetector(
-                onTap: () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                child: MediaQuery(
-                  //Setting font does not change with system font size
-                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                  child: widget ??
-                      Container(
-                        color: Colors.white,
-                      ),
-                ),
-              );
+    LogUtil.d("++++++++++++++++++++++++++++");
+    var environment0 = 'prod';
+    if (env.isNotEmpty) {
+      environment0 = env;
+    }
+
+    // 根据环境设置app名
+    var appName = 'atv';
+    if (StringUtils.isNotNullOrEmpty(environment0) && environment0 != 'prod') {
+      appName += '.$environment0';
+    }
+    // 设置多语言
+    var localeString =
+        localLanguage.isNotEmpty ? localLanguage : context.locale.languageCode;
+    if (StringUtils.isNullOrEmpty(localLanguage) == true) {
+      AppConf.setLauguage(localeString);
+    }
+    LogUtil.d(
+        '--------_environment:$environment0,appName:$appName,Lauguage:$localeString,_locale:$localeString');
+    LWArch.setLanguage(localeString);
+    var locale = Locale(localeString);
+    return MaterialApp(
+      title: appName,
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      navigatorObservers: [
+        _MyNavigator(),
+        SentryNavigatorObserver(),
+      ],
+      onGenerateRoute: RouteManager.instance.getRouteFactory(),
+      color: Colors.white,
+      theme: ThemeData(
+        // platform: TargetPlatform.iOS,
+        // primarySwatch: Color(0xFFE60044),
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSwatch()
+            .copyWith(secondary: const Color(0x01FFFFFF)),
+      ),
+      //国际化配置
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: locale,
+      home: mixDevelop ? page : SplashPage(route: AppRoute.splash),
+      // home: MapNaviPage(),
+      builder: EasyLoading.init(
+        builder: (context, widget) {
+          LWWidget.init(context, designWidth: 375, designHeight: 812);
+          return GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
             },
-          ),
-        );
-      },
+            child: MediaQuery(
+              //Setting font does not change with system font size
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: widget ??
+                  Container(
+                    color: Colors.white,
+                  ),
+            ),
+          );
+        },
+      ),
     );
   }
 
