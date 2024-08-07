@@ -33,4 +33,5 @@ build
 /linux
 pubspec.lock
 
+local.properties
 

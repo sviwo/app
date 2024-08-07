@@ -323,6 +323,12 @@ class BlueToothUtil {
     sendData.add(sendPackToBluetooth46(carStatus: 1));
   }
 
+
+  /// 停止
+  void controllerCardStop() {
+    sendData.add(sendPackToBluetooth46(carStatus: 0));
+  }
+
   /// 向后
   void controllerBackwards() {
     sendData.add(sendPackToBluetooth46(carStatus: 2));
