@@ -32,10 +32,10 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     with WidgetsBindingObserver {
   @override
   Widget? headerBackgroundWidget() {
-    return Image.asset(
-      AppIcons.imgCommonBgDownStar,
-      fit: BoxFit.cover,
-    );
+    // return Image.asset(
+    //   AppIcons.imgCommonBgDownStar,
+    //   fit: BoxFit.cover,
+    // );
     return viewModel.haveCar
         ? Image.asset(
             AppIcons.imgCommonBgNoStar,
@@ -110,7 +110,7 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
   void initState() {
     // BlueTest.getInstance();
     BlueToothUtil.getInstance();
-    // viewModel = MainPageViewModel();
+    viewModel = MainPageViewModel();
     super.initState();
     // AppConf.isMainPage = true;
     EventManager.register(context, ArchEvent.tokenInvalid, (params) {
