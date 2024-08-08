@@ -188,14 +188,16 @@ class _RemoteControlPageState
           ),
           onTap: () {
             LogUtil.d('点击了向前');
-            //: 蓝牙控制向前
-            BlueToothUtil.getInstance().controllerForward();
+
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
+            //: 蓝牙控制向前
+            BlueToothUtil.getInstance().controllerForward();
           },
           onLongPressEnd: (details) {
             LogUtil.d('onLongPressEnd');
+            BlueToothUtil.getInstance().controllerCardStop();
           },
         )),
         SizedBox(
@@ -210,11 +212,16 @@ class _RemoteControlPageState
           )),
           onTap: () {
             LogUtil.d('点击了向后');
-            //: 蓝牙控制向后
-            BlueToothUtil.getInstance().controllerBackwards();
+
           },
           onLongPress: () {
             LogUtil.d('长按了向后');
+            //: 蓝牙控制向后
+            BlueToothUtil.getInstance().controllerBackwards();
+          },
+          onLongPressEnd: (details) {
+            LogUtil.d('onLongPressEnd');
+            BlueToothUtil.getInstance().controllerCardStop();
           },
         )),
         SizedBox(
