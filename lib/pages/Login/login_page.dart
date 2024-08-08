@@ -6,6 +6,7 @@ import 'package:atv/config/conf/route/app_route_settings.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/viewModel/login_view_model.dart';
 import 'package:atv/tools/language/lw_language_tool.dart';
+import 'package:atv/tools/thirdPartLogin/third_part_login_tool.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/colors/lw_colors.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
@@ -368,8 +369,10 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
                 width: 28.dp,
                 height: 28.dp,
               ),
-              onPressed: () {
+              onPressed: () async {
                 LogUtil.d('点击了通过Apple登录');
+                final credential =  await ThirdPartLoginTool.signInWithApple();
+
               },
             ))
       ],

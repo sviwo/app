@@ -101,6 +101,8 @@ dependencies:
   map_launcher: ^3.2.0
   mobile_scanner: ^3.5.7
   url_launcher: ^6.1.11
+  sign_in_with_apple: ^5.0.0
+  # flutter_login_facebook: ^2.0.1
 
 dev_dependencies:
   flutter_test:
@@ -164,7 +166,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-  module:
-    androidX: true
-    androidPackage: com.sviwo.atv
-    iosBundleIdentifier: com.sviwo.atv
+  # module:
+  #   androidX: true
+  #   androidPackage: com.sviwo.atv
+  #   iosBundleIdentifier: com.sviwo.atv
