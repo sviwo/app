@@ -31,16 +31,8 @@ class ApiLogin {
 
   /// 登录
   /// -loginType：登陆类型：1=账号+密码，2=第三方
-  static Future<ResData<LoginResponse>> login(
-      {String username = '', String password = '', int loginType = 1}) async {
+  static Future<ResData<LoginResponse>> login({LoginParams? params}) async {
     try {
-      Map<String, dynamic> params = {'loginType': loginType};
-      if (username.isNotEmpty) {
-        params['username'] = username;
-      }
-      if (password.isNotEmpty) {
-        params['password'] = password;
-      }
       var data = await Http.instance().post('api/login', data: params);
       return await HttpHelper.httpDataConvert<LoginResponse>(
           data, (json) => LoginResponse.fromJson(json));

@@ -371,8 +371,9 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               ),
               onPressed: () async {
                 LogUtil.d('点击了通过Apple登录');
-                final credential =  await ThirdPartLoginTool.signInWithApple();
-
+                FocusManager.instance.primaryFocus?.unfocus();
+                final credential = await ThirdPartLoginTool.signInWithApple();
+                viewModel.appleLogin(credential);
               },
             ))
       ],

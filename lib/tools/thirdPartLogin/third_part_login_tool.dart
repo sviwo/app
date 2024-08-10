@@ -4,7 +4,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class ThirdPartLoginTool {
   ThirdPartLoginTool._();
-  static Future<Map<String, dynamic>> signInWithApple() async {
+  static Future<AuthorizationCredentialAppleID> signInWithApple() async {
     final credential = await SignInWithApple.getAppleIDCredential(
       scopes: [
         AppleIDAuthorizationScopes.email,
@@ -13,7 +13,7 @@ class ThirdPartLoginTool {
     );
     final result = credential.toJson();
     LogUtil.d('--------开始苹果登录，返回值为$result');
-    return result;
+    return credential;
   }
 }
 // const AuthorizationCredentialAppleID({

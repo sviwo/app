@@ -59,3 +59,32 @@ class ResetPasswordParams {
     };
   }
 }
+
+class LoginParams {
+  LoginParams(
+      {this.username,
+      this.password,
+      this.userIdentifier,
+      this.identityToken,
+      this.accessToken,
+      this.loginType = 1});
+  String? username;
+  String? password;
+  String? userIdentifier;
+  String? identityToken;
+  String? accessToken;
+
+  ///登陆类型:1=账号+密码，2=apple，3=facebook
+  int loginType;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'username': username,
+      'password': password,
+      'userIdentifier': userIdentifier,
+      'identityToken': identityToken,
+      'accessToken': accessToken,
+      'loginType': loginType,
+    };
+  }
+}

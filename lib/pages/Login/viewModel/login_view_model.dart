@@ -8,8 +8,10 @@ import 'package:atv/config/data/entity/common/media_tree.dart';
 import 'package:atv/config/net/api_login.dart';
 import 'package:atv/config/net/api_public.dart';
 import 'package:atv/generated/locale_keys.g.dart';
+import 'package:atv/pages/Login/define/login_defines.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginViewModel extends BaseViewModel {
   /// 是否选中了同意协议
@@ -32,7 +34,8 @@ class LoginViewModel extends BaseViewModel {
         return;
       }
       await loadApiData<LoginResponse>(
-        ApiLogin.login(username: emailName, password: password),
+        ApiLogin.login(
+            params: LoginParams(username: emailName, password: password)),
         showLoading: true,
         handlePageState: false,
         dataSuccess: (data) {
@@ -99,9 +102,13 @@ class LoginViewModel extends BaseViewModel {
     }
   }
 
-  void appleLogin() async {
+  void appleLogin(AuthorizationCredentialAppleID appleId) async {
     await loadApiData<LoginResponse>(
-      ApiLogin.login(username: emailName, password: password),
+      ApiLogin.login(
+          params: LoginParams(
+              userIdentifier: appleId.userIdentifier,
+              identityToken: appleId.identityToken,
+              loginType: 2)),
       showLoading: true,
       handlePageState: false,
       dataSuccess: (data) {
