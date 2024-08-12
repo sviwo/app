@@ -121,6 +121,29 @@ class LoginViewModel extends BaseViewModel {
     );
   }
 
+  void facebookLogin(Map<String, dynamic> fbMap) async {
+    if (fbMap.isEmpty) {
+      return;
+    }
+    if (fbMap.containsKey('accessToken') == false) {
+      return;
+    }
+
+    await loadApiData<LoginResponse>(
+      ApiLogin.login(
+          params: LoginParams(accessToken: fbMap['accessToken'], loginType: 3)),
+      showLoading: true,
+      handlePageState: false,
+      dataSuccess: (data) {
+        AppConf.afterLoginSuccess(
+            Authorization: data.Authorization, Publickey: data.Publickey);
+        pagePushAndRemoveUtil(
+          AppRoute.main,
+        );
+      },
+    );
+  }
+
   @override
   void initialize(args) {
     // TODO: implement initialize

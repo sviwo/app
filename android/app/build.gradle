@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.sviwo.atv.host"
+        applicationId "com.sviwo.atv"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1

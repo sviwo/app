@@ -349,8 +349,11 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
             width: 28.dp,
             height: 28.dp,
           ),
-          onPressed: () {
+          onPressed: () async {
             LogUtil.d('点击了通过Facebook登录');
+            FocusManager.instance.primaryFocus?.unfocus();
+            final map = await ThirdPartLoginTool.signInWithFacebook();
+            viewModel.facebookLogin(map);
           },
         ),
         Visibility(

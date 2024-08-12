@@ -39,6 +39,8 @@
 		<string>comgooglemaps</string>
 		<string>sms</string>
 		<string>tel</string>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -83,5 +85,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>fbAPP-ID</string>
+      </array>
+      </dict>
+    </array>
+    <key>FacebookAppID</key>
+    <string>476116921703658</string>
+    <key>FacebookClientToken</key>
+    <string>b3d161954685dcf7d3c5c8719d514574 </string>
+    <key>FacebookDisplayName</key>
+    <string>atv</string>
 </dict>
 </plist>
