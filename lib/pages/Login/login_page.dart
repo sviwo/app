@@ -10,6 +10,7 @@ import 'package:atv/tools/thirdPartLogin/third_part_login_tool.dart';
 import 'package:atv/widgetLibrary/basic/button/lw_button.dart';
 import 'package:atv/widgetLibrary/basic/colors/lw_colors.dart';
 import 'package:atv/widgetLibrary/basic/font/lw_font_weight.dart';
+import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:atv/widgetLibrary/form/lw_form_input.dart';
 import 'package:atv/widgetLibrary/utils/size_util.dart';
 import 'package:basic_utils/basic_utils.dart';
@@ -377,6 +378,11 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 final credential = await ThirdPartLoginTool.signInWithApple();
                 viewModel.appleLogin(credential);
+                // if (StringUtils.isNullOrEmpty(credential.email)) {
+                //   LWToast.show(LocaleKeys.apple_login_without_email_tips.tr());
+                // } else {
+                //   viewModel.appleLogin(credential);
+                // }
               },
             ))
       ],

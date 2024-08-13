@@ -10,6 +10,7 @@ import 'package:atv/config/net/api_public.dart';
 import 'package:atv/generated/locale_keys.g.dart';
 import 'package:atv/pages/Login/define/login_defines.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
+import 'package:basic_utils/basic_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -103,11 +104,20 @@ class LoginViewModel extends BaseViewModel {
   }
 
   void appleLogin(AuthorizationCredentialAppleID appleId) async {
+    var nickName = '';
+    if (StringUtils.isNotNullOrEmpty(appleId.givenName)) {
+      nickName += appleId.givenName ?? '';
+    }
+    if (StringUtils.isNotNullOrEmpty(appleId.familyName)) {
+      nickName += appleId.familyName ?? '';
+    }
     await loadApiData<LoginResponse>(
       ApiLogin.login(
           params: LoginParams(
+              username: appleId.email,
               userIdentifier: appleId.userIdentifier,
               identityToken: appleId.identityToken,
+              nickName: nickName,
               loginType: 2)),
       showLoading: true,
       handlePageState: false,
@@ -128,10 +138,18 @@ class LoginViewModel extends BaseViewModel {
     if (fbMap.containsKey('accessToken') == false) {
       return;
     }
+    if (fbMap.containsKey('userId') == false) {
+      return;
+    }
 
     await loadApiData<LoginResponse>(
       ApiLogin.login(
-          params: LoginParams(accessToken: fbMap['accessToken'], loginType: 3)),
+          params: LoginParams(
+              username: fbMap['email'],
+              accessToken: fbMap['accessToken'],
+              userIdentifier: fbMap['userId'],
+              nickName: fbMap['name'],
+              loginType: 3)),
       showLoading: true,
       handlePageState: false,
       dataSuccess: (data) {

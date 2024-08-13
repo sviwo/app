@@ -67,12 +67,14 @@ class LoginParams {
       this.userIdentifier,
       this.identityToken,
       this.accessToken,
+      this.nickName,
       this.loginType = 1});
   String? username;
   String? password;
   String? userIdentifier;
   String? identityToken;
   String? accessToken;
+  String? nickName;
 
   ///登陆类型:1=账号+密码，2=apple，3=facebook
   int loginType;
@@ -84,6 +86,7 @@ class LoginParams {
       'userIdentifier': userIdentifier,
       'identityToken': identityToken,
       'accessToken': accessToken,
+      'nickName': nickName,
       'loginType': loginType,
     };
   }

@@ -41,6 +41,8 @@
 		<string>tel</string>
         <string>fbapi</string>
         <string>fb-messenger-share-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
@@ -90,14 +92,14 @@
       <dict>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>fbAPP-ID</string>
+        <string>fb476116921703658</string>
       </array>
       </dict>
     </array>
     <key>FacebookAppID</key>
     <string>476116921703658</string>
     <key>FacebookClientToken</key>
-    <string>b3d161954685dcf7d3c5c8719d514574 </string>
+    <string>b3d161954685dcf7d3c5c8719d514574</string>
     <key>FacebookDisplayName</key>
     <string>atv</string>
 </dict>

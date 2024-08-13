@@ -166,5 +166,6 @@
     "no_map_destination_tips":"请搜索并在列表中选择终点",
     "nearby_devices":"附近设备",
     "scan_code":"扫一扫",
-    "qrcode_format_error_tips":"二维码格式不正确"
+    "qrcode_format_error_tips":"二维码格式不正确",
+    "apple_login_without_email_tips":"使用苹果登录请不要隐藏邮箱展示"
 }

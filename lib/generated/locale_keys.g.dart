@@ -182,7 +182,8 @@ abstract class LocaleKeys {
   static const scan_code = "scan_code";
   static const qrcode_format_error_tips = "qrcode_format_error_tips";
   static const connecting = "connecting";
-// static const  = "";
+  static const apple_login_without_email_tips =
+      "apple_login_without_email_tips";
 // static const  = "";
 // static const  = "";
 // static const  = "";

@@ -16,8 +16,8 @@ class ThirdPartLoginTool {
         AppleIDAuthorizationScopes.fullName,
       ],
     );
-    final result = credential.toJson();
-    LogUtil.d('--------开始苹果登录，返回值为$result');
+
+    LogUtil.d('--------开始苹果登录，返回值为${credential.toJson()}}');
 
     return credential;
   }
@@ -31,6 +31,8 @@ class ThirdPartLoginTool {
       final AccessToken? accessToken = result.accessToken;
 
       map['accessToken'] = accessToken?.token ?? '';
+
+      map['userId'] = accessToken?.userId ?? '';
 
       Map<String, dynamic> userData =
           await FacebookAuth.instance.getUserData(fields: "name,email");
