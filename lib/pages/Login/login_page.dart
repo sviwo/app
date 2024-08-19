@@ -352,6 +352,10 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
           ),
           onPressed: () async {
             LogUtil.d('点击了通过Facebook登录');
+            if (viewModel.isSelectedProtocol == false) {
+              LWToast.show(LocaleKeys.agree_regist_or_login_tips.tr());
+              return;
+            }
             FocusManager.instance.primaryFocus?.unfocus();
             final map = await ThirdPartLoginTool.signInWithFacebook();
             viewModel.facebookLogin(map);
@@ -376,6 +380,10 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
               onPressed: () async {
                 LogUtil.d('点击了通过Apple登录');
                 FocusManager.instance.primaryFocus?.unfocus();
+                if (viewModel.isSelectedProtocol == false) {
+                  LWToast.show(LocaleKeys.agree_regist_or_login_tips.tr());
+                  return;
+                }
                 final credential = await ThirdPartLoginTool.signInWithApple();
                 viewModel.appleLogin(credential);
                 // if (StringUtils.isNullOrEmpty(credential.email)) {
