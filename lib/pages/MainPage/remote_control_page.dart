@@ -34,12 +34,14 @@ class _RemoteControlPageState
         (params) {
       pagePop();
     });
+    //YGTO: 进入页面监听
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     EventManager.unregister(context, AppEvent.blueToothCommunicationDisabled);
+    //YGTO: 退出页面监听
     super.dispose();
   }
 
@@ -188,7 +190,6 @@ class _RemoteControlPageState
           ),
           onTap: () {
             LogUtil.d('点击了向前');
-
           },
           onLongPress: () {
             LogUtil.d('长按了向前');
@@ -212,7 +213,6 @@ class _RemoteControlPageState
           )),
           onTap: () {
             LogUtil.d('点击了向后');
-
           },
           onLongPress: () {
             LogUtil.d('长按了向后');

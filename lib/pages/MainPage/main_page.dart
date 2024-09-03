@@ -124,7 +124,6 @@ class _MainPageState extends BaseMvvmPageState<MainPage, MainPageViewModel>
     EventManager.register(context, AppEvent.vehicleInfoChange, (params) {
       LogUtil.d("------------vehicleInfoChange");
 
-
       viewModel.loadData();
     });
     EventManager.register(context, AppEvent.vehicleRegistSuccess, (args) {
