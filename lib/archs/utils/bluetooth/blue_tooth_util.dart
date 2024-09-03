@@ -318,6 +318,16 @@ class BlueToothUtil {
     return "";
   }
 
+  /// 进入页面发送 苟总:不管其他的，  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
+  void initPage(){
+    sendData.add(sendBluePageInitAndMove(1));
+  }
+
+  /// 离开页面发送 苟总: 不管其他的，  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
+  void movePage(){
+    sendData.add(sendBluePageInitAndMove(0));
+  }
+
   /// 向前
   void controllerForward() {
     sendData.add(sendPackToBluetooth46(carStatus: 1));
@@ -1590,6 +1600,45 @@ class BlueToothUtil {
 
     return sendPack;
   }
+
+
+
+  /// 蓝牙控制界面， 进入页面和退出界面发送的数据  carStatus 1 进入页面，0退出页面
+  ///  进入遥控器页面先发：0000000000000082，退出页面的时候发：0000000000000080
+  List<int> sendBluePageInitAndMove(int carStatus) {
+    List<int> sendPack = List.filled(17, 0);
+    int count = 0;
+    int position = 0;
+
+    sendPack[position++] = 0xa5;
+    sendPack[position++] = 0x03;
+    sendPack[position++] = 46;
+    sendPack[position++] = 8;
+    var second = (DateTime.now().toUtc().millisecondsSinceEpoch) ~/ 1000;
+    sendPack[position++] = (second >> 24) & 0xff;
+    sendPack[position++] = (second >> 16) & 0xff;
+    sendPack[position++] = (second >> 8) & 0xff;
+    sendPack[position++] = second & 0xff;
+
+    if(carStatus == 1){
+      sendPack[15] = (sendPack[15] | 0x82) & 0xff;
+    }else{
+      sendPack[15] = (sendPack[15] | 0x80) & 0xff;
+    }
+
+    for (int i = 0; i < 16; i++) {
+      count += sendPack[i];
+    }
+    sendPack[16] = count & 0xff;
+
+    return sendPack;
+  }
+
+
+
+
+
+
 
   /// lockCarStatus lockCarStatus 锁车状态 0没关机、1开机
   /// setLock 设防 0关闭、1开启

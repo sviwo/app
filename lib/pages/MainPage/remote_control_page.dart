@@ -35,6 +35,7 @@ class _RemoteControlPageState
       pagePop();
     });
     //YGTODO: 进入页面监听
+    BlueToothUtil.getInstance().initPage();
   }
 
   @override
@@ -42,6 +43,7 @@ class _RemoteControlPageState
     // TODO: implement dispose
     EventManager.unregister(context, AppEvent.blueToothCommunicationDisabled);
     //YGTODO: 退出页面监听
+    BlueToothUtil.getInstance().movePage();
     super.dispose();
   }
 
