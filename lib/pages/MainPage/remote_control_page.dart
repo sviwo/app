@@ -34,14 +34,14 @@ class _RemoteControlPageState
         (params) {
       pagePop();
     });
-    //YGTO: 进入页面监听
+    //YGTODO: 进入页面监听
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     EventManager.unregister(context, AppEvent.blueToothCommunicationDisabled);
-    //YGTO: 退出页面监听
+    //YGTODO: 退出页面监听
     super.dispose();
   }
 
