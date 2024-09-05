@@ -103,7 +103,7 @@ dependencies:
   url_launcher: ^6.1.11
   sign_in_with_apple: ^5.0.0
   # flutter_login_facebook: ^2.0.1
-  flutter_facebook_auth: ^5.0.11
+  # flutter_facebook_auth: ^5.0.11
 
 dev_dependencies:
   flutter_test:
