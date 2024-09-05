@@ -384,8 +384,10 @@ class _LoginPageState extends BaseMvvmPageState<LoginPage, LoginViewModel> {
                   LWToast.show(LocaleKeys.agree_regist_or_login_tips.tr());
                   return;
                 }
-                final credential = await ThirdPartLoginTool.signInWithApple();
-                viewModel.appleLogin(credential);
+                // final credential = await ThirdPartLoginTool.signInWithApple();
+                // viewModel.appleLogin(credential);
+
+                
                 // if (StringUtils.isNullOrEmpty(credential.email)) {
                 //   LWToast.show(LocaleKeys.apple_login_without_email_tips.tr());
                 // } else {
