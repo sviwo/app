@@ -34,4 +34,7 @@ build
 pubspec.lock
 
 local.properties
+.vscode
+.android
+.idea
 
