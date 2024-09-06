@@ -31,6 +31,7 @@ build
 /windows
 /macos
 /linux
+ios/Pods
 pubspec.lock
 
 local.properties
