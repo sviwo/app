@@ -12,7 +12,7 @@ import 'package:atv/pages/Login/define/login_defines.dart';
 import 'package:atv/widgetLibrary/complex/toast/lw_toast.dart';
 import 'package:basic_utils/basic_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
-// import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginViewModel extends BaseViewModel {
   /// 是否选中了同意协议
@@ -103,33 +103,33 @@ class LoginViewModel extends BaseViewModel {
     }
   }
 
-  // void appleLogin(AuthorizationCredentialAppleID appleId) async {
-  //   var nickName = '';
-  //   if (StringUtils.isNotNullOrEmpty(appleId.givenName)) {
-  //     nickName += appleId.givenName ?? '';
-  //   }
-  //   if (StringUtils.isNotNullOrEmpty(appleId.familyName)) {
-  //     nickName += appleId.familyName ?? '';
-  //   }
-  //   await loadApiData<LoginResponse>(
-  //     ApiLogin.login(
-  //         params: LoginParams(
-  //             username: appleId.email,
-  //             userIdentifier: appleId.userIdentifier,
-  //             identityToken: appleId.identityToken,
-  //             nickName: nickName,
-  //             loginType: 2)),
-  //     showLoading: true,
-  //     handlePageState: false,
-  //     dataSuccess: (data) {
-  //       AppConf.afterLoginSuccess(
-  //           Authorization: data.Authorization, Publickey: data.Publickey);
-  //       pagePushAndRemoveUtil(
-  //         AppRoute.main,
-  //       );
-  //     },
-  //   );
-  // }
+  void appleLogin(AuthorizationCredentialAppleID appleId) async {
+    var nickName = '';
+    if (StringUtils.isNotNullOrEmpty(appleId.givenName)) {
+      nickName += appleId.givenName ?? '';
+    }
+    if (StringUtils.isNotNullOrEmpty(appleId.familyName)) {
+      nickName += appleId.familyName ?? '';
+    }
+    await loadApiData<LoginResponse>(
+      ApiLogin.login(
+          params: LoginParams(
+              username: appleId.email,
+              userIdentifier: appleId.userIdentifier,
+              identityToken: appleId.identityToken,
+              nickName: nickName,
+              loginType: 2)),
+      showLoading: true,
+      handlePageState: false,
+      dataSuccess: (data) {
+        AppConf.afterLoginSuccess(
+            Authorization: data.Authorization, Publickey: data.Publickey);
+        pagePushAndRemoveUtil(
+          AppRoute.main,
+        );
+      },
+    );
+  }
 
   void facebookLogin(Map<String, dynamic> fbMap) async {
     if (fbMap.isEmpty) {
