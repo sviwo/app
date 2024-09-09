@@ -106,9 +106,11 @@ class _EnergyModelPageState
               if (isBluetoothOpen && isConnectBluetooth) {
                 //: 控制ECO模式的开启与关闭 value true：开启  false：关闭
                 BlueToothUtil.getInstance().modelSwitch(0, successBlock: () {
-                  viewModel.homeModel?.drivingMode = 0;
-                  dataRefresh();
-                  EventManager.post(AppEvent.vehicleInfoChange);
+                  // viewModel.homeModel?.drivingMode = 0;
+                  viewModel.changeDriveMode(0);
+                  // dataRefresh();
+
+                  // EventManager.post(AppEvent.vehicleInfoChange);
                 });
 
                 // viewModel.changeDriveMode(0);
@@ -174,9 +176,10 @@ class _EnergyModelPageState
               if (isBluetoothOpen && isConnectBluetooth) {
                 //: 控制运动模式的开启与关闭 value true：开启  false：关闭
                 BlueToothUtil.getInstance().modelSwitch(1, successBlock: () {
-                  viewModel.homeModel?.drivingMode = 1;
-                  dataRefresh();
-                  EventManager.post(AppEvent.vehicleInfoChange);
+                  // viewModel.homeModel?.drivingMode = 1;
+                  viewModel.changeDriveMode(1);
+                  // dataRefresh();
+                  // EventManager.post(AppEvent.vehicleInfoChange);
                 });
                 //viewModel.changeDriveMode(1);
               } else {
@@ -241,9 +244,10 @@ class _EnergyModelPageState
               if (isBluetoothOpen && isConnectBluetooth) {
                 //: 控制狂暴模式的开启与关闭 value true：开启  false：关闭
                 BlueToothUtil.getInstance().modelSwitch(2, successBlock: () {
-                  viewModel.homeModel?.drivingMode = 2;
-                  dataRefresh();
-                  EventManager.post(AppEvent.vehicleInfoChange);
+                  // viewModel.homeModel?.drivingMode = 2;
+                  viewModel.changeDriveMode(2);
+                  // dataRefresh();
+                  // EventManager.post(AppEvent.vehicleInfoChange);
                 });
                 //viewModel.changeDriveMode(2);
               } else {
@@ -316,6 +320,10 @@ class _EnergyModelPageState
                       activeColor: const Color(0xff36BCB3),
                       inactiveColor: Colors.white,
                       onChanged: (value) {
+                        LogUtil.d('+++++++++++++++onChanged value:$value');
+                      },
+                      onChangeEnd: (value) {
+                        LogUtil.d('+++++++++++++++onChangeEnd value:$value');
                         // 判断手机蓝牙是否打开
                         var isBluetoothOpen =
                             BlueToothUtil.getInstance().blueToothIsOpen();
@@ -326,9 +334,10 @@ class _EnergyModelPageState
                           //: 控制动能回收 value值为0、 1、 2
                           BlueToothUtil.getInstance()
                               .sportRecycle(value.toInt(), successBlock: () {
-                            viewModel.homeModel?.energyRecovery = value.toInt();
-                            dataRefresh();
-                            EventManager.post(AppEvent.vehicleInfoChange);
+                            // viewModel.homeModel?.energyRecovery = value.toInt();
+                            viewModel.changeEnergyRecovery(value.toInt());
+                            // dataRefresh();
+                            // EventManager.post(AppEvent.vehicleInfoChange);
                           });
                         } else {
                           viewModel.changeEnergyRecovery(value.toInt());
