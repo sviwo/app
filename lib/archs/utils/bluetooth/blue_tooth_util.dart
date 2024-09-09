@@ -272,9 +272,9 @@ class BlueToothUtil {
     }
   }
 
-  // 动能切换模式 1-3 ECO、运动、狂暴
+  // 动能切换模式 1-3 ECO、运动、狂暴     2024年9月7日16:47:23  苟总： 协议改为了1-3  之前是 0-2
   void modelSwitch(int value, {Function? successBlock}) {
-    sendData.add(sendPackToBluetooth46(sportRecycle: value));
+    sendData.add(sendPackToBluetooth46(sportStatus: value + 1));
     if(successBlock != null){
       successBlock();
     }
@@ -1691,7 +1691,7 @@ class BlueToothUtil {
     }
 
     if (sportStatus != null) {
-      if (sportStatus != 0 && sportStatus != 1 && sportStatus != 2) {
+      if (sportStatus != 1 && sportStatus != 2 && sportStatus != 3) {
         throw ArgumentError("sportStatus is in(1-3)");
       } else {
         sendPack[15] = (sendPack[15] | 0x10) & 0xff;
